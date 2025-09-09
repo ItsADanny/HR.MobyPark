@@ -212,5 +212,8 @@ Casus - MobyPark.pdf
 INFSCP01 - 2526 - Full-time Course Manual - Definitief.pdf
 Inlevermap INFSCPX1 - Team X - INF2X.zip
 
-JetBrains
-.idea
+#JetBrains
+/.idea
+
+#MacOS
+.DS_STORE
