@@ -23,7 +23,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(b"Username already taken")
                     return
-            users.add({
+            users.append({
                 'username': username,
                 'password': hashed_password,
                 'name': name
@@ -676,6 +676,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                         return
                     sessions = load_json(f'data/pdata/p{lid}-sessions.json')
                     rsessions = []
+                    session_user = get_session(token)
                     if self.path.endswith('/sessions'):
                         if "ADMIN" == session_user.get('role'):
                             rsessions = sessions

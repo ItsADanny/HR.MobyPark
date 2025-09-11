@@ -1,0 +1,157 @@
+openapi: 3.0.4
+info:
+  title: HR.MobyPark
+  description: |-
+    This documentation contains the endpoints and there example output for the MobyPark Project API
+
+    Project links:
+    - [HR.MobyPark project repository (MAIN)](https://github.com/swagger-api/swagger-petstore)
+    - [HR.MobyPark project repository (STABLE)](https://github.com/swagger-api/swagger-petstore)
+    - [HR.MobyPark project repository (DEVELOPMENT)](https://github.com/swagger-api/swagger-petstore)
+    - [HR.MobyPark project repository (TEMPLATE)](https://github.com/swagger-api/swagger-petstore)
+    - [MobyPark project case](https://github.com/ItsADanny/HR.MobyPark/blob/template/Casus%20-%20MobyPark.pdf)
+    - [Software Construction: Tools & Processes Course Guide](https://github.com/ItsADanny/HR.MobyPark/blob/template/INFSCP01%20-%202526%20-%20Full-time%20Course%20Manual%20-%20Definitief.pdf)
+    
+  version: BETA 1.0.0
+servers:
+  - url: https://localhost:8000/
+tags:
+  - name: register
+    description: All endpoints that are connected to the /register subdomain
+  - name: login
+    description: All endpoints that are connected to the /login subdomain
+  - name: logout
+    description: All endpoints that are connected to the /logout subdomain
+  - name: profile
+    description: All endpoints that are connected to the /profile subdomain
+  - name: parking-lots
+    description: All endpoints that are connected to the /parking-lots subdomain
+  - name: reservations
+    description: All endpoints that are connected to the /reservations subdomain
+  - name: vehicles
+    description: All endpoints that are connected to the /vehicles subdomain
+  - name: payments
+    description: All endpoints that are connected to the /payments subdomain
+  - name: billing
+    description: All endpoints that are connected to the /billing subdomain
+paths:
+  /register:
+    post:
+      tags:
+        - register
+      summary: Create a new user account
+      description: Create a new user account within the application.
+      operationId: CreateUser
+      
+  /login:
+    post:
+      tags:
+        - login
+      summary: preforms the login sequence for a user account
+      description: preforms the login sequence for a user account and returns a session token
+      operationId: LoginUser
+      
+  /logout:
+    get:
+      tags:
+        - logout
+        
+  /profile:
+    put:
+      tags:
+        - profile
+    get:
+      tags:
+        - profile
+        
+  /parking-lots:
+    get:
+      tags:
+        - parking-lots
+    post:
+      tags:
+        - parking-lots
+    put:
+      tags:
+        - parking-lots
+    delete:
+      tags:
+        - parking-lots
+        
+  /reservations:
+    post:
+      tags:
+        - reservations
+    put:
+      tags:
+        - reservations
+    delete:
+      tags:
+        - reservations
+  
+  /reservations/{ReservationID}:
+    get:
+      tags:
+        - reservations
+  
+  /vehicles:
+    get:
+      tags:
+        - vehicles
+    post:
+      tags:
+        - vehicles
+  
+  /vehicles/:
+    post:
+      tags:
+        - vehicles
+    put:
+      tags:
+        - vehicles
+    delete:
+      tags:
+        - vehicles
+        
+  /vehicles/reservations:
+    get:
+      tags:
+        - vehicles
+    
+  /vehicles/history:
+    get:
+      tags:
+        - vehicles
+  
+  /payments:
+    get:
+      tags:
+        - payments
+    post:
+      tags:
+        - payments
+  
+  /payments/:
+    put:
+      tags:
+        - payments
+  
+  /payments/refund:
+    post:
+      tags:
+        - payments
+  
+  /payments/{UserID}:
+    get:
+      tags:
+        - payments
+        
+  /billing:
+    get:
+      tags:
+        - billing
+  
+  /billing/{UserID}:
+    get:
+      tags:
+        - billing
