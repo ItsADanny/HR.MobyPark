@@ -147,7 +147,6 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(f"Parking lot saved under ID: {new_lid}".encode('utf-8'))
 
-
         elif self.path == "/reservations":
             token = self.headers.get('Authorization')
             if not token or not get_session(token):

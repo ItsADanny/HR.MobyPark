@@ -34,6 +34,7 @@ tags:
     description: All endpoints that are connected to the /payments subdomain
   - name: billing
     description: All endpoints that are connected to the /billing subdomain
+  - name: food
 paths:
   /register:
     post:
@@ -41,117 +42,857 @@ paths:
         - register
       summary: Create a new user account
       description: Create a new user account within the application.
-      operationId: CreateUser
-      
+      operationId: do_POST./register
+      parameters:
+        - name: username
+          in: query
+          description: The username for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: password
+          in: query
+          description: The unhashed password that has been chosen for the account
+          required: true
+          schema:
+            type: string
+            format: string
+      requestBody:
+        description: Create a new user account
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+        required: true
+      responses:
+        '200':
+          description: Account already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registerAlreadyExist'
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registerCreated'
+
   /login:
     post:
       tags:
         - login
       summary: preforms the login sequence for a user account
       description: preforms the login sequence for a user account and returns a session token
-      operationId: LoginUser
-      
+      operationId: do_POST./login
+      parameters:
+        - name: username
+          in: query
+          description: The username for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: password
+          in: query
+          description: The unhashed password for the account
+          required: true
+          schema:
+            type: string
+            format: string
+      requestBody:
+        description: Create a new user account
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+        required: true
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginSuccessful'
+        '400':
+          description: Missing credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginMissingCredentials'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/loginInvalidCredentials'
+                  - $ref: '#/components/schemas/loginUserNotFound'
+
   /logout:
     get:
       tags:
         - logout
-        
+      summary: preforms the logout sequence for a user account
+      description: preforms the logout sequence for a user account and returns a status code 200 when successful
+      operationId: do_GET./logout
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          'description': Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/logoutSuccessful'
+        '400':
+          'description': Invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/logoutInvalidToken'
+
   /profile:
     put:
       tags:
         - profile
+      summary: Update the users profile
+      description: Endpoint for performing a update on the user account profile
+      operationId: do_PUT./profile
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: username
+          in: query
+          description: The username for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: password
+          in: query
+          description: The password for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/profileUpdateSuccessful'
+        '401':
+          description: Invalid or missing session token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonUnauthorizedInvalidOrMissingToken'
+
     get:
       tags:
         - profile
-        
+      summary: Retrieve the user profile from the users.json file
+      description: Retrieve the user profile from the users.json file
+      operationId: do_GET./profile
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          description: operation successful
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/getProfileJSON_newRegistration'
+                  - $ref: '#/components/schemas/getProfileJSON_user'
+                  - $ref: '#/components/schemas/getProfileJSON_admin'
+        '401':
+          description: Invalid or missing session token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonUnauthorizedInvalidOrMissingToken'
+
   /parking-lots:
-    get:
-      tags:
-        - parking-lots
     post:
       tags:
         - parking-lots
+      operationId: do_POST./parking-lots
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: id
+          in: query
+          description: ID of the parking lot
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: name
+          in: query
+          description: Name of the parking lot
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: location
+          in: query
+          description: Location of the parking lot
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: address
+          in: query
+          description: Address of the parking lot
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: capacity
+          in: query
+          description: total capacity of the parking lot (total amount of parking spots)
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: reserved
+          in: query
+          description: Reserved parking spots in the parking lot
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: tariff
+          in: query
+          description: Cost of parking in the parking lot
+          required: true
+          schema:
+            type: number
+            format: XXX.XX
+        - name: daytariff
+          in: query
+          description: The max cost of parking for a whole day in the parking lot
+          required: true
+          schema:
+            type: number
+            format: XXX.XX
+        - name: created_at
+          in: query
+          description: The day the parking lot was created in the system
+          required: true
+          schema:
+            type: string
+            format: YYYY-MM-DD
+        - name: coordinates
+          in: query
+          description: Coordinates for the parking lot
+          required: true
+          schema:
+            $ref: '#/components/schemas/coordinates'
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parking-lots.savedSuccessful'
+        '401':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonUnauthorizedInvalidOrMissingToken'
+        '403':
+          description: Access denied, Not a ADMIN account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonAccessDenied'
     put:
       tags:
         - parking-lots
+      responses:
+
     delete:
       tags:
         - parking-lots
-        
+      responses:
+
+  /parking-lots/:
+    get:
+      tags:
+        - parking-lots
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          description: operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parkingLots.AllLotsDump'
+
+  /parking-lots/{ParkingLotID}:
+    get:
+      tags:
+        - parking-lots
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: ParkingLotID
+          in: path
+          description: The parking lot ID for which you want to retrieve the current sessions
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          description: operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parkingLots.SpecificLotDump'
+        '404':
+          description: Parking lot not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parkingLots.LotNotFound'
+
+  /parking-lots/{ParkingLotID}/sessions:
+    get:
+      tags:
+        - parking-lots
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: ParkingLotID
+          in: path
+          description: The parking lot ID for which you want to retrieve the current sessions
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        #        '200':
+        #          description: Operation successful
+        #          content:
+        #            application/json:
+        #              schema:
+        #                $ref: '#/components/schemas/parkingLots.sessions.dump'
+        '401':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonUnauthorizedInvalidOrMissingToken'
+        '403':
+          description: Access denied, Not a ADMIN account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonAccessDenied'
+
   /reservations:
     post:
       tags:
         - reservations
+      responses:
     put:
       tags:
         - reservations
+      responses:
     delete:
       tags:
         - reservations
+      responses:
   
   /reservations/{ReservationID}:
     get:
       tags:
         - reservations
+      parameters:
+        - name: ReservationID
+          in: path
+          description: ID of reservation from which to return data for
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
   
   /vehicles:
     get:
       tags:
         - vehicles
+      responses:
     post:
       tags:
         - vehicles
+      responses:
   
   /vehicles/:
     post:
       tags:
         - vehicles
+      responses:
     put:
       tags:
         - vehicles
+      responses:
     delete:
       tags:
         - vehicles
-        
+      responses:
+
   /vehicles/reservations:
     get:
       tags:
         - vehicles
-    
+      responses:
+
   /vehicles/history:
     get:
       tags:
         - vehicles
+      responses:
   
   /payments:
     get:
       tags:
         - payments
+      responses:
     post:
       tags:
         - payments
+      responses:
   
   /payments/:
     put:
       tags:
         - payments
+      responses:
   
   /payments/refund:
     post:
       tags:
         - payments
+      responses:
   
   /payments/{UserID}:
     get:
       tags:
         - payments
-        
+      parameters:
+        - name: UserID
+          in: path
+          description: ID of user from which to return all payment data
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+
   /billing:
     get:
       tags:
         - billing
+      responses:
   
   /billing/{UserID}:
     get:
       tags:
         - billing
+      parameters:
+        - name: UserID
+          in: path
+          description: ID of user from which to return all billing information
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+
+components:
+  schemas:
+    user:
+      type: object
+      properties:
+        username:
+          type: string
+          format: string
+          example: JohnDoe
+        password:
+          type: string
+          format: string
+          example: JohnHetSchaap123!
+    registerAlreadyExist:
+      type: string
+      format: string
+      example: Username already taken
+    registerCreated:
+      type: string
+      format: string
+      example: User created
+    loginMissingCredentials:
+      type: string
+      format: string
+      example: Missing credentials
+    loginInvalidCredentials:
+      type: string
+      format: string
+      example: Invalid credentials
+    loginUserNotFound:
+      type: string
+      format: string
+      example: User not found
+    loginSuccessful:
+      type: object
+      properties:
+        message:
+          type: string
+          format: string
+          example: User logged in
+        session_token:
+          type: string
+          format: string
+          example: e5b11548-7b4a-458d-9563-5708ce3231cc
+    logoutSuccessful:
+      type: string
+      format: string
+      example: User logged out
+    logoutInvalidToken:
+      type: string
+      format: string
+      example: Invalid session token
+    profileUpdateSuccessful:
+      type: string
+      format: string
+      example: User updated successfully
+    commonUnauthorizedInvalidOrMissingToken:
+      type: string
+      format: string
+      example: "Unauthorized: Invalid or missing session token"
+    getProfileJSON_user:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: integer
+          example: 8591
+        username:
+          type: string
+          format: string
+          example: mats.willems
+        password:
+          type: string
+          format: string
+          example: 154e9284e19a3c1612e7964c91a21015
+        name:
+          type: string
+          format: string
+          example: Mats Willems
+        email:
+          type: string
+          format: string
+          example: mats.willems@kpn.nl
+        phone:
+          type: string
+          format: string
+          example: +310100955111
+        role:
+          type: string
+          format: string
+          example: USER
+        created_at:
+          type: string
+          format: string
+          example: 2025-05-22
+        birth_year:
+          type: integer
+          format: integer
+          example: 1973
+        active:
+          type: boolean
+          format: boolean
+          example: true
+    getProfileJSON_admin:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: integer
+          example: 2
+        username:
+          type: string
+          format: string
+          example: gijsdegraaf
+        password:
+          type: string
+          format: string
+          example: 1b1f4e666f54b55ccd2c701ec3435dba
+        name:
+          type: string
+          format: string
+          example: Gijs de Graaf
+        email:
+          type: string
+          format: string
+          example: gijsdegraaf@hotmail.com
+        phone:
+          type: string
+          format: string
+          example: +310698086312
+        role:
+          type: string
+          format: string
+          example: ADMIN
+        created_at:
+          type: string
+          format: string
+          example: 2017-07-10
+        birth_year:
+          type: integer
+          format: integer
+          example: 1951
+        active:
+          type: boolean
+          format: boolean
+          example: true
+    getProfileJSON_newRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+          format: string
+          example: JippertjeJan
+        password:
+          type: string
+          format: string
+          example: 448ae42eb643ad5d0ce886a49c0f05cb
+        name:
+          type: string
+          format: string
+          example: Jip
+    commonAccessDenied:
+      type: string
+      format: string
+      example: Access denied
+    parkingLots.LotNotFound:
+      type: string
+      format: string
+      example: Parking lot not found
+    parkingLots.SpecificLotDump:
+      type: object
+      properties: 
+        1:
+          type: object
+          properties:
+            id:
+              type: string
+              format: string
+              example: 1
+            name:
+              type: string
+              format: string
+              example: Bedrijventerrein Almere Parkeergarage
+            location:
+              type: string
+              format: string
+              example: Industrial Zone
+            address:
+              type: string
+              format: string
+              example: Schanssingel 337, 2421 BS Almere
+            capacity:
+              type: integer
+              format: integer
+              example: 355
+            reserved:
+              type: integer
+              format: integer
+              example: 77
+            tariff:
+              type: number
+              format: number
+              example: 1.9
+            daytariff:
+              type: number
+              format: number
+              example: 11
+            created_at:
+              type: string
+              format: YYYY-MM-DD
+              example: 2020-03-25
+            coordinates:
+              type: object
+              properties:
+                lat:
+                  type: number
+                  format: XXX.XXXX
+                  example: 52.3133
+                lng:
+                  type: number
+                  format: XXX.XXXX
+                  example: 5.2234
+    parkingLots.AllLotsDump:
+      type: object
+      properties:
+        1:
+          type: object
+          properties:
+            id:
+              type: string
+              format: string
+              example: 1
+            name:
+              type: string
+              format: string
+              example: Bedrijventerrein Almere Parkeergarage
+            location:
+              type: string
+              format: string
+              example: Industrial Zone
+            address:
+              type: string
+              format: string
+              example: Schanssingel 337, 2421 BS Almere
+            capacity:
+              type: integer
+              format: integer
+              example: 355
+            reserved:
+              type: integer
+              format: integer
+              example: 77
+            tariff:
+              type: number
+              format: number
+              example: 1.9
+            daytariff:
+              type: number
+              format: number
+              example: 11
+            created_at:
+              type: string
+              format: YYYY-MM-DD
+              example: 2020-03-25
+            coordinates:
+              type: object
+              properties:
+                lat:
+                  type: number
+                  format: XXX.XXXX
+                  example: 52.3133
+                lng:
+                  type: number
+                  format: XXX.XXXX
+                  example: 5.2234
+        2:
+          type: object
+          properties:
+            id:
+              type: string
+              format: string
+              example: 2
+            name:
+              type: string
+              format: string
+              example: Vlaardingen Evenementenhal Parkeerterrein
+            location:
+              type: string
+              format: string
+              example: Event Center
+            address:
+              type: string
+              format: string
+              example: Westlindepark 756, 8920 AB Vlaardingen
+            capacity:
+              type: integer
+              format: integer
+              example: 730
+            reserved:
+              type: integer
+              format: integer
+              example: 136
+            tariff:
+              type: number
+              format: number
+              example: 3.2
+            daytariff:
+              type: number
+              format: number
+              example: 16
+            created_at:
+              type: string
+              format: YYYY-MM-DD
+              example: 2019-02-25
+            coordinates:
+              type: object
+              properties:
+                lat:
+                  type: number
+                  format: XXX.XXXX
+                  example: 51.8921
+                lng:
+                  type: number
+                  format: XXX.XXXX
+                  example: 4.3731
+    coordinates:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: XXX.XXXX
+          example: 52.3133
+        lng:
+          type: number
+          format: XXX.XXXX
+          example: 5.2234
+    parking-lots.savedSuccessful:
+      type: string
+      format: string
+      example: "Parking lot saved under ID: 69"
