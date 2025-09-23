@@ -34,7 +34,6 @@ tags:
     description: All endpoints that are connected to the /payments subdomain
   - name: billing
     description: All endpoints that are connected to the /billing subdomain
-  - name: food
 paths:
   /register:
     post:
@@ -200,7 +199,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/commonUnauthorizedInvalidOrMissingToken'
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
 
     get:
       tags:
@@ -231,7 +230,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/commonUnauthorizedInvalidOrMissingToken'
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
 
   /parking-lots:
     post:
@@ -327,22 +326,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/commonUnauthorizedInvalidOrMissingToken'
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
         '403':
           description: Access denied, Not a ADMIN account
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/commonAccessDenied'
-    put:
-      tags:
-        - parking-lots
-      responses:
-
-    delete:
-      tags:
-        - parking-lots
-      responses:
+                $ref: '#/components/schemas/common.AccessDenied'
 
   /parking-lots/:
     get:
@@ -397,6 +387,120 @@ paths:
               schema:
                 $ref: '#/components/schemas/parkingLots.LotNotFound'
 
+    put:
+      tags:
+        - parking-lots
+      parameters:
+        - name: name
+          in: query
+          description: Name of the parking lot
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: location
+          in: query
+          description: Location of the parking lot
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: address
+          in: query
+          description: Address of the parking lot
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: capacity
+          in: query
+          description: total capacity of the parking lot (total amount of parking spots)
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: reserved
+          in: query
+          description: Reserved parking spots in the parking lot
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: tariff
+          in: query
+          description: Cost of parking in the parking lot
+          required: true
+          schema:
+            type: number
+            format: XXX.XX
+        - name: daytariff
+          in: query
+          description: The max cost of parking for a whole day in the parking lot
+          required: true
+          schema:
+            type: number
+            format: XXX.XX
+        - name: coordinates
+          in: query
+          description: Coordinates for the parking lot
+          required: true
+          schema:
+            $ref: '#/components/schemas/coordinates'
+      responses:
+        '200':
+          'description': Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parkingLots.Modified'
+        '401':
+          'description': Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+        '403':
+          'description': Access denied, Not a ADMIN account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.AccessDenied'
+        '404':
+          'description': Parking lot not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parkingLots.LotNotFound'
+
+    delete:
+      tags:
+        - parking-lots
+      responses:
+        '200':
+          'description': Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parking-lots.deleteLot'
+        '401':
+          'description': Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+        '403':
+          'description': Access denied, Not a ADMIN account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.AccessDenied'
+        '404':
+          'description': Parking lot not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parkingLots.LotNotFound'
+
   /parking-lots/{ParkingLotID}/sessions:
     get:
       tags:
@@ -417,24 +521,124 @@ paths:
             type: string
             format: string
       responses:
-        #        '200':
-        #          description: Operation successful
-        #          content:
-        #            application/json:
-        #              schema:
-        #                $ref: '#/components/schemas/parkingLots.sessions.dump'
+#                '200':
+#                  description: Operation successful
+#                  content:
+#                    application/json:
+#                      schema:
+#                        $ref: '#/components/schemas/parkingLots.sessions.dump'
         '401':
           description: Access denied
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/commonUnauthorizedInvalidOrMissingToken'
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
         '403':
           description: Access denied, Not a ADMIN account
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/commonAccessDenied'
+                $ref: '#/components/schemas/common.AccessDenied'
+
+    delete:
+      tags:
+        - parking-lots
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: ParkingLotID
+          in: path
+          description: The parking lot ID for which you want to retrieve the current sessions
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          'description': Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parking-lots.deleteLot'
+        '401':
+          'description': Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+        '403':
+          'description': '"Access denied, Not a ADMIN account" or "Session ID Required"'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/common.AccessDenied'
+                  - $ref: '#/components/schemas/common.SessionIDRequired'
+        '404':
+          'description': Parking lot not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parkingLots.LotNotFound'
+
+  /parking-lots/{ParkingLotID}/sessions/{SessionID}:
+    delete:
+      tags:
+        - parking-lots
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: ParkingLotID
+          in: path
+          description: The parking lot ID for which you want to retrieve the current sessions
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: SessionID
+          in: path
+          description: The session ID for which you want to delete parking sessions
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          'description': Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.SessionDeleted'
+        '401':
+          'description': Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+        '403':
+          'description': '"Access denied, Not a ADMIN account" or "Session ID Required"'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/common.AccessDenied'
+                  - $ref: '#/components/schemas/common.SessionIDRequired'
+        '404':
+          'description': Parking lot not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parkingLots.LotNotFound'
 
   /reservations:
     post:
@@ -540,8 +744,28 @@ paths:
     get:
       tags:
         - billing
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
       responses:
-  
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/billing'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+
   /billing/{UserID}:
     get:
       tags:
@@ -555,7 +779,24 @@ paths:
             type: integer
             format: int64
       responses:
-
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/billing'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+        '403':
+          description: Access denied (User is not a ADMIN)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.AccessDenied'
 components:
   schemas:
     user:
@@ -612,7 +853,7 @@ components:
       type: string
       format: string
       example: User updated successfully
-    commonUnauthorizedInvalidOrMissingToken:
+    common.UnauthorizedInvalidOrMissingToken:
       type: string
       format: string
       example: "Unauthorized: Invalid or missing session token"
@@ -717,7 +958,7 @@ components:
           type: string
           format: string
           example: Jip
-    commonAccessDenied:
+    common.AccessDenied:
       type: string
       format: string
       example: Access denied
@@ -896,3 +1137,72 @@ components:
       type: string
       format: string
       example: "Parking lot saved under ID: 69"
+    parkingLots.Modified:
+      type: string
+      format: string
+      example: "Parking lot modified"
+    common.SessionIDRequired:
+      type: string
+      format: string
+      example: "Session ID is required, cannot delete all sessions"
+    common.SessionDeleted:
+      type: string
+      format: string
+      example: "Sessions deleted"
+    parking-lots.deleteLot:
+      type: string
+      format: string
+      example: "Parking lot deleted"
+    billing:
+      type: object
+      properties:
+        sessions:
+          type: object
+          properties:
+            licenseplate:
+              type: string
+              format: string
+              example:
+            started:
+              type: string
+              format: string
+              example:
+            stopped:
+              type: string
+              format: string
+              example:
+        parking:
+          type: object
+          properties:
+            name:
+              type: string
+              format: string
+              example:
+            location:
+              type: string
+              format: string
+              example:
+            tariff:
+              type: number
+              format: XXX.XX
+              example:
+            daytariff:
+              type: number
+              format: XXX.XX
+              example:
+        amount:
+          type: integer
+          format: int64
+          example:
+        thash:
+          type: string
+          format: string
+          example:
+        payed:
+          type: integer
+          format: int64
+          example:
+        balance:
+          type: integer
+          format: int64
+          example:
