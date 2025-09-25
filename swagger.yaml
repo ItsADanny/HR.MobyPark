@@ -645,16 +645,91 @@ paths:
       tags:
         - reservations
       responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reservation.postSucces'
+        '401':
+          'description': Unauthorized or Missing field
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+                  - $ref: '#/components/schemas/reservation.missingRequireField.licensePlate'
+                  - $ref: '#/components/schemas/reservation.missingRequireField.startdate'
+                  - $ref: '#/components/schemas/reservation.missingRequireField.enddate'
+                  - $ref: '#/components/schemas/reservation.missingRequireField.parkinglot'
+                  - $ref: '#/components/schemas/reservation.missingRequireField.user'
+        '404':
+          'description': Parking lot not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reservation.parkingLotNotFound'
+
     put:
       tags:
         - reservations
       responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reservation.putUpdated'
+        '401':
+          'description': Unauthorized or Missing field
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+                  - $ref: '#/components/schemas/reservation.missingRequireField.licensePlate'
+                  - $ref: '#/components/schemas/reservation.missingRequireField.startdate'
+                  - $ref: '#/components/schemas/reservation.missingRequireField.enddate'
+                  - $ref: '#/components/schemas/reservation.missingRequireField.parkinglot'
+                  - $ref: '#/components/schemas/reservation.missingRequireField.user'
+        '404':
+          'description': Reservation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reservation.notFound'
+
+  /reservations/{ReservationID}:
     delete:
       tags:
         - reservations
       responses:
-  
-  /reservations/{ReservationID}:
+        '200':
+          description: Operation successful
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/reservation.deleted'
+        '401':
+          'description': Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+        '403':
+          'description': '"Access denied, Not a ADMIN account"'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/common.AccessDenied'
+        '404':
+          'description': Reservation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reservation.notFound'
+          
     get:
       tags:
         - reservations
@@ -667,6 +742,26 @@ paths:
             type: integer
             format: int64
       responses:
+        '200':
+          description: Operation successful
+        '401':
+          description: Unauthorized or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.AccessDenied'
+        '404':
+          description: Reservation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reservation.notFound'
   
   /vehicles:
     get:
@@ -1153,6 +1248,107 @@ components:
       type: string
       format: string
       example: "Parking lot deleted"
+    reservation.missingRequireField.licensePlate:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Require field missing
+        field:
+          type: string
+          format: string
+          example: licenseplate
+    reservation.missingRequireField.startdate:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Require field missing
+        field:
+          type: string
+          format: string
+          example: startdate
+    reservation.missingRequireField.enddate:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Require field missing
+        field:
+          type: string
+          format: string
+          example: enddate
+    reservation.missingRequireField.parkinglot:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Require field missing
+        field:
+          type: string
+          format: string
+          example: parkinglot
+    reservation.parkingLotNotFound:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Parking lot not found
+        field:
+          type: string
+          format: string
+          example: parkinglot
+    reservation.notFound:
+      type: string
+      format: string
+      example: Reservation not found
+    reservation.missingRequireField.user:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Require field missing
+        field:
+          type: string
+          format: string
+          example: user
+    reservation.postSucces:
+      type: object
+      properties:
+        status:
+          type: string
+          format: string
+          example: Success
+        reservations:
+          type: array
+          example:
+    reservation.putUpdated:
+      type: object
+      properties:
+        status:
+          type: string
+          format: string
+          example: Updated
+        reservations:
+          type: array
+          example:
+    reservation.deleted:
+      type: object
+      properties:
+        status:
+          type: string
+          format: string
+          example: Deleted
+        reservations:
+          type: array
+          example:
+
     billing:
       type: object
       properties:
