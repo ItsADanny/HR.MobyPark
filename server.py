@@ -56,7 +56,11 @@ class RequestHandler(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(json.dumps({"message": "User logged in", "session_token": token}).encode('utf-8'))
                     return
-                else:
+                # NOTE: (ItsDanny - Danny - HRNumber: 1091749) [29-09-2025]
+                # Originally this was an else, but this would return a 401 on the first user it would check.
+                # This has been replaced with an elif that will check if the username is at least matching (if the check above returned a false)
+                # and returns a 401 error with the return body "Invalid Credentials"
+                elif user.get("username") == username:
                     self.send_response(401)
                     self.send_header("Content-type", "application/json")
                     self.end_headers()
