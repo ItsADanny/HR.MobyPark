@@ -13,7 +13,7 @@ def test_register_usernameTaken():
     assert r.text == "Username already taken"
 
 def test_login_succes():
-    r = requests.get("http://localhost:8000/login")
+    r = requests.post("http://localhost:8000/login", json={"username": "cindy.leenders42", "password": "password102"})
     assert r.status_code == 200
 
 def test_login_missingCredentials():
