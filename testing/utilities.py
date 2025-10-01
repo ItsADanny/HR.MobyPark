@@ -1,6 +1,19 @@
 import random
-from password_generator import PasswordGenerator
-from storage_utils import load_json, write_json
+import json
+import string
+
+# Letters
+uppercase_letters = list(string.ascii_uppercase)  # A-Z
+lowercase_letters = list(string.ascii_lowercase)  # a-z
+
+# Digits
+digits = list(string.digits)  # 0-9
+
+# Special characters
+special_characters = list(string.punctuation)
+
+# Combine all
+all_characters = uppercase_letters + lowercase_letters + digits + special_characters
 
 firstname = [
     "Jan", "Pieter", "Kees", "Bram", "Sander",
@@ -98,52 +111,61 @@ def gen_name():
     return name
 
 def gen_password(length=20):
-    pwo = PasswordGenerator()
-    pwo.minlen = length
-    pwo.maxlen = length
+    password = ""
+    for x in range(length):
+        password += all_characters[random.randint(0, len(all_characters) - 1)]
 
-    password = pwo.generate()
     save_password(password)
-
     return password
 
 def get_lastInsertedUser():
-    users = load_json('data/users.json')
+    users = load_json('../data/users.json')
     return users[len(users) - 1].get("username")
 
 def save_username(username):
-    tempStorage = load_json('testing/temp_storage.json')
+    tempStorage = load_json('temp_storage.json')
 
     tmpName = tempStorage.get("name")
     tmpPass = tempStorage.get("password")
 
     tempStorage["username"] = username
-    write_json('testing/temp_storage.json', {"username": username, "password": tmpPass, "name": tmpName})
+    write_json('temp_storage.json', {"username": username, "password": tmpPass, "name": tmpName})
 
 def save_password(password):
-    tempStorage = load_json('testing/temp_storage.json')
+    tempStorage = load_json('temp_storage.json')
 
     tmpUsername = tempStorage.get("username")
     tmpName = tempStorage.get("name")
 
-    write_json('testing/temp_storage.json', {"username": tmpUsername, "password": password, "name": tmpName})
+    write_json('temp_storage.json', {"username": tmpUsername, "password": password, "name": tmpName})
 
 def save_name(name):
-    tempStorage = load_json('testing/temp_storage.json')
+    tempStorage = load_json('temp_storage.json')
 
     tmpUsername = tempStorage.get("username")
     tmpPassword = tempStorage.get("password")
 
-    write_json('testing/temp_storage.json', {"username": tmpUsername, "password": tmpPassword, "name": name})
+    write_json('temp_storage.json', {"username": tmpUsername, "password": tmpPassword, "name": name})
 
 def get_saved_username():
-    tempStorage = load_json('testing/temp_storage.json')
+    tempStorage = load_json('temp_storage.json')
     return tempStorage.get("username")
 
 def get_saved_password():
-    tempStorage = load_json('testing/temp_storage.json')
+    tempStorage = load_json('temp_storage.json')
     return tempStorage.get("password")
 
 def get_saved_name():
-    tempStorage = load_json('testing/temp_storage.json')
+    tempStorage = load_json('temp_storage.json')
     return tempStorage.get("name")
+
+def load_json(filename):
+    try:
+        with open(filename, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
+
+def write_json(filename, data):
+    with open(filename, 'w') as file:
+        json.dump(data, file, default=str)
