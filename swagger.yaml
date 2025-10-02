@@ -845,7 +845,6 @@ paths:
       responses:
   
   /payments:
-    /payments:
     get:
       tags:
         - payments
@@ -869,7 +868,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/common.UnauthorizedInvalidorMissingToken"
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
     post:
       tags:
         - payments
@@ -893,7 +892,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/common.UnauthorizedInvalidorMissingToken'
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
   
   /payments/:
     put:
@@ -911,8 +910,8 @@ paths:
           content:
             application/json:
               schema:
-                oneof: #multiple possible responses for 401
-                  - $ref: '#/components/schemas/common.UnauthorizedInvalidormissingToken'
+                oneOf: #multiple possible responses for 401
+                  - $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
         '404':
           description: Payment not found
           content:
