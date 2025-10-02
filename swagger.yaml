@@ -644,6 +644,14 @@ paths:
     post:
       tags:
         - reservations
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
       responses:
         '200':
           description: Operation successful
@@ -764,10 +772,6 @@ paths:
                 $ref: '#/components/schemas/reservation.notFound'
   
   /vehicles:
-    get:
-      tags:
-        - vehicles
-      responses:
     post:
       tags:
         - vehicles
@@ -787,6 +791,47 @@ paths:
         - vehicles
       responses:
 
+  /vehicles/{UserID}:
+    get:
+      tags:
+        - vehicles
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: UserID
+          in: path
+          description: UserID for the user from which you want to see all vehicles
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+#        '200':
+#          description: Operation successful
+#          content:
+#            application/json:
+#              schema:
+#                $ref:
+        '401':
+          description: Unauthorized or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.UnauthorizedInvalidOrMissingToken'
+        '404':
+          description: Not found! / User not found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/common.NotFound'
+                  - $ref: '#/components/schemas/loginUserNotFound'
+
   /vehicles/reservations:
     get:
       tags:
@@ -800,26 +845,106 @@ paths:
       responses:
   
   /payments:
+    /payments:
     get:
       tags:
         - payments
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
       responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payments'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/common.UnauthorizedInvalidorMissingToken"
     post:
       tags:
         - payments
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
       responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payments'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.UnauthorizedInvalidorMissingToken'
   
   /payments/:
     put:
       tags:
         - payments
       responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payments'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                oneof: #multiple possible responses for 401
+                  - $ref: '#/components/schemas/common.UnauthorizedInvalidormissingToken'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payments.notFound'
   
   /payments/refund:
     post:
       tags:
         - payments
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token for the user account
+          required: true
+          schema:
+            type: string
+            format: string
       responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payments'
+        '403':
+          description: Access denied (User is not a ADMIN)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.AccessDenied'
   
   /payments/{UserID}:
     get:
@@ -1057,6 +1182,11 @@ components:
       type: string
       format: string
       example: Access denied
+    common.NotFound:
+      type: string
+      format: string
+      example: Not found!
+
     parkingLots.LotNotFound:
       type: string
       format: string
