@@ -302,7 +302,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                     "amount": -abs(data.get("amount", 0)),
                     "coupled_to": data.get("coupled_to"),
                     "processed_by": session_user["username"],
-                    "created_at": datetime.now().strftime("%d-%m-%Y %H:%I:%s"),
+                    "created_at": datetime.now().strftime("%D-%m-%Y %H:%M:%S"),
                     "completed": False,
                     "hash": sc.generate_transaction_validation_hash()
                 }
@@ -318,7 +318,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                     "transaction": data.get("transaction"),
                     "amount": data.get("amount", 0),
                     "initiator": session_user["username"],
-                    "created_at": datetime.now().strftime("%d-%m-%Y %H:%I:%s"),
+                    "created_at": datetime.now().strftime("%D-%m-%Y %H:%M:%S"),
                     "completed": False,
                     "hash": sc.generate_transaction_validation_hash()
                 }
@@ -760,7 +760,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             payments = []
             session_user = get_session(token)
             for payment in load_payment_data():
-                if payment["username"] == session_user["username"]:
+                if payment["initiator"] == session_user["username"]:
                     payments.append(payment)
             self.send_response(200)
             self.send_header("Content-type", "application/json")
@@ -787,7 +787,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.wfile.write(b"Access denied")
                 return
             for payment in load_payment_data():
-                if payment["username"] == session_user["username"]:
+                if payment["initiator"] == session_user["username"]:
                     payments.append(payment)
             self.send_response(200)
             self.send_header("Content-type", "application/json")
