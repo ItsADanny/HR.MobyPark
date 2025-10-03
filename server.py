@@ -482,20 +482,23 @@ class RequestHandler(BaseHTTPRequestHandler):
             data  = json.loads(self.rfile.read(int(self.headers.get("Content-Length", -1))))
             payment = next(p for p in payments if p["transaction"] == pid)
             if payment:
-                for field in ["t_data", "validation"]:
+                # print(f"DEBUG Server: Payment found: {payment}")
+                # print(f"DEBUG Server: payment['hash'] = {payment.get('hash')}")
+                # print(f"DEBUG Server: data.get('hash') = {data.get('hash')}")
+                for field in ["t_data", "hash"]:
                     if not field in data:
                         self.send_response(401)
                         self.send_header("Content-type", "application/json")
                         self.end_headers()
                         self.wfile.write(json.dumps({"error": "Require field missing", "field": field}).encode("utf-8"))
                         return
-                if payment["hash"] != data.get("validation"):
+                if payment["hash"] != data.get("hash"):
                     self.send_response(401)
                     self.send_header("Content-type", "application/json")
                     self.end_headers()
                     self.wfile.write(json.dumps({"error": "Validation failed", "info": "The validation of the security hash could not be validated for this transaction."}).encode("utf-8"))
-                    return  
-                payment["completed"] = datetime.now().strftime("%d-%m-%Y %H:%I:%s")
+                    return
+                payment["completed"] = datetime.now().strftime("%D-%m-%Y %H:%M:%S")
                 payment["t_data"] = data.get("t_data", {})
                 save_payment_data(payments)
                 self.send_response(200)
