@@ -482,9 +482,6 @@ class RequestHandler(BaseHTTPRequestHandler):
             data  = json.loads(self.rfile.read(int(self.headers.get("Content-Length", -1))))
             payment = next(p for p in payments if p["transaction"] == pid)
             if payment:
-                # print(f"DEBUG Server: Payment found: {payment}")
-                # print(f"DEBUG Server: payment['hash'] = {payment.get('hash')}")
-                # print(f"DEBUG Server: data.get('hash') = {data.get('hash')}")
                 for field in ["t_data", "hash"]:
                     if not field in data:
                         self.send_response(401)

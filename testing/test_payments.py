@@ -49,51 +49,52 @@ def test_Post_Payment_data_failure():
     assert rPayment.status_code == 401
     assert rPayment.text == "Unauthorized: Invalid or missing session token"
 
-# def test_update_payment_success():
+def test_update_payment_success():
+    import time
 
-#     r = requests.post("http://localhost:8000/login", json={'username': utilities.get_saved_username(), 'password': utilities.get_saved_password()})
-#     assert r.status_code == 200
-#     assert r.text.startswith('{"message": "User logged in", "session_token": "')
+    r = requests.post("http://localhost:8000/login", json={'username': utilities.get_saved_username(), 'password': utilities.get_saved_password()})
+    assert r.status_code == 200
+    assert r.text.startswith('{"message": "User logged in", "session_token": "')
 
-#     token = r.json()['session_token']
-    
-#     payment_data = {
-#         "transaction": "test-transaction-456",
-#         "amount": 75.00
-#     }
-#     # POST
-#     rPayment = requests.post("http://localhost:8000/payments",headers={'Authorization': token},json=payment_data)
-#     assert rPayment.status_code == 201
-#     data = rPayment.json()
+    token = r.json()['session_token']
+    unique_id = f"test-transaction-{int(time.time())}"
+    payment_data = {
+        "transaction": unique_id,
+        "amount": 75.00
+    }
+    # POST
+    rPayment = requests.post("http://localhost:8000/payments",headers={'Authorization': token},json=payment_data)
+    assert rPayment.status_code == 201
+    data = rPayment.json()
 
-#     payment_id = data["payment"]["transaction"]
-#     payment_hash = data["payment"]["hash"]
+    payment_id = data["payment"]["transaction"]
+    payment_hash = data["payment"]["hash"]
 
-#     print("DEBUG: Payment created")
-#     print("Payment ID:", payment_id)
-#     print("Payment hash from response:", payment_hash)
-#     print("Full payment data:", data["payment"])
-#     # PUT
-#     update_data = {
-#         "t_data": {"confirmation_code": "CONF12345"},
-#         "hash": payment_hash
-#     }
-#     rUpdate = requests.put(
-#         f"http://localhost:8000/payments/{payment_id}",
-#         headers={'Authorization': token},
-#         json=update_data
-#     )
-#     if rUpdate.status_code != 200:
-#         print("DEBUG: Update failed")
-#         print("Sent update_data:", update_data)
-#         print("Server response:", rUpdate.status_code, rUpdate.text)
+    # print("DEBUG: Payment created")
+    # print("Payment ID:", payment_id)
+    # print("Payment hash from response:", payment_hash)
+    # print("Full payment data:", data["payment"])
+    # PUT
+    update_data = {
+        "t_data": {"confirmation_code": "CONF12345"},
+        "hash": payment_hash
+    }
+    rUpdate = requests.put(
+        f"http://localhost:8000/payments/{payment_id}",
+        headers={'Authorization': token},
+        json=update_data
+    )
+    if rUpdate.status_code != 200:
+        print("DEBUG: Update failed")
+        print("Sent update_data:", update_data)
+        print("Server response:", rUpdate.status_code, rUpdate.text)
 
-    # assert rUpdate.status_code == 200
-    # updated_payment = rUpdate.json()["payment"]
+    assert rUpdate.status_code == 200
+    updated_payment = rUpdate.json()["payment"]
 
-    # assert "completed" in updated_payment
-    # assert updated_payment["t_data"]["confirmation_code"] == "CONF12345"
-    # assert updated_payment["hash"] == payment_hash
+    assert "completed" in updated_payment
+    assert updated_payment["t_data"]["confirmation_code"] == "CONF12345"
+    assert updated_payment["hash"] == payment_hash
 
 # [
 #   {
