@@ -68,3 +68,17 @@ def test_logout_fail_NoTokenGiven():
     r = requests.get("http://localhost:8000/logout")
     assert r.status_code == 400
     assert r.text == "Invalid session token"
+
+def test_billing_fail_noToken():
+    r = requests.get("http://localhost:8000/billing")
+    assert r.status_code == 401
+    assert "Unauthorized" in r.text
+
+
+
+def test_billing_fail_invalidToken():
+    r = requests.get("http://localhost:8000/billing", headers={'Authorization': 'invalidtoken123'})
+    assert r.status_code == 401
+    assert "Unauthorized" in r.text
+
+#Er komt hier nog een laatste test 
