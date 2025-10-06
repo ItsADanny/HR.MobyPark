@@ -480,7 +480,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             payments = load_payment_data()
             session_user = get_session(token)
             data  = json.loads(self.rfile.read(int(self.headers.get("Content-Length", -1))))
-            payment = next(p for p in payments if p["transaction"] == pid)
+            payment = next((p for p in payments if p["transaction"] == pid), None)
             if payment:
                 for field in ["t_data", "hash"]:
                     if not field in data:
