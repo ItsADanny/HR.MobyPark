@@ -137,3 +137,89 @@ def test_billing_fail_invalidToken():
 
 
 
+#Er komt hier nog een laatste test 
+
+
+def test_parking_lots_get_all():
+    r = requests.get("http://localhost:8000/parking-lots")
+    assert r.status_code == 200
+    data = r.json()
+    assert isinstance(data, dict)
+    assert len(data) > 0
+    first_key = next(iter(data))
+    first_lot = data[first_key]
+    assert "id" in first_lot
+    assert "name" in first_lot
+    assert "location" in first_lot
+    assert "capacity" in first_lot
+
+
+def test_parking_lot_by_id():
+    r = requests.get("http://localhost:8000/parking-lots/10")
+    assert r.status_code == 200
+    lot = r.json()
+    assert lot["id"] == "10"
+    assert "name" in lot
+    assert "tariff" in lot
+    assert "address" in lot
+
+
+def test_parking_lot_not_found():
+    r = requests.get("http://localhost:8000/parking-lots/9999")
+    assert r.status_code in [400, 404]
+    assert "not found" in r.text.lower()
+
+
+
+
+
+# Ryan doet zijn best test voor /profile endpoint
+def test_profile_fail_invalidToken():
+    r = requests.get("http://localhost:8000/profile", headers={'Authorization': 'invalidtoken123'})
+    assert r.status_code == 401
+    assert "Unauthorized" in r.text
+
+# def test_profile_fail_noToken():
+#     r = requests.get("http://localhost:8000/profile")
+#     assert r.status_code == 401
+#     assert "Unauthorized" in r.text
+
+# def test_profile_noTokenGiven():
+#     r = requests.get("http://localhost:8000/profile")
+#     assert r.status_code == 401
+#     assert "Unauthorized" in r.text
+
+def test_profile_get_success():
+    rLogin = requests.post("http://localhost:8000/login", json={'username': utilities.get_saved_username(), 'password': utilities.get_saved_password()})
+    assert rLogin.status_code == 200
+    assert rLogin.text.startswith('{"message": "User logged in", "session_token": "')
+    token = rLogin.json()['session_token']
+
+    r = requests.get("http://localhost:8000/profile", headers={'Authorization': token})
+    assert r.status_code == 200
+    assert "username" in r.json()
+
+def test_profile_put_succes():
+    rLogin = requests.post("http://localhost:8000/login", json={'username': utilities.get_saved_username(), 'password': utilities.get_saved_password()})
+    assert rLogin.status_code == 200
+    assert rLogin.text.startswith('{"message": "User logged in", "session_token": "')
+    token = rLogin.json()['session_token']
+
+    # oke we willen dus updaten naar een nieuwe password
+    # dus we moeten een nieuwe password genereren
+    new_password = utilities.gen_password()
+
+    # dan willen we de profile updaten met het nieuwe password
+    # geen idee of dit klopt
+    r = requests.put("http://localhost:8000/profile", headers={'Authorization': token}, json={"password": new_password})
+    assert r.status_code == 200
+    assert r.text == "User updated successfully"
+
+    # dan willen we inloggen met de nieuwe password om te checken of het echt geupdate is
+    # maar dan moet het nieuwe password wel als saved_password gezet worden
+    utilities.save_password(new_password)
+    r = requests.post("http://localhost:8000/login", json={'username': utilities.get_saved_username(), 'password': utilities.get_saved_password()})
+    assert r.status_code == 200
+    assert r.text.startswith('{"message": "User logged in", "session_token": "')
+
+    # dit is mijn logica tot nu toe, ik heb geen idee of het werkt
