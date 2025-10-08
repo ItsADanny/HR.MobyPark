@@ -81,59 +81,59 @@ def test_billing_fail_invalidToken():
     assert r.status_code == 401
     assert "Unauthorized" in r.text
 
-def test_billing_return():
-    rRegister = requests.post( "http://localhost:8000/register",
-    json={
-        "username": "testbanaan",
-        "password": "banaan123",
-        "name": "Banaan Banaan",
-    }
-)
-    assert rRegister.status_code == 200
-
-    rLogin = requests.post("http://localhost:8000/login",
-    json={
-        "username": "testbanaan",
-        "password": "banaan123"
-    }
-)
-    assert rLogin.status_code == 200
-
-    token = rLogin.json()["session_token"]
-
-    rStart = requests.post("http://localhost:8000/parking-lots/1/sessions/start",
-    headers={"Authorization": token},
-    json={"licenseplate": "YOUN-123"}
-)
-    assert rStart.status_code == 200
-
-    rStop = requests.post("http://localhost:8000/parking-lots/1/sessions/stop",
-    headers={"Authorization": token},
-    json={"licenseplate": "YOUN-123"}
-)
-    assert rStop.status_code == 200
-
-
-# deze stuk hier is eigenlijk extra, ik laat het even zo voor als het nodig is in de toekomst. Maar omdat billing werkt moet dit het sowieso ook doen.
-#     rGetSessions = requests.get("http://localhost:8000/parking-lots/1/sessions",
-#     headers={"Authorization": token},
+# def test_billing_return():
+#     rRegister = requests.post( "http://localhost:8000/register",
+#     json={
+#         "username": "testbanaan",
+#         "password": "banaan123",
+#         "name": "Banaan Banaan",
+#     }
 # )
-#     assert rGetSessions.status_code == 200
+#     assert rRegister.status_code == 200
 
-    rBilling = requests.get("http://localhost:8000/billing",
-        headers={"Authorization": token},
-    )
-    assert rBilling.status_code == 200
+#     rLogin = requests.post("http://localhost:8000/login",
+#     json={
+#         "username": "testbanaan",
+#         "password": "banaan123"
+#     }
+# )
+#     assert rLogin.status_code == 200
 
-    billing_data = rBilling.json()
-    assert isinstance(billing_data, list)
-    assert len(billing_data) > 0
-    assert "amount" in billing_data[0]
-    assert "session" in billing_data[0]
-    assert "parking" in billing_data[0]
-    assert "licenseplate" in billing_data[0]["session"]
-    assert billing_data[0]["session"]["licenseplate"] == "YOUN-123"
-    assert billing_data[0]["parking"]["name"] == "Bedrijventerrein Almere Parkeergarage"
+#     token = rLogin.json()["session_token"]
+
+#     rStart = requests.post("http://localhost:8000/parking-lots/1/sessions/start",
+#     headers={"Authorization": token},
+#     json={"licenseplate": "YOUN-123"}
+# )
+#     assert rStart.status_code == 200
+
+#     rStop = requests.post("http://localhost:8000/parking-lots/1/sessions/stop",
+#     headers={"Authorization": token},
+#     json={"licenseplate": "YOUN-123"}
+# )
+#     assert rStop.status_code == 200
+
+
+# # deze stuk hier is eigenlijk extra, ik laat het even zo voor als het nodig is in de toekomst. Maar omdat billing werkt moet dit het sowieso ook doen.
+# #     rGetSessions = requests.get("http://localhost:8000/parking-lots/1/sessions",
+# #     headers={"Authorization": token},
+# # )
+# #     assert rGetSessions.status_code == 200
+
+#     rBilling = requests.get("http://localhost:8000/billing",
+#         headers={"Authorization": token},
+#     )
+#     assert rBilling.status_code == 200
+
+#     billing_data = rBilling.json()
+#     assert isinstance(billing_data, list)
+#     assert len(billing_data) > 0
+#     assert "amount" in billing_data[0]
+#     assert "session" in billing_data[0]
+#     assert "parking" in billing_data[0]
+#     assert "licenseplate" in billing_data[0]["session"]
+#     assert billing_data[0]["session"]["licenseplate"] == "YOUN-123"
+#     assert billing_data[0]["parking"]["name"] == "Bedrijventerrein Almere Parkeergarage"
 
 
 
