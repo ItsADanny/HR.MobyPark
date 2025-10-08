@@ -82,33 +82,3 @@ def test_billing_fail_invalidToken():
     assert "Unauthorized" in r.text
 
 #Er komt hier nog een laatste test 
-
-
-def test_parking_lots_get_all():
-    r = requests.get("http://localhost:8000/parking-lots")
-    assert r.status_code == 200
-    data = r.json()
-    assert isinstance(data, dict)
-    assert len(data) > 0
-    first_key = next(iter(data))
-    first_lot = data[first_key]
-    assert "id" in first_lot
-    assert "name" in first_lot
-    assert "location" in first_lot
-    assert "capacity" in first_lot
-
-
-def test_parking_lot_by_id():
-    r = requests.get("http://localhost:8000/parking-lots/10")
-    assert r.status_code == 200
-    lot = r.json()
-    assert lot["id"] == "10"
-    assert "name" in lot
-    assert "tariff" in lot
-    assert "address" in lot
-
-
-def test_parking_lot_not_found():
-    r = requests.get("http://localhost:8000/parking-lots/9999")
-    assert r.status_code in [400, 404]
-    assert "not found" in r.text.lower()

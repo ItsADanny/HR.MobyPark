@@ -94,7 +94,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                         return
                     filtered = {key: value for key, value in sessions.items() if value.get("licenseplate") == data['licenseplate'] and not value.get('stopped')}
                     if len(filtered) > 0:
-                        self.send_response(401)
+                        self.send_response(400) #bad request
                         self.send_header("Content-type", "application/json")
                         self.end_headers()
                         self.wfile.write(b'Cannot start a session when another sessions for this licesenplate is already started.')
@@ -120,8 +120,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                         self.wfile.write(json.dumps({"error": "Require field missing", "field": 'licenseplate'}).encode("utf-8"))
                         return
                     filtered = {key: value for key, value in sessions.items() if value.get("licenseplate") == data['licenseplate'] and not value.get('stopped')}
-                    if len(filtered) < 0:
-                        self.send_response(401)
+                    if len(filtered) == 0:
+                        self.send_response(400)
                         self.send_header("Content-type", "application/json")
                         self.end_headers()
                         self.wfile.write(b'Cannot stop a session when there is no session for this licesenplate.')
