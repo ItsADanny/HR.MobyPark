@@ -684,7 +684,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                         if "ADMIN" == session_user.get('role'):
                             rsessions = sessions
                         else:
-                            for session in sessions:
+                            for session in sessions.values():
                                 if session['user'] == session_user['username']:
                                     rsessions.append(session)
                         self.send_response(200)
