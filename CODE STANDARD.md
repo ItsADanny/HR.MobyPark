@@ -1,3 +1,4 @@
+![HR.MobyPark - Banner](https://github.com/ItsADanny/HR.MobyPark/blob/template/HR__Banner.png?raw=true)
 
 # HR.Mobypark - Code standard rules
 
