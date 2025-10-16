@@ -2,6 +2,9 @@
 
 # HR.Mobypark - Code standard rules
 
+[![Hogeschool Rotterdam Project](https://img.shields.io/badge/Hogeschool_Rotterdam-Software_Construction:_Process_and_Tools-cc0133.svg?logo=googlescholar&logoColor=cc0133)]()
+[![.NET](https://img.shields.io/badge/Microsoft_.NET_-9.0-3776AB.svg?logo=dotnet)]()
+
 This markdown file contains the code standard rules for working in/on the new implementation of the MobyPark API. All code changes/creations must follow the rules set out in this document.
 
 If you do not follow the rules in this document then all merge request will be denied until complaince is achieved
