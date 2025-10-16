@@ -1,0 +1,36 @@
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
+
+app.MapPost("/register", () =>
+{
+
+})
+.WithName("PostRegister");
+
+app.MapPost("/login", () =>
+{
+
+})
+
+.WithName("PostLogin");
+
+app.MapGet("/logout", () =>
+{
+    
+})
+.WithName("GetLogout");
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "3000";
+Log.WriteLine($"Server started, Listening to port: {port}");
+app.Run();

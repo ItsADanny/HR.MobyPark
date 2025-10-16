@@ -200,6 +200,8 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+# IF I SEE ANYONE USE THIS IDE I WILL PERSONALY DELETE ALL YOUR CODE
+# WE DON'T "VIBE" CODE HERE
 
 # Marimo
 marimo/_static/
@@ -217,3 +219,5 @@ Inlevermap INFSCPX1 - Team X - INF2X.zip
 
 #MacOS
 .DS_STORE
+/.vscode
+/MobyPark/obj
