@@ -74,11 +74,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif self.path.startswith("/parking-lots"):
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             session_user = get_session(token)
             if 'sessions' in self.path:
@@ -153,11 +149,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif self.path == "/reservations":
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             session_user = get_session(token)
             data  = json.loads(self.rfile.read(int(self.headers.get("Content-Length", -1))))
@@ -199,11 +191,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         
         elif self.path == "/vehicles":
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             session_user = get_session(token)
             data  = json.loads(self.rfile.read(int(self.headers.get("Content-Length", -1))))
@@ -241,11 +229,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif self.path.startswith("/vehicles/"):
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             session_user = get_session(token)
             data  = json.loads(self.rfile.read(int(self.headers.get("Content-Length", -1))))
@@ -274,11 +258,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif self.path.startswith("/payments"):
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             payments = load_payment_data()
             session_user = get_session(token)
@@ -337,11 +317,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if lid:
                 if lid in parking_lots:
                     token = self.headers.get('Authorization')
-                    if not token or not get_session(token):
-                        self.send_response(401)
-                        self.send_header("Content-type", "application/json")
-                        self.end_headers()
-                        self.wfile.write(b"Unauthorized: Invalid or missing session token")
+                    if not check_token(self, token):
                         return
                     session_user = get_session(token)
                     if not 'ADMIN' == session_user.get('role'):
@@ -367,11 +343,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 
         elif self.path == "/profile":
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             session_user = get_session(token)
             data  = json.loads(self.rfile.read(int(self.headers.get("Content-Length", -1))))
@@ -392,11 +364,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if rid:
                 if rid in reservations:
                     token = self.headers.get('Authorization')
-                    if not token or not get_session(token):
-                        self.send_response(401)
-                        self.send_header("Content-type", "application/json")
-                        self.end_headers()
-                        self.wfile.write(b"Unauthorized: Invalid or missing session token")
+                    if not check_token(self, token):
                         return
                     session_user = get_session(token)
                     for field in ["licenseplate", "startdate", "enddate", "parkinglot"]:
@@ -432,11 +400,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif self.path.startswith("/vehicles/"):
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             session_user = get_session(token)
             data  = json.loads(self.rfile.read(int(self.headers.get("Content-Length", -1))))
@@ -470,11 +434,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         
         elif self.path.startswith("/payments/"):
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             pid = self.path.replace("/payments/", "")
             payments = load_payment_data()
@@ -518,11 +478,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if lid:
                 if lid in parking_lots:
                     token = self.headers.get('Authorization')
-                    if not token or not get_session(token):
-                        self.send_response(401)
-                        self.send_header("Content-type", "application/json")
-                        self.end_headers()
-                        self.wfile.write(b"Unauthorized: Invalid or missing session token")
+                    if not check_token(self, token):
                         return
                     session_user = get_session(token)
                     if not 'ADMIN' == session_user.get('role'):
@@ -568,11 +524,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if rid:
                 if rid in reservations:
                     token = self.headers.get('Authorization')
-                    if not token or not get_session(token):
-                        self.send_response(401)
-                        self.send_header("Content-type", "application/json")
-                        self.end_headers()
-                        self.wfile.write(b"Unauthorized: Invalid or missing session token")
+                    if not check_token(self, token):
                         return
                     session_user = get_session(token)
                     if "ADMIN" == session_user.get('role') or session_user["username"] == reservations[rid].get("user"):
@@ -604,11 +556,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             lid = self.path.replace("/vehicles/", "")
             if lid:
                 token = self.headers.get('Authorization')
-                if not token or not get_session(token):
-                    self.send_response(401)
-                    self.send_header("Content-type", "application/json")
-                    self.end_headers()
-                    self.wfile.write(b"Unauthorized: Invalid or missing session token")
+                if not check_token(self, token):
                     return
                 session_user = get_session(token)
                 vehicles = load_json("data/vehicles.json")
@@ -631,11 +579,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/profile":
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             session_user = get_session(token)
             self.send_response(200)
@@ -671,11 +615,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                     self.wfile.write(b"Parking lot not found")
                     return
                 if 'sessions' in self.path:
-                    if not token or not get_session(token):
-                        self.send_response(401)
-                        self.send_header("Content-type", "application/json")
-                        self.end_headers()
-                        self.wfile.write(b"Unauthorized: Invalid or missing session token")
+                    if not check_token(self, token):
                         return
                     sessions = load_json(f'data/pdata/p{lid}-sessions.json')
                     rsessions = []
@@ -722,11 +662,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if rid:
                 if rid in reservations:
                     token = self.headers.get('Authorization')
-                    if not token or not get_session(token):
-                        self.send_response(401)
-                        self.send_header("Content-type", "application/json")
-                        self.end_headers()
-                        self.wfile.write(b"Unauthorized: Invalid or missing session token")
+                    if not check_token(self, token):
                         return
                     session_user = get_session(token)
                     if not "ADMIN" == session_user.get('role') and not session_user["username"] == reservations[rid].get("user"):
@@ -751,11 +687,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         
         elif self.path == "/payments":
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             payments = []
             session_user = get_session(token)
@@ -771,11 +703,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     
         elif self.path.startswith("/payments/"):
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             payments = []
             session_user = get_session(token)
@@ -798,11 +726,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif self.path == "/billing":
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             data = []
             session_user = get_session(token)
@@ -829,11 +753,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif self.path.startswith("/billing/"):
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             data = []
             session_user = get_session(token)
@@ -867,11 +787,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif self.path.startswith("/vehicles"):
             token = self.headers.get('Authorization')
-            if not token or not get_session(token):
-                self.send_response(401)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+            if not check_token(self, token):
                 return
             session_user = get_session(token)
             if self.path.endswith("/reservations"):
@@ -922,6 +838,14 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(vehicles.get(user, {}), default=str).encode("utf-8"))
                 return
             
+    def check_token(self, token):
+            if not token or not get_session(token):
+                self.send_response(401)
+                self.send_header("Content-type", "application/json")
+                self.end_headers()
+                self.wfile.write(b"Unauthorized: Invalid or missing session token")
+                return False
+            return True
 
 server = HTTPServer(('localhost', 8000), RequestHandler)
 print("Server running on http://localhost:8000")
