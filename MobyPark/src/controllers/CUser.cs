@@ -60,7 +60,7 @@ public static class CUser()
         User.IsPasswordCorrect(Password);
     }
 
-    public static bool LoginCheck(username, password)
+    public static bool LoginCheck(string username, string password)
     {
         if ((username == "" || username == null) && (password == "" || password == null))
         {
