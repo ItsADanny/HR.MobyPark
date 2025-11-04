@@ -42,4 +42,30 @@ public static class CUser()
         // hier de test scenario's
         return true;
     }
+
+
+    public static string Login(HttpRequest request)
+    {
+        string? Username = request.Query["Username"];
+        string? Password = request.Query["Password"];
+
+        // Login check, gebruik losse functies voor elke check.
+        if (LoginCheck(Username, password))
+        {
+            System.Console.WriteLine("Missing creds");
+            return;
+        }
+
+        CDatabase.getUser(username);
+        User.IsPasswordCorrect(Password);
+    }
+
+    public static bool LoginCheck(username, password)
+    {
+        if ((username == "" || username == null) && (password == "" || password == null))
+        {
+            return false;
+        }
+        return true;
+    }
 }
