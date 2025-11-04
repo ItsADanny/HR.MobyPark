@@ -12,9 +12,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/register", () =>
+app.MapPost("/register", (HttpRequest request) =>
 {
-
+    // hierin komt de functie
+    CUser.Register(request);
 })
 .WithName("PostRegister");
 
