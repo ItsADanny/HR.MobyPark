@@ -45,7 +45,7 @@ public static class CDatabase
     public static void SaveUserSalt(int userId, string salt)
     {
         // hier de database logica om de salt op te slaan voor de gebruiker
-                // return de gegenereerde gebruikers-ID
+        // return de gegenereerde gebruikers-ID
         MySqlConnection conn = new MySqlConnection(connectionString);
         MySqlCoomand cmd = new MySqlCommand();
 
@@ -57,5 +57,11 @@ public static class CDatabase
         cmd.ExecuteNonQuery();
 
         conn.Close();
+    }
+    
+    // voor login, checken of username en pass kloppen tov. database
+    public static void getUser()
+    {
+        
     }
 }

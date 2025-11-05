@@ -50,19 +50,22 @@ public static class CUser()
         string? Password = request.Query["Password"];
 
         // Login check, gebruik losse functies voor elke check.
-        if (LoginCheck(Username, password))
+        if (!LoginCheck(Username, Password))
         {
             System.Console.WriteLine("Missing creds");
             return;
         }
 
-        CDatabase.getUser(username);
+        CDatabase.getUser(Username);
         User.IsPasswordCorrect(Password);
+
+        // we hebben een token nodig (nieuwe method?)
     }
 
-    public static bool LoginCheck(string username, string password)
+    // Hier moeten we testen of de username/password niet leeg/null is
+    public static bool LoginCheck(string? username, string? password)
     {
-        if ((username == "" || username == null) && (password == "" || password == null))
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
         {
             return false;
         }
