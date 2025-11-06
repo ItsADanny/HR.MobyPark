@@ -52,12 +52,22 @@ public static class CUser()
         // Login check, gebruik losse functies voor elke check.
         if (!LoginCheck(Username, Password))
         {
-            System.Console.WriteLine("Missing creds");
+            System.Console.WriteLine("Missing credentials");
             return;
         }
 
-        CDatabase.getUser(Username);
-        User.IsPasswordCorrect(Password);
+        User user = CDatabase.getUser(Username);
+        if (user is null)
+        {
+            System.Console.WriteLine("User not found");
+            return;
+        }
+        
+        if(!user.IsPasswordCorrect(Password))
+        {
+            System.Console.WriteLine("Invalid credentials");
+            return;
+        }
 
         // we hebben een token nodig (nieuwe method?)
     }

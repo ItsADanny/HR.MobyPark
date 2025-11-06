@@ -8,7 +8,7 @@ public static class CDatabase
         // hier de database logica om te checken of de gebruiker bestaat
         // return true als de gebruiker bestaat, anders false
         MySqlConnection conn = new MySqlConnection(connectionString);
-        MySqlCoomand cmd = new MySqlCommand();
+        MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
         string query = $"SELECT COUNT(*) FROM Users WHERE Username = {username}";
@@ -28,7 +28,7 @@ public static class CDatabase
         // hier de database logica om de gebruiker op te slaan
         // return de gegenereerde gebruikers-ID
         MySqlConnection conn = new MySqlConnection(connectionString);
-        MySqlCoomand cmd = new MySqlCommand();
+        MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
         string query = $"INSERT INTO Users VALUES({username}, {hash} ,{fullName}, {email}, {phoneNumber})";
@@ -47,7 +47,7 @@ public static class CDatabase
         // hier de database logica om de salt op te slaan voor de gebruiker
         // return de gegenereerde gebruikers-ID
         MySqlConnection conn = new MySqlConnection(connectionString);
-        MySqlCoomand cmd = new MySqlCommand();
+        MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
 
@@ -59,9 +59,32 @@ public static class CDatabase
         conn.Close();
     }
     
-    // voor login, checken of username en pass kloppen tov. database
-    public static void getUser()
+    // voor login, checken of username klopt tov. database
+    public static User getUser(string username)
     {
-        
+        MySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        string query = $"SELECT * FROM Users WHERE Username = {username}";
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            User user = new User
+            {
+                Username = reader["Username"].ToString(),
+                // de rest ook
+            };
+            conn.Close();
+            return user;
+        }
+        else
+        {
+            conn.Close();
+            return null;
+        }        
     }
 }
