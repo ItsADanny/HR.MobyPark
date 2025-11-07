@@ -62,14 +62,17 @@ public static class CUser()
             System.Console.WriteLine("User not found");
             return;
         }
-        
-        if(!user.IsPasswordCorrect(Password))
+
+        if (!user.IsPasswordCorrect(Password))
         {
             System.Console.WriteLine("Invalid credentials");
             return;
         }
 
         // we hebben een token nodig (nieuwe method?)
+        // Generate a UUID (GUID) and convert it to a string
+        // via security (niet aankomen dankje)
+        // string token = Guid.NewGuid().ToString();
     }
 
     // Hier moeten we testen of de username/password niet leeg/null is
@@ -80,5 +83,23 @@ public static class CUser()
             return false;
         }
         return true;
+    }
+
+    public static string Logout()
+    {
+        //check session token (method) (here)
+        if (!token) // or get_session(token)
+        {
+            
+        }
+        // succesful logout (here)
+        // remove session token (methode in )
+        
+        return "";
+    }
+
+    public static bool RemoveSessionOnLogout(var token)
+    {
+        return true;        
     }
 }
