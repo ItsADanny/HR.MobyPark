@@ -71,17 +71,22 @@ public static class CUser
         // we hebben een token nodig (nieuwe method?)
         // Generate a UUID (GUID) and convert it to a string
         // via security (niet aankomen dankje)
-        // string token = Guid.NewGuid().ToString();
+        string token = Guid.NewGuid().ToString();
 
         // token opslaan in database
-        // CDatabase.SaveUserToken();
+        SaveUserToken();
         return $"Login succesful. Token: {token}";
     }
 
     // Hier moeten we testen of de username/password niet leeg/null is
-    public static bool LoginCheck(string? username, string? password) 
+    public static bool LoginCheck(string? username, string? password)
         => !(string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password));
 
+    public static void SaveUserToken(string token)
+    {
+        // token in database zetten;
+        return;
+    }
 
     public static string Logout(HttpRequest request)
     {
