@@ -1,3 +1,4 @@
+using System.Data;
 using System.Net.Cache;
 
 public static class CReservation
@@ -9,28 +10,40 @@ public static class CReservation
         if (string.IsNullOrWhiteSpace(token) || !CDatabase.SessionExists(token))
             return "No session token";
 
-        string? parkingLotId = request.Query["ParkingLotId"];
-        string? vehicleId = request.Query["VehicleId"];
-        string? startTime = request.Query["StartTime"];
-        string? endTime = request.Query["EndTime"];
+        string? parkingLotIdstr = request.Query["ParkingLotId"];
+        string? vehicleIdstr = request.Query["VehicleId"];
+        string? startTimestr = request.Query["StartTime"];
+        string? endTimestr = request.Query["EndTime"];
+        string? coststr = request.Query["Cost"];
 
-        if (ValidateReservation(parkingLotId, vehicleId, startTime, endTime) == false)
+        if (ValidateReservation(parkingLotIdstr, vehicleIdstr, startTimestr, endTimestr, coststr) == false)
         {
             return "Reservation data invalid due to missing field(s)";
         }
-        
-        
+
+        int parkingLotId = int.Parse(parkingLotIdstr);
+        int vehicleId = int.Parse(vehicleIdstr);
+        DateTime startTime = DateTime.Parse(startTimestr);
+        DateTime endTime = DateTime.Parse(endTimestr);
+        decimal cost = decimal.Parse(coststr);
+
+        int userId = CDatabaseReservation.GetUserIdFromToken(token);
+
+        int reservationId = CDatabaseReservation.SaveReservation(userId, parkingLotId, vehicleId, startTime, endTime, cost);
+
+        return $"Reservation created with ID: {reservationId}";
 
     }
 
     
     
-    public static bool ValidateReservation(string parkingLotId, string vehicleId, string startTime, string endTime)
+    public static bool ValidateReservation(string parkingLotId, string vehicleId, string startTime, string endTime, string cost)
     {
         if (string.IsNullOrWhiteSpace(parkingLotId) ||
             string.IsNullOrWhiteSpace(vehicleId) ||
             string.IsNullOrWhiteSpace(startTime) ||
-            string.IsNullOrWhiteSpace(endTime))
+            string.IsNullOrWhiteSpace(endTime) ||
+            string.IsNullOrWhiteSpace(cost))
         {
             return false;
         }
