@@ -60,7 +60,7 @@ public static class CDatabase
     }
     
     // voor login, checken of username klopt tov. database
-    public static User getUser(string username)
+    public static User GetUser(string username)
     {
         MySqlConnection conn = new MySqlConnection(connectionString);
         MySqlCommand cmd = new MySqlCommand();
