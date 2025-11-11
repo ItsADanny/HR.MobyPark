@@ -2,14 +2,17 @@ public static class CParkingLot
 {
 
     // Get all
-    public static List<string> GetAllParkingLots()
+    public static List<ParkingLot> GetAllParkingLots()
     {
+        string token = request.headers.get["Authorization"];
         //fetch and return all parking lots
     }
 
     //Get by id
     public static object GetParkingLotById(int id)
     {
+        string token = request.headers.get["Authorization"];
+
         string validationError = ValidateId(id);
         if (validationError != null)
         {
@@ -24,6 +27,7 @@ public static class CParkingLot
     //Delete
     public static bool DeleteParkingLot(int id)
     {
+        string token = request.headers.get["Authorization"];
         //call a delete method and handle failed delete logic
 
         Log.WriteLine($"Parking lot with ID: {id} successfully deleted.");
@@ -31,8 +35,9 @@ public static class CParkingLot
     }
 
     //Post
-    public int CreateParkingLot(string name, string location, string adress, int capacity, double tariff, double dayTariff)
+    public static int CreateParkingLot(string name, string location, string adress, int capacity, double tariff, double dayTariff)
     {
+        string token = request.headers.get["Authorization"];
         //call a helper method to insert parking lot into database and return the id
         if (id == -1)
         {
