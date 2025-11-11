@@ -32,6 +32,6 @@ app.MapGet("/logout", () =>
 })
 .WithName("GetLogout");
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "3000";
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 Log.WriteLine($"Server started, Listening to port: {port}");
 app.Run();
