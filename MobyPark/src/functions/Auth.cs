@@ -77,7 +77,7 @@ public static class Auth
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
-            Session returnValue = new(Convert.ToInt32(reader["ID"].ToString), Convert.ToInt32(reader["UserID"].ToString), reader["ID"].ToString(), );
+            Session returnValue = new(Convert.ToInt32(reader["ID"].ToString), Convert.ToInt32(reader["UserID"].ToString), reader["Token"].ToString(), );
             conn.Close();
             return returnValue;
         }
