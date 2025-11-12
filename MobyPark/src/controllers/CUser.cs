@@ -1,21 +1,22 @@
 // register hierin
 
-public static class CUser()
+public static class CUser
 {
     public static string Register(HttpRequest request)
     {
-        string? Username = request.Query["Username"];
-        string? Password = request.Query["Password"];
-        string? FullName = request.Query["FullName"];
-        string? Email = request.Query["Email"];
-        string? PhoneNumber = request.Query["PhoneNumber"];
-        int? BirthYear = request.Query["BirthYear"];
+        string? username = request.Query["Username"];
+        string? password = request.Query["Password"];
+        string? fullName = request.Query["FullName"];
+        string? email = request.Query["Email"];
+        string? phoneNumber = request.Query["PhoneNumber"];
+        string? birthYearStr = request.Query["BirthYear"];
+
+        if (!int.TryParse(birthYearStr, out int birthYear))
+            return "Invalid birth year";
 
         // hier de control check
-        if (!RegisterCheck())
-        {
+        if (!RegisterCheck(username, password, fullName, email, phoneNumber, birthYear))
             return "Registration failed due to invalid input.";
-        }
 
         // hash het wachtwoord
         string[] hashed_password = Auth.Hash(password);
@@ -24,82 +25,92 @@ public static class CUser()
 
         // check of de username al bestaat in de database
         // deze method moet staan in CDatabase
-        if (CDatabase.UserExists(Username))
+        if (CDatabase.UserExists(username))
         {
             // response code hier (methods)
-            return;
+            return "";
         }
 
         // sla de gebruiker op in de database
-        int id = CDatabase.SaveUser(Username, hash, FullName, Email, PhoneNumber);
+        int id = CDatabase.SaveUser(username, hash, fullName, email, phoneNumber, birthYear);
         CDatabase.SaveUserSalt(id, salt);
 
         return "Registration successful.";
     }
 
-    public static bool RegisterCheck()
+    public static bool RegisterCheck(string? username, string? password, string? fullName, string? email, string? phoneNumber, int birthYear)
     {
-        // hier de test scenario's
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            return false;
+        if (password.Length < 8)
+            return false;
+        if (birthYear < 1900 || birthYear > DateTime.Now.Year)
+            return false;
+
+        // eventueel extra validatie, zoals emailformaat
         return true;
     }
 
 
     public static string Login(HttpRequest request)
     {
-        string? Username = request.Query["Username"];
-        string? Password = request.Query["Password"];
+        string? username = request.Query["Username"];
+        string? password = request.Query["Password"];
 
         // Login check, gebruik losse functies voor elke check.
-        if (!LoginCheck(Username, Password))
-        {
-            System.Console.WriteLine("Missing credentials");
-            return;
-        }
+        if (!LoginCheck(username, password))
+            return "Missing credentials";
 
-        User user = CDatabase.getUser(Username);
+        User user = CDatabase.GetUser(username);
         if (user is null)
-        {
-            System.Console.WriteLine("User not found");
-            return;
-        }
+            return "User not found";
 
-        if (!user.IsPasswordCorrect(Password))
-        {
-            System.Console.WriteLine("Invalid credentials");
-            return;
-        }
+        if (!user.IsPasswordCorrect(password))
+            return "Invalid credentials";
 
         // we hebben een token nodig (nieuwe method?)
         // Generate a UUID (GUID) and convert it to a string
         // via security (niet aankomen dankje)
-        // string token = Guid.NewGuid().ToString();
+        string token = Guid.NewGuid().ToString();
+
+        // token opslaan in database
+        SaveUserToken();
+        return $"Login succesful. Token: {token}";
     }
 
     // Hier moeten we testen of de username/password niet leeg/null is
     public static bool LoginCheck(string? username, string? password)
+        => !(string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password));
+
+    public static void SaveUserToken(string token)
     {
-        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-        {
-            return false;
-        }
-        return true;
+        // token in database zetten;
+        return;
     }
 
-    public static string Logout()
+    public static string Logout(HttpRequest request)
     {
+        string? token = request.Query["Token"];
+
+        //check of er wel iets van een token bestaat
+        if (string.IsNullOrWhiteSpace(token)) // or get_session(token)
+            return "No session token";
+
         //check session token (method) (here)
-        if (!token) // or get_session(token)
-        {
-            
-        }
+        if(!CDatabase.SessionExists(token))
+            return "Session not found or expired";
+
         // succesful logout (here)
         // remove session token (methode in )
-        
-        return "";
+        if (RemoveSessionOnLogout(token))
+            return "Logout succesful";
+        else
+            return "Logout failed";
     }
 
-    public static bool RemoveSessionOnLogout(var token)
+    public static bool RemoveSessionOnLogout(string token)
     {
-        return true;        
+        // return CDatabase.RemoveSession(token);
+        return true;      
     }
 }
