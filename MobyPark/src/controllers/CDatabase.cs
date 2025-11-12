@@ -58,7 +58,7 @@ public static class CDatabase
 
         conn.Close();
     }
-    
+
     // voor login, checken of username klopt tov. database
     public static User GetUser(string username)
     {
@@ -85,6 +85,63 @@ public static class CDatabase
         {
             conn.Close();
             return null;
-        }        
+        }
+    }
+    public static string GetUsernameById(int userId)
+{
+    try
+    {
+        using MySqlConnection conn = new MySqlConnection(connectionString);
+        conn.Open();
+
+        string query = "SELECT Username FROM Users WHERE ID = @userId";
+        using MySqlCommand cmd = new MySqlCommand(query, conn);
+        cmd.Parameters.AddWithValue("@userId", userId);
+
+        object result = cmd.ExecuteScalar();
+        return result != null ? Convert.ToString(result) : null;
+    }
+    catch (Exception)
+    {
+        return null;
+    }
+}
+    public static Payments[] GetPaymentsBySession(string username)
+    {
+        try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT * FROM Payments WHERE Initiator = @username";
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@username", username);
+
+            List<Payments> paymentsList = new List<Payments>();
+            using MySqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Payments payment = new Payments
+                {
+                    Transaction = Convert.ToString(reader["Transaction"]),
+                    Amount = Convert.ToDecimal(reader["Amount"]),
+                    Initiator = Convert.ToString(reader["Initiator"]),
+                    CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
+                    Completed = Convert.ToDateTime(reader["Completed"]),
+                    Hash = Convert.ToString(reader["Hash"]),
+                    SessionId = Convert.ToString(reader["SessionId"]),
+                    ParkingLotId = Convert.ToString(reader["ParkingLotId"]),
+                };
+                paymentsList.Add(payment);
+            }
+
+
+            return paymentsList.ToArray();
+        }
+        catch (Exception)
+        {
+            return new Payments[0];
+        }
     }
 }

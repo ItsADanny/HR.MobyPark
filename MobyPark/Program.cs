@@ -28,9 +28,14 @@ app.MapPost("/login", () =>
 
 app.MapGet("/logout", () =>
 {
-    
+
 })
 .WithName("GetLogout");
+
+app.MapGet("/payments", (HttpRequest request) =>
+{
+    CPayment paymentController = new CPayment();
+}).WithName("GetPayments");
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 Log.WriteLine($"Server started, Listening to port: {port}");
