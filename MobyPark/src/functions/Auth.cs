@@ -1,3 +1,4 @@
+using MySql.Data.MySqlClient;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
@@ -61,5 +62,37 @@ public static class Auth
         }
 
         return sb.ToString();
+    }
+
+    public static bool IsTokenFilled(HttpRequest request)
+    {
+        string? token = request.Headers["Token"];
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public static Session? GetSession(Database DBConfig, string authToken)
+    {
+        MySqlConnection conn = new MySqlConnection(DBConfig.GetConnectionSTR());
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        string query = $"SELECT * FROM Sessions WHERE Token = {authToken}";
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            Session returnValue = new(Convert.ToInt32(reader["ID"].ToString), Convert.ToInt32(reader["UserID"].ToString), reader["Token"].ToString(), );
+            conn.Close();
+            return returnValue;
+        }
+
+        conn.Close();
+        return null;
     }
 }

@@ -2,6 +2,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
+Database? DBConfig = builder.Configuration.GetSection("Database").Get<Database>();
+if (DBConfig is null)
+{
+    throw new NullReferenceException("Can't load user-secrets into DBConfig");
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
