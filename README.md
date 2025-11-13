@@ -3,6 +3,7 @@
 # HR.MobyPark
 
 [![Hogeschool Rotterdam Project](https://img.shields.io/badge/Hogeschool_Rotterdam-Software_Construction:_Process_and_Tools-cc0133.svg?logo=googlescholar&logoColor=cc0133)]()
+
 [![Python3](https://img.shields.io/badge/Python-3-3776AB.svg?logo=python)]()
 
 ## (EN)
