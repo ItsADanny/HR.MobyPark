@@ -2,6 +2,10 @@
 {
     public static void Main()
     {
-        
+        bool shutdown = false;
+        while (!shutdown)
+        {
+            
+        }
     }
 }

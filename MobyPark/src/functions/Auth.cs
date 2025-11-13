@@ -64,9 +64,19 @@ public static class Auth
         return sb.ToString();
     }
 
-    public static Session? GetSession(string authToken)
+    public static bool IsTokenFilled(HttpRequest request)
     {
-        MySqlConnection conn = new MySqlConnection(connectionString);
+        string? token = request.Headers["Token"];
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public static Session? GetSession(Database DBConfig, string authToken)
+    {
+        MySqlConnection conn = new MySqlConnection(DBConfig.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
