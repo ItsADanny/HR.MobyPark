@@ -4,16 +4,14 @@ public static class CProfile
     public static void GetProfile(HttpRequest request)
     {
         // token vragen, dit wordt hengyi headeer
-        string token = request.Query["Token"];
-
-        // token if statements / methods (hier)
-        if (token.IsNullOrWhiteSpace())
+        if (!Auth.IsTokenFilled(request))
         {
             System.Console.WriteLine("Invalid token");
             return;
         }
 
         // auf mthod, dit doet ook de sessie terug sturen
+        Session? session = CSession.GetSession(Database.MainDBConfig, request.Headers["Token"]);
 
         // anders method maken dat je de user items krijgt
         //  met een query Session UserID gebruiken
@@ -25,16 +23,14 @@ public static class CProfile
     public static void UpdateProfile(HttpRequest request)
     {
         // token vragen 
-        string token = request.Query["Token"];
-
-        // token if statements / methods (hier)
-        if (string.IsNullOrWhiteSpace(token))
+        if (!Auth.IsTokenFilled(request))
         {
             System.Console.WriteLine("Invalid token");
             return;
         }
 
         //auf method hier
+        Session? session = CSession.GetSession(Database.MainDBConfig, request.Headers["Token"]);
 
 
         //mogen we wel updaten (session checken)
