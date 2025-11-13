@@ -17,13 +17,13 @@ public static class CDatabaseReservation
         return userId;
     }
 
-    public static int SaveReservation(int userId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal cost)
+    public static int SaveReservation(int userId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal amount)
     {
         MySqlConnection conn = new MySqlConnection(connectionString);
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
-        string query = $"INSERT INTO Reservations VALUES({userId}, {parkingLotId} ,{vehicleId}, '{startTime:yyyy-MM-dd HH:mm:ss}', '{endTime:yyyy-MM-dd HH:mm:ss}', {cost})";
+        string query = $"INSERT INTO Reservations VALUES({userId}, {parkingLotId} ,{vehicleId}, '{startTime:yyyy-MM-dd HH:mm:ss}', '{endTime:yyyy-MM-dd HH:mm:ss}', {amount})";
 
         cmd.Connection = conn;
         cmd.CommandText = query;
@@ -37,5 +37,23 @@ public static class CDatabaseReservation
         conn.Close();
 
         return id;
+    }
+
+    public static bool UpdateReservation(int userId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal amount)
+    {
+        MySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+
+        string.Query = $"UPDATE Reservations SET ParkingLotId = {parkingLodId}, VehicleId = {vehicleId}, StartTime = '{startTime:yyyy-MM-dd HH:mm}', EndTime = '{endTime:yyyy-MM-dd HH:mm}', Amount = {amount} WHERE UserId = {userId}";
+
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+         
+
+         //moet nog verder vanaf hier
+        return true;
+
     }
 }

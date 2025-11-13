@@ -39,8 +39,8 @@ public static class CReservation
         //Python: if the session user is an admin, they can specify the user for the reservation.
     }
 
-    
-    
+
+
     public static bool ValidateReservation(string parkingLotId, string vehicleId, string startTime, string endTime, string Amount)
     {
         if (string.IsNullOrWhiteSpace(parkingLotId) ||
@@ -52,5 +52,31 @@ public static class CReservation
             return false;
         }
         return true;
+    }
+    
+    public static string UpdateReservation(HttpRequest request)
+    {
+        string? token = request.Query["Token"];
+        if (string.IsNullOrWhiteSpace(token) || !CDatabase.SessionExists(token))
+        {
+            return "Invalid Session Token";
+        }
+        string? parkingLotIdstr = request.Query["ParkingLotId"];
+        string? vehicleIdstr = request.Query["VehicleId"];
+        string? startTimestr = request.Query["StartTime"];
+        string? endTimestr = request.Query["EndTime"];
+        string? amountstr = request.Query["Amount"];
+
+        if (ValidateReservation(parkingLotIdstr, vehicleIdstr, startTimestr, endTimestr, amountstr) == false)
+        {
+            return "Reservation data invalid due to missing field(s)";
+        }
+
+        int parkingLotId = int.Parse(parkingLotIdstr);
+        int vehicleId = int.Parse(vehicleIdstr);
+        DateTime startTime = DateTime.ParseExact(startTimestr, "dd-MM-yyyy HH:mm", null);
+        DateTime endTime = DateTime.ParseExact(endTimestr, "dd-MM-yyyy HH:mm", null);
+        decimal Amount = decimal.Parse(amountstr);
+
     }
 }
