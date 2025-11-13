@@ -9,6 +9,7 @@ public static class CUser
         string? fullName = request.Query["FullName"];
         string? email = request.Query["Email"];
         string? phoneNumber = request.Query["PhoneNumber"];
+        //date van maken
         string? birthYearStr = request.Query["BirthYear"];
 
         if (!int.TryParse(birthYearStr, out int birthYear))
