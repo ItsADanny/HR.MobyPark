@@ -74,7 +74,7 @@ public static class Auth
         return false;
     }
 
-    public static Session? GetSession(Database DBConfig, string authToken)
+    public static UserSession? GetUserSession(Database DBConfig, string authToken)
     {
         MySqlConnection conn = new MySqlConnection(DBConfig.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
@@ -87,7 +87,7 @@ public static class Auth
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
-            Session returnValue = new(Convert.ToInt32(reader["ID"].ToString), Convert.ToInt32(reader["UserID"].ToString), reader["Token"].ToString(), );
+            UserSession returnValue = new(Convert.ToInt32(reader["ID"].ToString), Convert.ToInt32(reader["UserID"].ToString), reader["Token"].ToString(), );
             conn.Close();
             return returnValue;
         }

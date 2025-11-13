@@ -27,7 +27,7 @@ public class User : iToTransform
 
     //This method will simply return a true or false when checking the users password,
     //this will make sure that the password is never exposed or to be accessed outside of this class
-    public bool IsPasswordCorrect(string guess, string salt) => CAuth.Hash(guess, salt)[0] == _password ? true : false;
+    public bool IsPasswordCorrect(string guess, string salt) => Auth.Hash(guess, salt)[0] == _password ? true : false;
     
     public bool IsPasswordCorrect(string guess) => Auth.Hash(guess, CDatabase.GetSalt(ID))[0] == _password ? true : false;
 }

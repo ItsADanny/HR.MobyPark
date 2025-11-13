@@ -1,5 +1,11 @@
 public static class AppUI
 {
+    public static string Header = @"" +
+                                   "" +
+                                   "" +
+                                   "" +
+                                   "";
+
     public static string GenProgressBar(int currentProgress, int maxProgress, int maxSize = 32)
     {
         double progressDone = Convert.ToDouble(currentProgress) / Convert.ToDouble(currentProgress);
@@ -19,12 +25,15 @@ public static class AppUI
         return returnValue;
     }
     
-    public static int OptionSelector(string[] options)
+    public static int OptionSelector(string header, string[] options)
     {
         int usrPOS = 0;
 
         while (true)
         {
+            Console.Clear();
+            Console.WriteLine(header);
+            
             for (int i = 0; i < options.Count(); i++)
             {
                 if (i == usrPOS)
