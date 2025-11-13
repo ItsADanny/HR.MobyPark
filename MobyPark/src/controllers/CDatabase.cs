@@ -23,7 +23,7 @@ public static class CDatabase
         return false; // placeholder
     }
 
-    public static int SaveUser(string username, string hash, string fullName, string email, string phoneNumber)
+    public static int SaveUser(string username, string hash, string fullName, string email, string phoneNumber, int birthYear)
     {
         // hier de database logica om de gebruiker op te slaan
         // return de gegenereerde gebruikers-ID
@@ -67,6 +67,34 @@ public static class CDatabase
 
         conn.Open();
         string query = $"SELECT * FROM Users WHERE Username = {username}";
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            User user = new User
+            {
+                Username = reader["Username"].ToString(),
+                // de rest ook
+            };
+            conn.Close();
+            return user;
+        }
+        else
+        {
+            conn.Close();
+            return null;
+        }        
+    }
+
+    public static User GetUserByID(int userID)
+    {
+        MySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        string query = $"SELECT * FROM Users WHERE ID = {userID}";
         cmd.Connection = conn;
         cmd.CommandText = query;
 
