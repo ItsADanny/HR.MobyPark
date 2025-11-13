@@ -14,36 +14,40 @@ public static class CReservation
         string? vehicleIdstr = request.Query["VehicleId"];
         string? startTimestr = request.Query["StartTime"];
         string? endTimestr = request.Query["EndTime"];
-        string? coststr = request.Query["Cost"];
+        string? amountstr = request.Query["Amount"];
 
-        if (ValidateReservation(parkingLotIdstr, vehicleIdstr, startTimestr, endTimestr, coststr) == false)
+        if (ValidateReservation(parkingLotIdstr, vehicleIdstr, startTimestr, endTimestr, amountstr) == false)
         {
             return "Reservation data invalid due to missing field(s)";
         }
 
         int parkingLotId = int.Parse(parkingLotIdstr);
         int vehicleId = int.Parse(vehicleIdstr);
-        DateTime startTime = DateTime.Parse(startTimestr);
-        DateTime endTime = DateTime.Parse(endTimestr);
-        decimal cost = decimal.Parse(coststr);
+        DateTime startTime = DateTime.ParseExact(startTimestr, "dd-MM-yyyy HH:mm", null);
+        DateTime endTime = DateTime.ParseExact(endTimestr, "dd-MM-yyyy HH:mm", null);
+        decimal Amount = decimal.Parse(amountstr);
 
         int userId = CDatabaseReservation.GetUserIdFromToken(token);
 
-        int reservationId = CDatabaseReservation.SaveReservation(userId, parkingLotId, vehicleId, startTime, endTime, cost);
+        int reservationId = CDatabaseReservation.SaveReservation(userId, parkingLotId, vehicleId, startTime, endTime, Amount);
 
         return $"Reservation created with ID: {reservationId}";
 
+
+
+        //Nog toe te voegen:
+        //Python: if the session user is an admin, they can specify the user for the reservation.
     }
 
     
     
-    public static bool ValidateReservation(string parkingLotId, string vehicleId, string startTime, string endTime, string cost)
+    public static bool ValidateReservation(string parkingLotId, string vehicleId, string startTime, string endTime, string Amount)
     {
         if (string.IsNullOrWhiteSpace(parkingLotId) ||
             string.IsNullOrWhiteSpace(vehicleId) ||
             string.IsNullOrWhiteSpace(startTime) ||
             string.IsNullOrWhiteSpace(endTime) ||
-            string.IsNullOrWhiteSpace(cost))
+            string.IsNullOrWhiteSpace(Amount))
         {
             return false;
         }
