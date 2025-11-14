@@ -1,5 +1,5 @@
 
-public class CPayment
+public static class CPayment
 {
     public static IResult GetMyPayments(HttpRequest request)
     {
