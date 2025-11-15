@@ -1,10 +1,13 @@
+using System.Reflection.Metadata.Ecma335;
 using MySql.Data.MySqlClient;
 
 public static class CDatabaseReservation
 {
     public static int GetUserIdFromToken(string token)
     {
-        MySqlConnection conn = new MySqlConnection(connectionString);
+        Database Database = new Database();
+        
+        MySqlConnection conn = new MySqlConnection(Database.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -19,7 +22,7 @@ public static class CDatabaseReservation
 
     public static int SaveReservation(int userId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal amount)
     {
-        MySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlConnection conn = new MySqlConnection();
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -39,21 +42,58 @@ public static class CDatabaseReservation
         return id;
     }
 
-    public static bool UpdateReservation(int userId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal amount)
+    public static bool UpdateReservation(int reservationId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal amount)
+    {
+
+        // Database Database = new Database();
+        // string connectionString = Database.GetConnectionSTR();
+
+        MySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlCommand cmd = new MySqlCommand();
+
+        if (ReservationExists(reservationId) == false)
+        {
+            return false;
+        }
+
+        conn.Open();
+
+        string Query = $"UPDATE Reservations SET ParkingLotId = {parkingLotId}, VehicleId = {vehicleId}, StartTime = '{startTime:yyyy-MM-dd HH:mm}', EndTime = '{endTime:yyyy-MM-dd HH:mm}', Amount = {amount} WHERE ID = {reservationId}";
+
+        cmd.Connection = conn;
+        cmd.CommandText = Query;
+
+        int RowAffected = cmd.ExecuteNonQuery();
+
+        conn.Close();
+
+        if (RowAffected > 0)
+        {
+            return true;
+        }
+
+        return false;
+
+
+    }
+
+    public static bool ReservationExists(int reservationId)
     {
         MySqlConnection conn = new MySqlConnection(connectionString);
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
-
-        string.Query = $"UPDATE Reservations SET ParkingLotId = {parkingLodId}, VehicleId = {vehicleId}, StartTime = '{startTime:yyyy-MM-dd HH:mm}', EndTime = '{endTime:yyyy-MM-dd HH:mm}', Amount = {amount} WHERE UserId = {userId}";
+        string query = $"SELECT COUNT(*) FROM Reservations WHERE ID = {reservationId}";
 
         cmd.Connection = conn;
-        cmd.CommandText = query;
-         
+        cmd.CommandText = query;        
+        int count = Convert.ToInt32(cmd.ExecuteScalar());
 
-         //moet nog verder vanaf hier
-        return true;
-
+        conn.Close();
+        if (count > 0)
+        {
+            return true;
+        }
+        return false;
     }
 }
