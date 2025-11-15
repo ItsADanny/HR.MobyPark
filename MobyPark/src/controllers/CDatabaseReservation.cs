@@ -3,23 +3,6 @@ using MySql.Data.MySqlClient;
 
 public static class CDatabaseReservation
 {
-    public static int GetUserIdFromToken(string token)
-    {
-        Database Database = new Database();
-        
-        MySqlConnection conn = new MySqlConnection(Database.GetConnectionSTR());
-        MySqlCommand cmd = new MySqlCommand();
-
-        conn.Open();
-        string query = $"SELECT userId FROM Sessions WHERE Token = {token}";
-        cmd.Connection = conn;
-        cmd.CommandText = query;
-
-        int userId = Convert.ToInt32(cmd.ExecuteScalar());
-        conn.Close();
-        return userId;
-    }
-
     public static bool SaveReservation(int userId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal amount)
     {
         MySqlConnection conn = new MySqlConnection(connectionString);
@@ -86,7 +69,7 @@ public static class CDatabaseReservation
         string query = $"SELECT COUNT(*) FROM Reservations WHERE ID = {reservationId}";
 
         cmd.Connection = conn;
-        cmd.CommandText = query;        
+        cmd.CommandText = query;
         int count = Convert.ToInt32(cmd.ExecuteScalar());
 
         conn.Close();
@@ -95,5 +78,22 @@ public static class CDatabaseReservation
             return true;
         }
         return false;
+    }
+    
+    public static int GetUserIdFromToken(string token)  
+    {
+        Database Database = new Database();
+        
+        MySqlConnection conn = new MySqlConnection(Database.GetConnectionSTR());
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        string query = $"SELECT userId FROM Sessions WHERE Token = {token}";
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+
+        int userId = Convert.ToInt32(cmd.ExecuteScalar());
+        conn.Close();
+        return userId;
     }
 }
