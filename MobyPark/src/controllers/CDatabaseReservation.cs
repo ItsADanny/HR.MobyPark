@@ -20,9 +20,9 @@ public static class CDatabaseReservation
         return userId;
     }
 
-    public static int SaveReservation(int userId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal amount)
+    public static bool SaveReservation(int userId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal amount)
     {
-        MySqlConnection conn = new MySqlConnection();
+        MySqlConnection conn = new MySqlConnection(connectionString);
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -30,16 +30,16 @@ public static class CDatabaseReservation
 
         cmd.Connection = conn;
         cmd.CommandText = query;
-        cmd.ExecuteNonQuery();
+        // cmd.ExecuteNonQuery();
 
-        string query2 = $"SELECT ID FROM Reservations WHERE UserId = {userId} AND StartTime = '{startTime:yyyy-MM-dd HH:mm:ss}'";
-        cmd.Connection = conn;
-        cmd.CommandText = query2;
+        // string query2 = $"SELECT ID FROM Reservations WHERE UserId = {userId} AND StartTime = '{startTime:yyyy-MM-dd HH:mm:ss}'";
+        // cmd.Connection = conn;
+        // cmd.CommandText = query2;
 
-        int id = Convert.ToInt32(cmd.ExecuteScalar());
+        int rowsAffected = cmd.ExecuteNonQuery();
         conn.Close();
 
-        return id;
+        return rowsAffected > 0; 
     }
 
     public static bool UpdateReservation(int reservationId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal amount)

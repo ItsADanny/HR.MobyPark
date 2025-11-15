@@ -30,9 +30,13 @@ public static class CReservation
 
         int userId = CDatabaseReservation.GetUserIdFromToken(token);
 
-        int reservationId = CDatabaseReservation.SaveReservation(userId, parkingLotId, vehicleId, startTime, endTime, Amount);
+        bool saveSatatus = CDatabaseReservation.SaveReservation(userId, parkingLotId, vehicleId, startTime, endTime, Amount);
 
-        return $"Reservation created with ID: {reservationId}";
+        if (saveSatatus)
+        {
+            return $"Reservation created successfully";
+        }
+        return $"Failed to create reservation";
 
 
 
