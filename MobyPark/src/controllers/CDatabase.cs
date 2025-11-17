@@ -23,7 +23,7 @@ public static class CDatabase
         return false; // placeholder
     }
 
-    public static int SaveUser(string username, string hash, string fullName, string email, string phoneNumber)
+    public static int SaveUser(string username, string hash, string fullName, string email, string phoneNumber, int birthYear)
     {
         // hier de database logica om de gebruiker op te slaan
         // return de gegenereerde gebruikers-ID
@@ -87,4 +87,141 @@ public static class CDatabase
             return null;
         }        
     }
+
+    public static User GetUserByID(int userID)
+    {
+        MySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        string query = $"SELECT * FROM Users WHERE ID = {userID}";
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            User user = new User
+            {
+                Username = reader["Username"].ToString(),
+                // de rest ook
+            };
+            conn.Close();
+            return user;
+        }
+        else
+        {
+            conn.Close();
+            return null;
+        }        
+    }
+    public static bool IsUserAdmin(int userID)
+    {
+        try
+        {
+            MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = $"SELECT RoleID FROM Users WHERE ID = @UserID";
+            MySqlCommand cmd = new MySqlCommand(query,conn);
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            object result = cmd.ExecuteScalar();
+            if (result != null && Convert.ToInt32(result) == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+    public static Payment[] GetAllPaymentsBySession(int UserID)
+    {
+        try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+            
+            string query = "SELECT * FROM Transaction WHERE UserID = @UserID";
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@UserID", UserID);
+            
+            List<Payment> paymentsList = new List<Payment>();
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            
+            while (reader.Read())
+            {
+                Payment payment = new Payment
+                {
+                    ID = Convert.ToInt32(reader["ID"]),
+                    TransactionID = reader["TransactionID"].ToString(),
+                    Amount = Convert.ToDecimal(reader["Amount"]),
+                    UserID = Convert.ToInt32(reader["UserID"]),
+                    ParkingLotID = Convert.ToInt32(reader["ParkingLotID"]),
+                    SessionID = Convert.ToInt32(reader["SessionID"]),
+                    Date = Convert.ToDateTime(reader["Date"]),
+                    Method = reader["Method"].ToString(),
+                    Issuer = reader["Issuer"].ToString(),
+                    Bank = reader["Bank"].ToString(),
+                    Hash = reader["Hash"].ToString(),
+                    CompletedDateTime = reader["CompletedDateTime"] != DBNull.Value ? Convert.ToDateTime(reader["CompletedDateTime"]) : null,
+                    CreatedDateTime = Convert.ToDateTime(reader["CreatedDateTime"]),
+                    UpdatedDateTime = Convert.ToDateTime(reader["UpdatedDateTime"])
+                };
+                paymentsList.Add(payment);
+            }
+            
+            return paymentsList.ToArray();
+        }
+        catch (Exception)
+        {
+            return new Payment[0];
+        }
+    }
+
+    public static Payment GetPaymentById( int userId)
+    {
+        try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+            
+            string query = "SELECT * FROM Transaction WHERE  UserID = @userId";
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@userId", userId);
+            
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            
+            if (reader.Read())
+            {
+                return new Payment
+                {
+                    ID = Convert.ToInt32(reader["ID"]),
+                    TransactionID = reader["TransactionID"].ToString(),
+                    Amount = Convert.ToDecimal(reader["Amount"]),
+                    UserID = Convert.ToInt32(reader["UserID"]),
+                    ParkingLotID = Convert.ToInt32(reader["ParkingLotID"]),
+                    SessionID = Convert.ToInt32(reader["SessionID"]),
+                    Date = Convert.ToDateTime(reader["Date"]),
+                    Method = reader["Method"].ToString(),
+                    Issuer = reader["Issuer"].ToString(),
+                    Bank = reader["Bank"].ToString(),
+                    Hash = reader["Hash"].ToString(),
+                    CompletedDateTime = reader["CompletedDateTime"] != DBNull.Value ? Convert.ToDateTime(reader["CompletedDateTime"]) : null,
+                    CreatedDateTime = Convert.ToDateTime(reader["CreatedDateTime"]),
+                    UpdatedDateTime = Convert.ToDateTime(reader["UpdatedDateTime"])
+                };
+            }
+            
+            return null;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+    
 }
