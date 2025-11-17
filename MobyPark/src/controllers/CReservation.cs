@@ -5,9 +5,8 @@ public static class CReservation
 {
 
     //POST
-    public static string CreateReservation(HttpRequest request)
+    public static string CreateReservation(HttpRequest request, string token)
     {
-        string? token = request.Query["Token"];
         // check of er wel iets van een token bestaat, deze method moet nog in CDatabase komen
         if (!ValidateToken(token))
         {
@@ -51,10 +50,10 @@ public static class CReservation
 
     //PUT
 
-    public static string UpdateReservation(HttpRequest request)
+    public static string UpdateReservation(HttpRequest request, string token)
     {
         // if (string.IsNullOrWhiteSpace(token) || !CDatabase.SessionExists(token))
-        if (string.IsNullOrWhiteSpace(token) || CDatabase.SessionExists(token) == false)
+        if (!ValidateToken(token))
         {
             return "Invalid Session Token";
         }
@@ -110,8 +109,13 @@ public static class CReservation
     
     //GET
 
-    public static string GetReservation(HttpRequest request)
+    public static string GetReservation(HttpRequest request, string token)
     {
+
+        if(!ValidateToken(token))
+        {
+            return "Invalid session token";
+        }
         string? reservationIdStr = request.Query["Id"];
         string? userId = request.Query["UserId"];
         
@@ -139,13 +143,13 @@ public static class CReservation
     }
 
     //DELETE
-    public static string DeleteReservation(HttpRequest request)
+    public static string DeleteReservation(HttpRequest request, string token)
     {
-        string? token = request.Query["Token"];
         if(!ValidateToken(token))
         {
             return "Invalid session token";
         }
+
         string? reservationIdStr = request.Query["Id"];
         if (string.IsNullOrWhiteSpace(reservationIdStr))
         {
@@ -178,10 +182,9 @@ public static class CReservation
         return true;
     }
 
-    public static bool ValidateToken(string token)
+    public static bool ValidateToken(string token) //hier moeten meer checks komen
     {
         if (string.IsNullOrWhiteSpace(token))
-        // if (string.IsNullOrWhiteSpace(token) || CDatabase.SessionExists(token) == false)
         {
             return false;
         }

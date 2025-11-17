@@ -117,13 +117,12 @@ public static class CDatabaseReservation
 
     public static Reservation GetReservationById(int userID)
     {
-        List<Reservation> reservations = new List<Reservation>();
 
         MySqlConnection conn = new MySqlConnection(connectionString);
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
-        string query = "SELECT * FROM Reservations WHERE UserID = @UserID";
+        string query = $"SELECT * FROM Reservations WHERE UserID = {userID}";
         cmd.Connection = conn;
         cmd.CommandText = query;
 
