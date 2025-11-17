@@ -8,7 +8,7 @@ public static class CParkingLot
     }
 
     // Get by id
-    public static object GetParkingLotById(int id, string token)
+    public static ParkingLot GetParkingLotById(int id, string token)
     {
         ValidateToken(token);
 
@@ -16,7 +16,7 @@ public static class CParkingLot
         if (validationError != null)
             return new { error = validationError };
 
-        var lot = CDatabaseParkingLot.GetById(id);
+        ParkingLot lot = CDatabaseParkingLot.GetById(id);
         if (lot == null)
             return new { error = $"Parking lot with ID {id} not found." };
 
