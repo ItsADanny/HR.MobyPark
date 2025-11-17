@@ -1,59 +1,67 @@
 public static class CParkingLot
 {
-
     // Get all
-    public static List<ParkingLot> GetAllParkingLots()
+    public static List<ParkingLot> GetAllParkingLots(string token)
     {
-        string token = request.headers.get["Authorization"];
-        //fetch and return all parking lots
+        ValidateToken(token);
+        return CDatabaseParkingLot.GetAll();
     }
 
-    //Get by id
-    public static object GetParkingLotById(int id)
+    // Get by id
+    public static object GetParkingLotById(int id, string token)
     {
-        string token = request.headers.get["Authorization"];
+        ValidateToken(token);
 
         string validationError = ValidateId(id);
         if (validationError != null)
-        {
             return new { error = validationError };
-        }
 
-        //check if parking lot with the given id exists else return error message
+        var lot = CDatabaseParkingLot.GetById(id);
+        if (lot == null)
+            return new { error = $"Parking lot with ID {id} not found." };
 
-        return new { error = $"Parking lot with ID {id} not found." };
+        return lot;
     }
 
-    //Delete
-    public static bool DeleteParkingLot(int id)
+    // Delete
+    public static object DeleteParkingLot(int id, string token)
     {
-        string token = request.headers.get["Authorization"];
-        //call a delete method and handle failed delete logic
+        ValidateToken(token);
+
+        string validationError = ValidateId(id);
+        if (validationError != null)
+            return new { error = validationError };
+
+        bool success = CDatabaseParkingLot.Delete(id);
+        if (!success)
+            return new { error = $"Failed to delete parking lot with ID {id}." };
 
         Log.WriteLine($"Parking lot with ID: {id} successfully deleted.");
-        return true;
+        return new { success = true };
     }
 
-    //Post
-    public static int CreateParkingLot(string name, string location, string adress, int capacity, double tariff, double dayTariff)
+    // Post
+    public static object CreateParkingLot(string token, string name, string location, string address, int capacity, double tariff, double dayTariff)
     {
-        string token = request.headers.get["Authorization"];
-        //call a helper method to insert parking lot into database and return the id
+        ValidateToken(token);
+
+        int id = CDatabaseParkingLot.Insert(name, location, address, capacity, tariff, dayTariff);
         if (id == -1)
         {
             Log.WriteErrorLine(null, $"Could not create parking lot '{name}'");
+            return new { error = "Creation failed" };
         }
-        return id;
+
+        return new { id = id };
     }
 
+    // Validation
+    private static string ValidateId(int id) =>
+        id <= 0 ? "Invalid ID. It must be a positive number." : null;
 
-    //Validation
-    private static string ValidateId(int id)
+    private static void ValidateToken(string token)
     {
-        if (id <= 0)
-        {
-            return "Invalid ID. Must be a positive number.";
-        }
-        return null;
+        if (string.IsNullOrWhiteSpace(token))
+            throw new UnauthorizedAccessException("Missing or invalid Authorization token.");
     }
 }
