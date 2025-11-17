@@ -57,26 +57,70 @@ public static class CPayment
         return Results.Ok(payment);
     }
 
-    // public static IResult CreatePayment(HttpRequest request)
-    // {
-    //     string token = request.Headers["Authorization"].FirstOrDefault();
-    //     string transaction = request.Query["transaction"];
-    //     int amount = int.Parse(request.Query["amount"]);
+    public static IResult CreatePayment(HttpRequest request)
+    {
+        string token = request.Headers["Authorization"].FirstOrDefault();
+        string transaction = request.Query["Transaction"];
+        int amount = int.Parse(request.Query["Amount"]);
 
-    //     if (string.IsNullOrEmpty(token)|| string.IsNullOrEmpty(transaction) || amount <= 0)
-    //     {
-    //         return Results.Unauthorized();
-    //     }
+        if (string.IsNullOrEmpty(token))
+        {
+            return Results.Unauthorized();
+        }
+        if (string.IsNullOrEmpty(transaction) || amount <= 0)
+        {
+            return Results.BadRequest("Invalid transaction or amount");
+        }
 
-    //     UserSession session = Auth.GetUserSession(null, token);
-    //     if (session == null)
-    //     {
-    //         return Results.NotFound("Session not found");
-    //     }
+        UserSession session = Auth.GetUserSession(null, token);
+        if (session == null)
+        {
+            return Results.NotFound("Session not found");
+        }
+        int parkingLotID = 0; // to be implemented
+        int sessionID = 0; // to be implemented
         
-    //     // add payment creation logic here
-    //     string transactiondone = AddPaymentTransaction(session.UserID, transaction, amount);
+        // add payment creation logic here
+        string transactiondone = CDatabase.AddPaymentTransaction(
+            transaction, 
+            parkingLotID,
+            sessionID,
+            session.UserID, 
+            amount, 
+            "Unknown", // method is not provided in the request, assuming a default value of "Unknown"
+            "Unknown", // issuer is not provided in the request, assuming a default value of "
+            "Unknown",  // bank is not provided in the request, assuming a default value of "Unknown"
+            session.CreateDateTime, 
+            session.CreateDateTime);
 
-    //     return Results.Ok();
-    // }
+        return Results.Ok();
+    }
+
+    public static IResult Refund(HttpRequest request)
+    {
+        string token = request.Headers["Authorization"].FirstOrDefault();
+        int amount = int.Parse(request.Query["Amount"]);
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return Results.Unauthorized();
+        }
+
+        UserSession session = Auth.GetUserSession(null, token);
+        if (session == null)
+        {
+            return Results.NotFound("Session not found");
+        }
+
+        if (!CDatabase.IsUserAdmin(session.UserID))
+        {
+            return Results.Unauthorized();
+        }
+        if (amount <= 0)
+        {
+            return Results.BadRequest("Require field missing");
+        }
+
+        return Results.Ok();
+    }
 }

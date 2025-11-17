@@ -189,7 +189,7 @@ public static class CDatabase
             using MySqlConnection conn = new MySqlConnection(connectionString);
             conn.Open();
             
-            string query = "SELECT * FROM Transaction WHERE  UserID = @userId";
+            string query = "SELECT * FROM Transaction WHERE UserID = @userId";
             using MySqlCommand cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", userId);
             
@@ -223,5 +223,55 @@ public static class CDatabase
             return null;
         }
     }
-    
+
+    public static string AddPaymentTransaction(
+        string transactionID,
+        int parkingLotID,
+        int sessionID,
+        int userID, 
+        decimal amount,
+        string method,
+        string issuer,
+        string bank,
+        DateTime createdDateTime,
+        DateTime updatedDateTime)
+        {
+        try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string hash = Guid.NewGuid().ToString();
+            DateTime now = DateTime.Now;
+
+            string query = @"
+                INSERT INTO Transaction 
+                (TransactionID, ParkingLotID, SessionID, UserID, Amount, Date, Method, Issuer, Bank, Hash, CompletedDateTime, CreatedDateTime, UpdatedDateTime)
+                VALUES 
+                (@transactionID, @parkingLotID, @sessionID, @userID, @amount, @date, @method, @issuer, @bank, @hash, @CompletedDateTime, @createdDateTime, @updatedDateTime)";
+
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@transactionID", transactionID);
+            cmd.Parameters.AddWithValue("@parkingLotID", parkingLotID);
+            cmd.Parameters.AddWithValue("@sessionID", sessionID);
+            cmd.Parameters.AddWithValue("@userID", userID);
+            cmd.Parameters.AddWithValue("@amount", amount);
+            cmd.Parameters.AddWithValue("@date", now);
+            cmd.Parameters.AddWithValue("@method", method);
+            cmd.Parameters.AddWithValue("@issuer", issuer);
+            cmd.Parameters.AddWithValue("@bank", bank);
+            cmd.Parameters.AddWithValue("@hash", hash);
+            cmd.Parameters.AddWithValue("@CompletedDateTime", DateTime.MaxValue);
+            cmd.Parameters.AddWithValue("@createdDateTime", createdDateTime);
+            cmd.Parameters.AddWithValue("@updatedDateTime", updatedDateTime);
+
+            int rowsAffected = cmd.ExecuteNonQuery();
+            
+            return rowsAffected > 0 ? transactionID : null;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
 }
