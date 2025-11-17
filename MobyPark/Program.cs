@@ -38,12 +38,12 @@ app.MapGet("/logout", () =>
 })
 .WithName("GetLogout");
 
-app.MapPost("/reservation", (HttpRequestError request) =>
+app.MapPost("/reservation", (HttpRequest request) =>
 {
     return CReservation.CreateReservation(request);
 }).WithName("PostReservation");
 
-app.MapPut("/Reservation", (HttpRequestError request) =>
+app.MapPut("/Reservation", (HttpRequest request) =>
 {
     return CReservation.UpdateReservation(request);
 }).WithName("PutReservation");

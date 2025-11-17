@@ -79,12 +79,12 @@ public static class CDatabaseReservation
         }
         return false;
     }
-    
-    public static int GetUserIdFromToken(string token)  
+
+    public static int GetUserIdFromToken(string token)
     {
         Database Database = new Database();
-        
-        MySqlConnection conn = new MySqlConnection(Database.GetConnectionSTR());
+
+        MySqlConnection conn = new MySqlConnection(connectionString);
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -95,5 +95,38 @@ public static class CDatabaseReservation
         int userId = Convert.ToInt32(cmd.ExecuteScalar());
         conn.Close();
         return userId;
+    }
+
+    public static Reservation GetReservationById(int userID)
+    {
+        List<Reservation> reservations = new List<Reservation>();
+
+        MySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        string query = "SELECT * FROM Reservations WHERE UserID = @UserID";
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+
+        var reader = cmd.ExecuteReader();
+
+        if(reader.Read())
+        {
+            return new Reservation
+            {
+                Id = reader.GetInt32("Id"),
+                UserId = reader.GetInt32("UserId"),
+                ParkingLotId = reader.GetInt32("ParkingLotId"),
+                VehicleId = reader.GetInt32("VehicleId"),
+                StartTime = reader.GetDateTime("StartTime"),
+                EndTime = reader.GetDateTime("EndTime"),
+                Status = reader.GetString("Status"),
+                Amount = reader.GetDecimal("Amount")
+            };
+        }
+        return null!;
+
+        
     }
 }

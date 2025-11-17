@@ -102,6 +102,22 @@ public static class CReservation
         }
     }
 
+    public static string GetReservation(HttpRequest request)
+    {
+        string? reservationIdStr = request.Query["Id"];
+        if (string.IsNullOrWhiteSpace(reservationIdStr))
+        {
+            return "Reservation ID is missing";
+        }
+
+        Reservation pulledReservation = CDatabaseReservation.GetReservationById(int.Parse(reservationIdStr));
+        if (pulledReservation == null)
+        {
+            return $"No reservation found with ID {reservationIdStr}";
+        }
+
+        return $"Reservation";
+    }
     public static bool ValidateReservation(string parkingLotId, string vehicleId, string startTime, string endTime, string Amount)
     {
         if (string.IsNullOrWhiteSpace(parkingLotId) ||
@@ -114,5 +130,7 @@ public static class CReservation
         }
         return true;
     }
+
+
 }
 
