@@ -105,18 +105,20 @@ public static class CReservation
     public static string GetReservation(HttpRequest request)
     {
         string? reservationIdStr = request.Query["Id"];
+        //hier moet nog een token check komen later
         if (string.IsNullOrWhiteSpace(reservationIdStr))
         {
             return "Reservation ID is missing";
         }
+        //hier moet nog admin check komen dat het of een admin is, of de eigenaar van de reservation
 
         Reservation pulledReservation = CDatabaseReservation.GetReservationById(int.Parse(reservationIdStr));
         if (pulledReservation == null)
         {
             return $"No reservation found with ID {reservationIdStr}";
         }
-
-        return $"Reservation";
+        
+        return ".";
     }
     public static bool ValidateReservation(string parkingLotId, string vehicleId, string startTime, string endTime, string Amount)
     {
