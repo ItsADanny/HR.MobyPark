@@ -1,5 +1,6 @@
 using System.Reflection.Metadata.Ecma335;
 using MySql.Data.MySqlClient;
+using ZstdSharp.Unsafe;
 
 public static class CDatabaseReservation
 {
@@ -13,11 +14,7 @@ public static class CDatabaseReservation
 
         cmd.Connection = conn;
         cmd.CommandText = query;
-        // cmd.ExecuteNonQuery();
 
-        // string query2 = $"SELECT ID FROM Reservations WHERE UserId = {userId} AND StartTime = '{startTime:yyyy-MM-dd HH:mm:ss}'";
-        // cmd.Connection = conn;
-        // cmd.CommandText = query2;
 
         int rowsAffected = cmd.ExecuteNonQuery();
         conn.Close();
@@ -60,6 +57,29 @@ public static class CDatabaseReservation
 
     }
 
+    public static bool DeleteReservation(int reservationId)
+    {
+        MySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        string query = $"DELETE FROM Reservations WHERE Id = {reservationId}";
+
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+
+        int rowsAffected = cmd.ExecuteNonQuery();
+        conn.Close();
+
+        if(rowsAffected > 0)
+        {
+            return true;
+        }
+        return false;
+
+
+    }
+
     public static bool ReservationExists(int reservationId)
     {
         MySqlConnection conn = new MySqlConnection(connectionString);
@@ -82,8 +102,6 @@ public static class CDatabaseReservation
 
     public static int GetUserIdFromToken(string token)
     {
-        Database Database = new Database();
-
         MySqlConnection conn = new MySqlConnection(connectionString);
         MySqlCommand cmd = new MySqlCommand();
 
