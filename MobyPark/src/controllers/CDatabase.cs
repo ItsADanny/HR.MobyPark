@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using MySql.Data.MySqlClient;
 
 public static class CDatabase
@@ -223,6 +224,45 @@ public static class CDatabase
             return null;
         }
     }
+    public static Session GetSessionFormUser(int userID)
+    {
+        try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT * FROM Sessions WHERE UserID = @userID";
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@userID", userID);
+
+            using MySqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                return new Session
+                {
+                    ID = Convert.ToInt32(reader["ID"]),
+                    ParkingLotId = Convert.ToInt32(reader["ParkingLotID"]),
+                    LicensePlate = reader["LicensePlate"].ToString(),
+                    VehicleID = Convert.ToInt32(reader["VehicleID"]),
+                    UserID = Convert.ToInt32(reader["UserID"]),
+                    StartDateTime = Convert.ToDateTime(reader["StartDateTime"]),
+                    EndDateTime = Convert.ToDateTime(reader["EndDateTime"]),
+                    Duration = Convert.ToInt32(reader["Duration"]),
+                    Amount = Convert.ToDouble(reader["Amount"]),
+                    PaymentStatus = reader["PaymentStatus"].ToString(),
+                    CreateDateTime = Convert.ToDateTime(reader["CreatedDateTime"]),
+                    UpdateDateTime = Convert.ToDateTime(reader["UpdatedDateTime"])
+                };
+            }
+
+            return null;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
 
     public static string AddPaymentTransaction(
         string transactionID,
@@ -232,17 +272,12 @@ public static class CDatabase
         decimal amount,
         string method,
         string issuer,
-        string bank,
-        DateTime createdDateTime,
-        DateTime updatedDateTime)
+        string bank)
         {
         try
         {
             using MySqlConnection conn = new MySqlConnection(connectionString);
             conn.Open();
-
-            string hash = Guid.NewGuid().ToString();
-            DateTime now = DateTime.Now;
 
             string query = @"
                 INSERT INTO Transaction 
@@ -256,14 +291,14 @@ public static class CDatabase
             cmd.Parameters.AddWithValue("@sessionID", sessionID);
             cmd.Parameters.AddWithValue("@userID", userID);
             cmd.Parameters.AddWithValue("@amount", amount);
-            cmd.Parameters.AddWithValue("@date", now);
+            cmd.Parameters.AddWithValue("@date", DateTime.Now);
             cmd.Parameters.AddWithValue("@method", method);
             cmd.Parameters.AddWithValue("@issuer", issuer);
             cmd.Parameters.AddWithValue("@bank", bank);
-            cmd.Parameters.AddWithValue("@hash", hash);
-            cmd.Parameters.AddWithValue("@CompletedDateTime", DateTime.MaxValue);
-            cmd.Parameters.AddWithValue("@createdDateTime", createdDateTime);
-            cmd.Parameters.AddWithValue("@updatedDateTime", updatedDateTime);
+            cmd.Parameters.AddWithValue("@hash", "");// to be implemented
+            cmd.Parameters.AddWithValue("@CompletedDateTime", DateTime.MinValue);
+            cmd.Parameters.AddWithValue("@createdDateTime", DateTime.Now);
+            cmd.Parameters.AddWithValue("@updatedDateTime", DateTime.MinValue);
 
             int rowsAffected = cmd.ExecuteNonQuery();
             

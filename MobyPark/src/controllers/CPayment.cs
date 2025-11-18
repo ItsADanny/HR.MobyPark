@@ -79,8 +79,10 @@ public static class CPayment
             return Results.BadRequest("Require field missing");
         }
 
-        int parkingLotID = 0; // to be implemented
-        int sessionID = 0; // to be implemented
+        Session CurrentSession = CDatabase.GetSessionFormUser(session.UserID);
+
+        int parkingLotID = CurrentSession.ParkingLotId;
+        int sessionID = CurrentSession.ID; 
         
         // add payment creation logic here
         string transactiondone = CDatabase.AddPaymentTransaction(
@@ -91,9 +93,8 @@ public static class CPayment
             amount, 
             "Unknown", // method is not provided in the request, assuming a default value of "Unknown"
             "Unknown", // issuer is not provided in the request, assuming a default value of "
-            "Unknown",  // bank is not provided in the request, assuming a default value of "Unknown"
-            session.CreateDateTime, 
-            session.CreateDateTime);
+            "Unknown" // bank is not provided in the request, assuming a default value of "Unknown"
+            );
 
         return Results.Ok();
     }
@@ -123,8 +124,11 @@ public static class CPayment
             return Results.BadRequest("Require field missing");
         }
         
-        int parkingLotID = 0; // to be implemented
-        int sessionID = 0; // to be implemented
+        Session CurrentSession = CDatabase.GetSessionFormUser(session.UserID);
+
+        int parkingLotID = CurrentSession.ParkingLotId;
+        int sessionID = CurrentSession.ID; 
+
         string transaction = $"Refund {session.UserID}"; // to be implemented
 
         // add payment creation logic here
@@ -136,10 +140,8 @@ public static class CPayment
             amount, 
             "Unknown", // method is not provided in the request, assuming a default value of "Unknown"
             "Unknown", // issuer is not provided in the request, assuming a default value of "
-            "Unknown",  // bank is not provided in the request, assuming a default value of "Unknown"
-            session.CreateDateTime, 
-            session.CreateDateTime);
-
+            "Unknown"  // bank is not provided in the request, assuming a default value of "Unknown"
+            );
         return Results.Ok();
     }
 }
