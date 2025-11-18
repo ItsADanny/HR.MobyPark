@@ -1,18 +1,21 @@
 using System.Data;
 using System.Net.Cache;
+using System.Reflection.Metadata.Ecma335;
 
 public static class CReservation
 {
 
     //POST
-    public static string CreateReservation(HttpRequest request, string token)
+    public static string CreateReservation(HttpRequest request)
     {
-        // check of er wel iets van een token bestaat, deze method moet nog in CDatabase komen
+
+        string ?token = request.Headers["Authorization"].FirstOrDefault();
         if (!ValidateToken(token))
         {
             return "Invalid session token";
         }
         
+
         string? userIdstr = request.Query["UserId"];
         string? parkingLotIdstr = request.Query["ParkingLotId"];
         string? vehicleIdstr = request.Query["VehicleId"];
@@ -182,14 +185,52 @@ public static class CReservation
         return true;
     }
 
-    public static bool ValidateToken(string token) //hier moeten meer checks komen
+    public static bool ValidateToken(string token)
     {
-        if (string.IsNullOrWhiteSpace(token))
+        if (string.IsNullOrWhiteSpace(token) || Auth.GetUserSession(token) == null)
         {
             return false;
         }
         return true;
     }
+
+    // public int GetUserIdFromToken(string token)
+    // {
+    //     UserSession userSession = Auth.GetUserSession(token);
+    //     if (userSession != null)
+    //     {
+    //         return userSession.UserId;
+    //     }
+    //     return -1; 
+    // }
+    
+    public bool IsUserOwner(int userId, int reservationId)
+    {
+        Reservation reservation = CDatabaseReservation.GetReservationById(reservationId);
+        if(reservation != null && reservation.UserId == userId)
+        {
+            return true;
+        }
+        return false;
+    }
+    public static bool CheckIfAdminWithToken(string token)
+    {
+        UserSession userSession = Auth.GetUserSession(token);
+        if (userSession == null)
+        {
+            return false;
+        }
+
+        int userId = userSession(token);
+
+        if(CDatabase.IsUserAdmin(userId))
+        {
+            return true;
+        }
+        return false;
+
+    }
+
 
 
 }
