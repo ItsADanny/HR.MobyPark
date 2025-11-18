@@ -22,7 +22,7 @@ public static class CDatabaseReservation
         return rowsAffected > 0; 
     }
 
-    public static bool UpdateReservation(int reservationId, int parkingLotId, int vehicleId, DateTime startTime, DateTime endTime, decimal amount)
+    public static bool UpdateReservation(int reservationId, DateTime startTime, DateTime endTime, string status)
     {
 
         // Database Database = new Database();
@@ -38,7 +38,7 @@ public static class CDatabaseReservation
 
         conn.Open();
 
-        string Query = $"UPDATE Reservations SET ParkingLotId = {parkingLotId}, VehicleId = {vehicleId}, StartTime = '{startTime:yyyy-MM-dd HH:mm}', EndTime = '{endTime:yyyy-MM-dd HH:mm}', Amount = {amount} WHERE ID = {reservationId}";
+        string Query = $"UPDATE Reservations SET StartDateTime = '{startTime:yyyy-MM-dd HH:mm}', EndDateTime = '{endTime:yyyy-MM-dd HH:mm}', Status = '{status}' WHERE ID = {reservationId}";
 
         cmd.Connection = conn;
         cmd.CommandText = Query;

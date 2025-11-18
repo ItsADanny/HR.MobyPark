@@ -53,8 +53,9 @@ public static class CReservation
 
     //PUT
 
-    public static string UpdateReservation(HttpRequest request, string token)
+    public static string UpdateReservation(HttpRequest request)
     {
+        string token = request.Headers["Authorization"].FirstOrDefault()!;
         // if (string.IsNullOrWhiteSpace(token) || !CDatabase.SessionExists(token))
         if (!ValidateToken(token))
         {
@@ -72,16 +73,17 @@ public static class CReservation
             return $"Reservation with ID {reservationIdstr} does not exist";
         }
 
+        //hier moet eigenlijk nog komen WAT er gewijzigt moet worden. 
+        //Nu kan alles geupdate worden, maar voor user en admin moet alleen starttime endtime en status.
 
-
-
-        string? parkingLotIdstr = request.Query["ParkingLotId"];
-        string? vehicleIdstr = request.Query["VehicleId"];
+        // string? parkingLotIdstr = request.Query["ParkingLotId"];
+        // string? vehicleIdstr = request.Query["VehicleId"];
         string? startTimestr = request.Query["StartTime"];
         string? endTimestr = request.Query["EndTime"];
-        string? amountstr = request.Query["Amount"];
+        // string? amountstr = request.Query["Amount"];
+        string? status = request.Query["Status"];
 
-        if (ValidateReservation(parkingLotIdstr, vehicleIdstr, startTimestr, endTimestr, amountstr) == false)
+        if (ValidateReservation(startTimestr, endTimestr, status) == false)
         {
             return "Reservation data invalid due to missing field(s)";
         }
@@ -89,15 +91,21 @@ public static class CReservation
 
 
         int reservationId = int.Parse(reservationIdstr);
-        int parkingLotId = int.Parse(parkingLotIdstr);
-        int vehicleId = int.Parse(vehicleIdstr);
+        // int parkingLotId = int.Parse(parkingLotIdstr);
+        // int vehicleId = int.Parse(vehicleIdstr);
         DateTime startTime = DateTime.ParseExact(startTimestr, "dd-MM-yyyy HH:mm", null);
         DateTime endTime = DateTime.ParseExact(endTimestr, "dd-MM-yyyy HH:mm", null);
-        decimal Amount = decimal.Parse(amountstr);
-
+        // decimal Amount = decimal.Parse(amountstr);
         // int userId = CDatabaseReservation.GetUserIdFromToken(token);
 
-        bool reservationUpdated = CDatabaseReservation.UpdateReservation(reservationId, parkingLotId, vehicleId, startTime, endTime, Amount);
+        if(IsUserOwner(CDatabase.GetUserIdFromToken(token), reservationId) == false && !CReservation.CheckIfAdminWithToken(token))
+        {
+            return "User is not authorized to update this reservation";
+        }
+
+
+        bool reservationUpdated = CDatabaseReservation.UpdateReservation(reservationId, startTime, endTime, status);
+
 
 
         if (reservationUpdated)
@@ -112,13 +120,16 @@ public static class CReservation
     
     //GET
 
-    public static string GetReservation(HttpRequest request, string token)
+    public static string GetReservation(HttpRequest request)
     {
-
+        string token = request.Headers["Authorization"].FirstOrDefault()!;
         if(!ValidateToken(token))
         {
             return "Invalid session token";
         }
+
+
+
         string? reservationIdStr = request.Query["Id"];
         string? userId = request.Query["UserId"];
         
@@ -146,8 +157,9 @@ public static class CReservation
     }
 
     //DELETE
-    public static string DeleteReservation(HttpRequest request, string token)
+    public static string DeleteReservation(HttpRequest request)
     {
+        string token = request.Headers["Authorization"].FirstOrDefault()!;
         if(!ValidateToken(token))
         {
             return "Invalid session token";
@@ -162,6 +174,14 @@ public static class CReservation
         {
             return $"Reservation with ID {reservationIdStr} does not exist";
         }
+
+
+        int userId = CDatabase.GetUserIdFromToken(token);
+
+        if(!CReservation.CheckIfAdmin(userId) && !CReservation.CheckIfOwner(userId, int.Parse(reservationIdStr)))
+        {
+            return "User is not authorized to delete this reservation";
+        }
         bool isDeleted = CDatabaseReservation.DeleteReservation(int.Parse(reservationIdStr));
         if(isDeleted)
         {
@@ -172,13 +192,29 @@ public static class CReservation
             return $"Failed to delete reservation with ID {reservationIdStr}";
         }
     }
-    public static bool ValidateReservation(string parkingLotId, string vehicleId, string startTime, string endTime, string Amount)
+    public static bool ValidateReservation(string startTime, string endTime, string Status)
     {
-        if (string.IsNullOrWhiteSpace(parkingLotId) ||
-            string.IsNullOrWhiteSpace(vehicleId) ||
+        if (
+            // string.IsNullOrWhiteSpace(parkingLotId) ||
+            // string.IsNullOrWhiteSpace(vehicleId) ||
             string.IsNullOrWhiteSpace(startTime) ||
             string.IsNullOrWhiteSpace(endTime) ||
-            string.IsNullOrWhiteSpace(Amount))
+            // string.IsNullOrWhiteSpace(Amount))
+            string.IsNullOrWhiteSpace(Status))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public static bool ValidateReservation(string parkingLotIdstr, string vehicleIdstr, string startTimestr, string endTimestr, string amountstr)
+    {
+        if (
+            string.IsNullOrWhiteSpace(parkingLotIdstr) ||
+            string.IsNullOrWhiteSpace(vehicleIdstr) ||
+            string.IsNullOrWhiteSpace(startTimestr) ||
+            string.IsNullOrWhiteSpace(endTimestr) ||
+            string.IsNullOrWhiteSpace(amountstr))
         {
             return false;
         }
