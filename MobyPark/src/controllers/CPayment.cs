@@ -144,4 +144,43 @@ public static class CPayment
             );
         return Results.Ok();
     }
+
+    public static IResult ChangeTransaction(HttpRequest request)
+    {
+        int transactionid = int.Parse((string)request.RouteValues["id"]);
+        string token = request.Headers["Authorization"].FirstOrDefault();
+        int amount = int.Parse(request.Query["amount"]);
+        DateTime date = DateTime.TryParse(request.Query["date"], out DateTime parsedDate) ? parsedDate : default;
+        string method = request.Query["method"];
+        string issuer = request.Query["issuer"];
+        string bank = request.Query["bank"];
+        int session_id = int.Parse(request.Query["session_id"]);
+        int parking_lot_id = int.Parse(request.Query["parking_lot_id"]);
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return Results.Unauthorized();
+        }
+
+        UserSession session = Auth.GetUserSession(null, token);
+        if (session == null)
+        {
+            return Results.NotFound("Session not found");
+        }
+
+        if(amount <= 0 || date == default || string.IsNullOrEmpty(method) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(bank) || session_id <= 0 || parking_lot_id <= 0)
+        {
+            return Results.BadRequest("Require field missing");
+        }
+
+        bool isInDB = CDatabase.IsPaymentInDB(transactionid);
+        if (!isInDB)
+        {
+            return Results.NotFound("Payment not found");
+        }
+        CDatabase.UpdatePaymentTransaction(transactionid, amount, date, method, issuer, bank, session_id, parking_lot_id);
+
+
+        return Results.Ok();
+    }
 }

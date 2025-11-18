@@ -309,4 +309,55 @@ public static class CDatabase
             return null;
         }
     }
+
+    internal static bool IsPaymentInDB(int transactionid)
+    {
+       try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT COUNT(*) FROM Transaction WHERE transactionID = @transactionid";
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@transactionid", transactionid);
+
+            int count = Convert.ToInt32(cmd.ExecuteScalar());
+            return count > 0;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    internal static void UpdatePaymentTransaction(int transactionid, int amount, DateTime date, string method, string issuer, string bank, int session_id, int parking_lot_id)
+    {
+        try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE Transaction 
+                SET Amount = @amount, Date = @date, Method = @method, Issuer = @issuer, Bank = @bank, SessionID = @session_id, ParkingLotID = @parking_lot_id, UpdatedDateTime = @updatedDateTime
+                WHERE TransactionID = @transactionid";
+
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@amount", amount);
+            cmd.Parameters.AddWithValue("@date", date);
+            cmd.Parameters.AddWithValue("@method", method);
+            cmd.Parameters.AddWithValue("@issuer", issuer);
+            cmd.Parameters.AddWithValue("@bank", bank);
+            cmd.Parameters.AddWithValue("@session_id", session_id);
+            cmd.Parameters.AddWithValue("@parking_lot_id", parking_lot_id);
+            cmd.Parameters.AddWithValue("@updatedDateTime", DateTime.Now);
+            cmd.Parameters.AddWithValue("@transactionid", transactionid);
+
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception)
+        {
+            // Handle exception
+        }
+    }
 }
