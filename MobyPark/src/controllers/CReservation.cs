@@ -12,11 +12,10 @@ public static class CReservation
         string ?token = request.Headers["Authorization"].FirstOrDefault();
         if (!ValidateToken(token))
         {
-            return "Invalid session token";
+            return "Unauthorized: Invalid or missing session token";
         }
-        
 
-        string? userIdstr = request.Query["UserId"];
+        // string? userIdstr = request.Query["UserId"];
         string? parkingLotIdstr = request.Query["ParkingLotId"];
         string? vehicleIdstr = request.Query["VehicleId"];
         string? startTimestr = request.Query["StartTime"];
@@ -28,15 +27,25 @@ public static class CReservation
             return "Reservation data invalid due to missing field(s)";
         }
 
+        //this only to convert everything to the right datatype
         int parkingLotId = int.Parse(parkingLotIdstr);
         int vehicleId = int.Parse(vehicleIdstr);
         DateTime startTime = DateTime.ParseExact(startTimestr, "dd-MM-yyyy HH:mm", null);
         DateTime endTime = DateTime.ParseExact(endTimestr, "dd-MM-yyyy HH:mm", null);
         decimal Amount = decimal.Parse(amountstr);
 
-        // int userId = CDatabaseReservation.GetUserIdFromToken(token);
-        int userId = int.Parse(userIdstr!);
+        if(!CDatabaseReservation.ParkingLotExists(parkingLotId))
+        {
+            return $"error: Parking lot not found with ID {parkingLotId}";
+        }
 
+        int userId = CDatabaseReservation.GetUserIdFromToken(token);
+        
+        
+        if(CReservation.CarAlreadyParked(vehicleId))
+        {
+            return "The vehicle is already parked in this parking lot.";
+        }
         bool saveSatatus = CDatabaseReservation.SaveReservation(userId, parkingLotId, vehicleId, startTime, endTime, Amount);
 
         if (saveSatatus)
@@ -44,15 +53,9 @@ public static class CReservation
             return $"Reservation created successfully";
         }
         return $"Failed to create reservation";
-
-
-
-        //Nog toe te voegen:
-        //Python: if the session user is an admin, they can specify the user for the reservation.
     }
 
     //PUT
-
     public static string UpdateReservation(HttpRequest request)
     {
         string token = request.Headers["Authorization"].FirstOrDefault()!;
@@ -98,7 +101,7 @@ public static class CReservation
         // decimal Amount = decimal.Parse(amountstr);
         // int userId = CDatabaseReservation.GetUserIdFromToken(token);
 
-        if(IsUserOwner(CDatabase.GetUserIdFromToken(token), reservationId) == false && !CReservation.CheckIfAdminWithToken(token))
+        if(IsUserOwner(CDatabaseReservation.GetUserIdFromToken(token), reservationId) == false && !CReservation.CheckIfAdminWithToken(token))
         {
             return "User is not authorized to update this reservation";
         }
@@ -117,9 +120,8 @@ public static class CReservation
             return $"Failed to update reservation with ID {reservationId}";
         }
     }
-    
-    //GET
 
+    //GET
     public static string GetReservation(HttpRequest request)
     {
         string token = request.Headers["Authorization"].FirstOrDefault()!;
@@ -131,17 +133,13 @@ public static class CReservation
 
 
         string? reservationIdStr = request.Query["Id"];
-        string? userId = request.Query["UserId"];
         
-        //hier moet nog een token check komen
         if (string.IsNullOrWhiteSpace(reservationIdStr))
         {
             return "Reservation ID is missing";
         }
 
-
-        //deze onderste methods moeten nog bestaan. Het checks of de user admin is of de eigenaar van de reservation
-        if(!CReservation.CheckIfAdmin(int.Parse(userId)) || !CReservation.CheckIfOwner(int.Parse(userId), int.Parse(reservationIdStr)))
+        if(!CReservation.CheckIfAdminWithToken(token) && !CReservation.IsUserOwner(CDatabaseReservation.GetUserIdFromToken(token), int.Parse(reservationIdStr)))
         {
             return "User is not authorized to view this reservation";
         }
@@ -176,9 +174,9 @@ public static class CReservation
         }
 
 
-        int userId = CDatabase.GetUserIdFromToken(token);
+        int userId = CDatabaseReservation.GetUserIdFromToken(token);
 
-        if(!CReservation.CheckIfAdmin(userId) && !CReservation.CheckIfOwner(userId, int.Parse(reservationIdStr)))
+        if(!CReservation.CheckIfAdminWithToken(token) && !CReservation.IsUserOwner(userId, int.Parse(reservationIdStr)))
         {
             return "User is not authorized to delete this reservation";
         }
@@ -240,7 +238,7 @@ public static class CReservation
     //     return -1; 
     // }
     
-    public bool IsUserOwner(int userId, int reservationId)
+    public static bool IsUserOwner(int userId, int reservationId)
     {
         Reservation reservation = CDatabaseReservation.GetReservationById(reservationId);
         if(reservation != null && reservation.UserId == userId)
@@ -267,7 +265,25 @@ public static class CReservation
 
     }
 
+    public static bool CarAlreadyParked(int vehicleId)
+    {
+        MySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlCommand cmd = new MySqlCommand();
 
+        conn.Open();
+        string query = $"SELECT COUNT(*) FROM Reservations WHERE VehicleId = {vehicleId} AND Status = 'Active'";
+
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+        int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+        conn.Close();
+        if (count > 0)
+        {
+            return true;
+        }
+        return false;
+    }
 
 }
 

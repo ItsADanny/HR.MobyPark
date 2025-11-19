@@ -146,4 +146,47 @@ public static class CDatabaseReservation
 
         
     }
+
+    public static bool ParkingLotExists(int parkingLotId)
+    {
+        mySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        string query = $"SELECT COUNT(*) FROM ParkingsLots WHERE ID = {parkingLotId}";
+        
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+
+        int count = Convert.ToInt32(cmd.ExecuteScalar());
+        conn.Close();
+
+        if(count > 0)
+        {
+            return true;
+        }
+        return false;
+
+    }
+
+
+    public static int GetReservationWithToken(string token)
+    {
+        int userId = GetUserIdFromToken(token);
+        MySqlConnection conn = new MySqlConnection(connectionString);
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        string query = $"SELECT ID FROM Reservations WHERE UserID = {userId}";
+
+        cmd.Connection = conn;
+        cmd.CommandText = query;
+
+        int reservationId = Convert.ToInt32(cmd.ExecuteScalar());
+        conn.Close();
+
+        return reservationId;
+    }
+
 }
+    
