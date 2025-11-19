@@ -211,7 +211,7 @@ public static class CDatabase
                     Issuer = reader["Issuer"].ToString(),
                     Bank = reader["Bank"].ToString(),
                     Hash = reader["Hash"].ToString(),
-                    CompletedDateTime = reader["CompletedDateTime"] != DBNull.Value ? Convert.ToDateTime(reader["CompletedDateTime"]) : null,
+                    CompletedDateTime = reader["CompletedDateTime"] != DBNull.Value ? Convert.ToDateTime(reader["CompletedDateTime"]) : DateTime.MinValue,
                     CreatedDateTime = Convert.ToDateTime(reader["CreatedDateTime"]),
                     UpdatedDateTime = Convert.ToDateTime(reader["UpdatedDateTime"])
                 };
@@ -310,7 +310,7 @@ public static class CDatabase
         }
     }
 
-    internal static bool IsPaymentInDB(int transactionid)
+    public static bool IsPaymentInDB(int transactionid)
     {
        try
         {
@@ -330,7 +330,7 @@ public static class CDatabase
         }
     }
 
-    internal static void UpdatePaymentTransaction(int transactionid, int amount, DateTime date, string method, string issuer, string bank, int session_id, int parking_lot_id)
+    public static void UpdatePaymentTransaction(int transactionid, int amount, DateTime date, string method, string issuer, string bank, int session_id, int parking_lot_id)
     {
         try
         {
