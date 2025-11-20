@@ -75,6 +75,7 @@ public static class CParkingLot
 
     private static void ValidateToken(HttpRequest request)
     {
+        string token = request.Headers["Authorization"].FirstOrDefault();
         if (string.IsNullOrWhiteSpace(token))
             throw new UnauthorizedAccessException("Missing or invalid Authorization token.");
     }
