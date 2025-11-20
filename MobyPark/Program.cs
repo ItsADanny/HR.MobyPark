@@ -34,9 +34,19 @@ app.MapPost("/login", () =>
 
 app.MapGet("/logout", () =>
 {
-    
+
 })
 .WithName("GetLogout");
+
+app.MapPost("/reservation", (HttpRequest request) =>
+{
+    return CReservation.CreateReservation(request);
+}).WithName("PostReservation");
+
+app.MapPut("/Reservation", (HttpRequest request) =>
+{
+    return CReservation.UpdateReservation(request);
+}).WithName("PutReservation");
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 Log.WriteLine($"Server started, Listening to port: {port}");

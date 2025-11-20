@@ -1,3 +1,5 @@
+using Newtonsoft.Json.Linq;
+
 public class Reservation : iToTransform
 {
     public int Id { get; set; }
@@ -11,5 +13,28 @@ public class Reservation : iToTransform
 
     // public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+    public JObject ToJSON()
+    {
+        JObject reservation = new JObject
+        {
+            { "Id", Id },
+            { "UserId", UserId },
+            { "ParkingLotId", ParkingLotId },
+            { "VehicleId", VehicleId },
+            { "StartTime", StartTime },
+            { "EndTime", EndTime },
+            { "Status", Status },
+            { "Amount", Amount }
+        };
+        return reservation;
+    }
+    public string ToSQLInString()
+    {
+        return null;
+    }
+    public string ToSQLUpString()
+    {
+        return null;
+    }
 
 }
