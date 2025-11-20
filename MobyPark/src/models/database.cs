@@ -1,6 +1,7 @@
 public class Database
 {
     public string HST { get; set; }
+    public string PRT { get; set; }
     public string USR { get; set; }
     public string PSW { get; set; }
     public string DBL { get; set; }
@@ -11,6 +12,6 @@ public class Database
         {
             throw new NullReferenceException("All database secrets must be filled!");
         }
-        return $"server={HST};uid={USR};pwd={PSW};database={DBL}";
+        return $"server={HST};port={PRT};uid={USR};pwd={PSW};database={DBL}";
     }
 }
