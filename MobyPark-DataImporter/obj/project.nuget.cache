@@ -1,12 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "PkySXZC+ikE=",
+  "dgSpecHash": "0UzmdE7TbYo=",
   "success": true,
-  "projectFilePath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/MobyPark-DataImporter/MobyPark-DataImporter.csproj",
-  "expectedPackageFiles": [
-    "/Users/dannydesnoo/.nuget/packages/microsoft.netcore.app.ref/9.0.11/microsoft.netcore.app.ref.9.0.11.nupkg.sha512",
-    "/Users/dannydesnoo/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.11/microsoft.aspnetcore.app.ref.9.0.11.nupkg.sha512",
-    "/Users/dannydesnoo/.nuget/packages/microsoft.netcore.app.host.osx-arm64/9.0.11/microsoft.netcore.app.host.osx-arm64.9.0.11.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\MobyPark-DataImporter\\MobyPark-DataImporter.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }

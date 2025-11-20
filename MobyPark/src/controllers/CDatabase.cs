@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using MySql.Data.MySqlClient;
 
 public static class CDatabase
@@ -189,7 +190,7 @@ public static class CDatabase
             using MySqlConnection conn = new MySqlConnection(connectionString);
             conn.Open();
             
-            string query = "SELECT * FROM Transaction WHERE  UserID = @userId";
+            string query = "SELECT * FROM Transaction WHERE UserID = @userId";
             using MySqlCommand cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@userId", userId);
             
@@ -210,7 +211,7 @@ public static class CDatabase
                     Issuer = reader["Issuer"].ToString(),
                     Bank = reader["Bank"].ToString(),
                     Hash = reader["Hash"].ToString(),
-                    CompletedDateTime = reader["CompletedDateTime"] != DBNull.Value ? Convert.ToDateTime(reader["CompletedDateTime"]) : null,
+                    CompletedDateTime = reader["CompletedDateTime"] != DBNull.Value ? Convert.ToDateTime(reader["CompletedDateTime"]) : DateTime.MinValue,
                     CreatedDateTime = Convert.ToDateTime(reader["CreatedDateTime"]),
                     UpdatedDateTime = Convert.ToDateTime(reader["UpdatedDateTime"])
                 };
@@ -223,5 +224,140 @@ public static class CDatabase
             return null;
         }
     }
-    
+    public static Session GetSessionFormUser(int userID)
+    {
+        try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT * FROM Sessions WHERE UserID = @userID";
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@userID", userID);
+
+            using MySqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                return new Session
+                {
+                    ID = Convert.ToInt32(reader["ID"]),
+                    ParkingLotId = Convert.ToInt32(reader["ParkingLotID"]),
+                    LicensePlate = reader["LicensePlate"].ToString(),
+                    VehicleID = Convert.ToInt32(reader["VehicleID"]),
+                    UserID = Convert.ToInt32(reader["UserID"]),
+                    StartDateTime = Convert.ToDateTime(reader["StartDateTime"]),
+                    EndDateTime = Convert.ToDateTime(reader["EndDateTime"]),
+                    Duration = Convert.ToInt32(reader["Duration"]),
+                    Amount = Convert.ToDouble(reader["Amount"]),
+                    PaymentStatus = reader["PaymentStatus"].ToString(),
+                    CreateDateTime = Convert.ToDateTime(reader["CreatedDateTime"]),
+                    UpdateDateTime = Convert.ToDateTime(reader["UpdatedDateTime"])
+                };
+            }
+
+            return null;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    public static string AddPaymentTransaction(
+        string transactionID,
+        int parkingLotID,
+        int sessionID,
+        int userID, 
+        decimal amount,
+        string method,
+        string issuer,
+        string bank)
+        {
+        try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                INSERT INTO Transaction 
+                (TransactionID, ParkingLotID, SessionID, UserID, Amount, Date, Method, Issuer, Bank, Hash, CompletedDateTime, CreatedDateTime, UpdatedDateTime)
+                VALUES 
+                (@transactionID, @parkingLotID, @sessionID, @userID, @amount, @date, @method, @issuer, @bank, @hash, @CompletedDateTime, @createdDateTime, @updatedDateTime)";
+
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@transactionID", transactionID);
+            cmd.Parameters.AddWithValue("@parkingLotID", parkingLotID);
+            cmd.Parameters.AddWithValue("@sessionID", sessionID);
+            cmd.Parameters.AddWithValue("@userID", userID);
+            cmd.Parameters.AddWithValue("@amount", amount);
+            cmd.Parameters.AddWithValue("@date", DateTime.Now);
+            cmd.Parameters.AddWithValue("@method", method);
+            cmd.Parameters.AddWithValue("@issuer", issuer);
+            cmd.Parameters.AddWithValue("@bank", bank);
+            cmd.Parameters.AddWithValue("@hash", "");// to be implemented
+            cmd.Parameters.AddWithValue("@CompletedDateTime", DateTime.MinValue);
+            cmd.Parameters.AddWithValue("@createdDateTime", DateTime.Now);
+            cmd.Parameters.AddWithValue("@updatedDateTime", DateTime.MinValue);
+
+            int rowsAffected = cmd.ExecuteNonQuery();
+            
+            return rowsAffected > 0 ? transactionID : null;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
+    public static bool IsPaymentInDB(int transactionid)
+    {
+       try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = "SELECT COUNT(*) FROM Transaction WHERE transactionID = @transactionid";
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@transactionid", transactionid);
+
+            int count = Convert.ToInt32(cmd.ExecuteScalar());
+            return count > 0;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    public static void UpdatePaymentTransaction(int transactionid, int amount, DateTime date, string method, string issuer, string bank, int session_id, int parking_lot_id)
+    {
+        try
+        {
+            using MySqlConnection conn = new MySqlConnection(connectionString);
+            conn.Open();
+
+            string query = @"
+                UPDATE Transaction 
+                SET Amount = @amount, Date = @date, Method = @method, Issuer = @issuer, Bank = @bank, SessionID = @session_id, ParkingLotID = @parking_lot_id, UpdatedDateTime = @updatedDateTime
+                WHERE TransactionID = @transactionid";
+
+            using MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@amount", amount);
+            cmd.Parameters.AddWithValue("@date", date);
+            cmd.Parameters.AddWithValue("@method", method);
+            cmd.Parameters.AddWithValue("@issuer", issuer);
+            cmd.Parameters.AddWithValue("@bank", bank);
+            cmd.Parameters.AddWithValue("@session_id", session_id);
+            cmd.Parameters.AddWithValue("@parking_lot_id", parking_lot_id);
+            cmd.Parameters.AddWithValue("@updatedDateTime", DateTime.Now);
+            cmd.Parameters.AddWithValue("@transactionid", transactionid);
+
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception)
+        {
+            // Handle exception
+        }
+    }
 }

@@ -57,26 +57,130 @@ public static class CPayment
         return Results.Ok(payment);
     }
 
-    // public static IResult CreatePayment(HttpRequest request)
-    // {
-    //     string token = request.Headers["Authorization"].FirstOrDefault();
-    //     string transaction = request.Query["transaction"];
-    //     int amount = int.Parse(request.Query["amount"]);
+    public static IResult CreatePayment(HttpRequest request)
+    {
+        string token = request.Headers["Authorization"].FirstOrDefault();
+        string transaction = request.Query["Transaction"];
+        int amount = int.Parse(request.Query["Amount"]);
 
-    //     if (string.IsNullOrEmpty(token)|| string.IsNullOrEmpty(transaction) || amount <= 0)
-    //     {
-    //         return Results.Unauthorized();
-    //     }
+        if (string.IsNullOrEmpty(token))
+        {
+            return Results.Unauthorized();
+        }
 
-    //     UserSession session = Auth.GetUserSession(null, token);
-    //     if (session == null)
-    //     {
-    //         return Results.NotFound("Session not found");
-    //     }
+        UserSession session = Auth.GetUserSession(null, token);
+        if (session == null)
+        {
+            return Results.NotFound("Session not found");
+        }
+
+        if (string.IsNullOrEmpty(transaction) || amount <= 0)
+        {
+            return Results.BadRequest("Require field missing");
+        }
+
+        Session CurrentSession = CDatabase.GetSessionFormUser(session.UserID);
+
+        int parkingLotID = CurrentSession.ParkingLotId;
+        int sessionID = CurrentSession.ID; 
         
-    //     // add payment creation logic here
-    //     string transactiondone = AddPaymentTransaction(session.UserID, transaction, amount);
+        // add payment creation logic here
+        string transactiondone = CDatabase.AddPaymentTransaction(
+            transaction, 
+            parkingLotID,
+            sessionID,
+            session.UserID, 
+            amount, 
+            "Unknown", // method is not provided in the request, assuming a default value of "Unknown"
+            "Unknown", // issuer is not provided in the request, assuming a default value of "
+            "Unknown" // bank is not provided in the request, assuming a default value of "Unknown"
+            );
 
-    //     return Results.Ok();
-    // }
+        return Results.Ok();
+    }
+
+    public static IResult Refund(HttpRequest request)
+    {
+        string token = request.Headers["Authorization"].FirstOrDefault();
+        int amount = int.Parse(request.Query["Amount"]);
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return Results.Unauthorized();
+        }
+
+        UserSession session = Auth.GetUserSession(null, token);
+        if (session == null)
+        {
+            return Results.NotFound("Session not found");
+        }
+
+        if (!CDatabase.IsUserAdmin(session.UserID))
+        {
+            return Results.Unauthorized();
+        }
+        if (amount <= 0)
+        {
+            return Results.BadRequest("Require field missing");
+        }
+        
+        Session CurrentSession = CDatabase.GetSessionFormUser(session.UserID);
+
+        int parkingLotID = CurrentSession.ParkingLotId;
+        int sessionID = CurrentSession.ID; 
+
+        string transaction = $"Refund {session.UserID}"; // to be implemented
+
+        // add payment creation logic here
+        string transactiondone = CDatabase.AddPaymentTransaction(
+            transaction, 
+            parkingLotID,
+            sessionID,
+            session.UserID, 
+            amount, 
+            "Unknown", // method is not provided in the request, assuming a default value of "Unknown"
+            "Unknown", // issuer is not provided in the request, assuming a default value of "
+            "Unknown"  // bank is not provided in the request, assuming a default value of "Unknown"
+            );
+        return Results.Ok();
+    }
+
+    public static IResult ChangeTransaction(HttpRequest request)
+    {
+        int transactionid = int.Parse((string)request.RouteValues["id"]);
+        string token = request.Headers["Authorization"].FirstOrDefault();
+        int amount = int.Parse(request.Query["amount"]);
+        DateTime date = DateTime.TryParse(request.Query["date"], out DateTime parsedDate) ? parsedDate : default;
+        string method = request.Query["method"];
+        string issuer = request.Query["issuer"];
+        string bank = request.Query["bank"];
+        int session_id = int.Parse(request.Query["session_id"]);
+        int parking_lot_id = int.Parse(request.Query["parking_lot_id"]);
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return Results.Unauthorized();
+        }
+
+        UserSession session = Auth.GetUserSession(null, token);
+        if (session == null)
+        {
+            return Results.NotFound("Session not found");
+        }
+
+        if(amount <= 0 || date == default || string.IsNullOrEmpty(method) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(bank) || session_id <= 0 || parking_lot_id <= 0)
+        {
+            return Results.BadRequest("Require field missing");
+        }
+
+        bool isInDB = CDatabase.IsPaymentInDB(transactionid);
+        if (!isInDB)
+        {
+            return Results.NotFound("Payment not found");
+        }
+        CDatabase.UpdatePaymentTransaction(transactionid, amount, date, method, issuer, bank, session_id, parking_lot_id);
+
+
+        return Results.Ok();
+    }
 }
