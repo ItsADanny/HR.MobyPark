@@ -1,0 +1,105 @@
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+//This is added because it would otherwise interfere with the ControllerBase's User
+using MUser = User;
+
+[ApiController]
+// [Route("[controller]")]
+public class UserController : ControllerBase
+{
+    // ====================================================================================
+    // GET
+    // ====================================================================================
+    [HttpGet("logout")]
+    public ActionResult<string> logout([FromHeader] logoutDto logoutDto)
+    {
+        if (string.IsNullOrWhiteSpace(logoutDto.authorization)) return BadRequest("Missing session token");
+        if (!UserSession.SessionExist(logoutDto.authorization)) return Unauthorized("Session not found or expired");
+        if (UserSession.RemoveSession(logoutDto.authorization)) return Ok("Logout successful");
+        
+        return Problem("There was an problem while trying to log you out of the application, please try again later");
+    }
+
+    // ====================================================================================
+    // POST
+    // ====================================================================================
+    [HttpPost("register")]
+    public ActionResult<string> register([FromBody] registerDto registerDto)
+    {
+        if (MUser.DoesEmailExist(registerDto.email) && MUser.DoesUsernameExist(registerDto.username)) 
+            return Ok("Email & username already taken/used");
+        else if (MUser.DoesUsernameExist(registerDto.username)) return Ok("Username already taken");
+        else if (MUser.DoesEmailExist(registerDto.email)) return Ok("Email already used");
+        else
+        {
+            User newAccount = new()
+            {
+                Username = registerDto.username,
+                Name = registerDto.fullname,
+                Email = registerDto.email,
+                Phone = registerDto.phonenumber,
+                BirthDate = registerDto.birthdate
+            };
+
+            newAccount.SetPassword(registerDto.password);
+
+            if (newAccount.CreateDB())
+            {
+                return Created((string?)null, "User created");
+            }
+            return Problem("There was an error while trying to create a new account, please try again later");
+        }
+    }
+
+    [HttpPost("login")]
+    public ActionResult<string> login([FromBody] loginDto loginDto)
+    {
+        //See if the required data has been inputted to preform the user check
+        if (string.IsNullOrWhiteSpace(loginDto.username) || string.IsNullOrWhiteSpace(loginDto.password)) return BadRequest("Missing credentials");
+        
+        //Retriev user
+        User? foundUser = MUser.GetUserUsername(loginDto.username);
+
+        //If the foundUser is null, return the message "User not found"
+        if (foundUser is null) return BadRequest("User not found");
+
+        //Preform the check to see if the users password is valid
+        if (!foundUser.IsPasswordCorrect(loginDto.password))
+        {
+            if (foundUser.IsLegacyPassword(loginDto.password))
+            {
+                //Update the password in the user object
+                foundUser.UpdatePasswordFromLegacy(loginDto.password);
+                //Update DB and check if its successful, if not return an internal error
+                if (!foundUser.UpdateDB())
+                {
+                    return Problem("Internal password updating legacy account password, please contact support");
+                }
+            } 
+            else
+            {
+                return Unauthorized("Invalid credentials");
+            }
+        }
+
+        //Create a new session and if successful, return a login JSON
+        string? token = UserSession.CreateSession(foundUser);
+        if (token is not null)
+        {
+            JObject returnJSON = new JObject(
+                new JProperty("message", "User logged in"),
+                new JProperty("session_token", token)
+            );
+
+            return Ok(returnJSON.ToString());
+        }
+        //Otherwise, return a login error
+        return Problem("There was an problem while trying to login, please try again later");
+    }
+
+    [HttpPost("pinger")]
+    public ActionResult<string> pinger()
+    {
+        return Ok("ponger");
+    }
+}
