@@ -5,7 +5,7 @@ using MUser = User;
 
 [ApiController]
 // [Route("[controller]")]
-public class UserController : ControllerBase
+public class AuthController : ControllerBase
 {
     // ====================================================================================
     // GET
