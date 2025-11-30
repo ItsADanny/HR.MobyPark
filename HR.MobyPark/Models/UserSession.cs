@@ -1,12 +1,103 @@
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json.Linq;
 
-public class UserSession : aDatabase, iDatabase
+public class UserSession : aModel, iDatabase
 {
     public int ID { get; set; }
     public int UserID { get; set; }
     public string Token { get; set; }
     public DateTime CreateDateTime { get; set; }
     public DateTime UpdateDateTime { get; set; }
+
+    private UserSession(int userID, string token)
+    {
+        UserID = userID;
+        Token = token;
+    }
+
+    private UserSession(int id, int userID, string token, DateTime createDateTime, DateTime updateDateTime)
+    {
+        ID = id;
+        UserID = userID;
+        Token = token;
+        CreateDateTime = createDateTime;
+        UpdateDateTime = updateDateTime;
+    }
+
+    public static JObject ToJSON(UserSession userSession)
+    {
+        JObject returnValue = new()
+        {
+            new JProperty("id", userSession.ID),
+            new JProperty("userID", userSession.UserID),
+            new JProperty("token", userSession.Token),
+            new JProperty("createDateTime", userSession.CreateDateTime),
+            new JProperty("updateDateTime", userSession.UpdateDateTime)
+        };
+
+        return returnValue;
+    }
+
+    public static JArray ToJSON(List<UserSession> UserSession)
+    {
+        JArray returnValue = new();
+
+        foreach (UserSession userSession in UserSession)
+        {
+            returnValue.Add(ToJSON(userSession));
+        }
+
+        return returnValue;
+    }
+
+    public static UserSession? GetByID(int id)
+    {
+        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        cmd.Connection = conn;
+        cmd.CommandText = ToSelectByIDSQL(id);
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            UserSession returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString),
+                                 reader["Token"].ToString(), Convert.ToDateTime(reader["CreateDateTime"].ToString),
+                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+
+            conn.Close();
+            return returnValue;
+        }
+
+        conn.Close();
+        return null;
+    }
+
+    public static List<UserSession> GetAll()
+    {
+        List<UserSession> returnValue = [];
+
+        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        cmd.Connection = conn;
+        cmd.CommandText = ToSelectAllSQL();
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            UserSession newUserSession = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString),
+                                 reader["Token"].ToString(), Convert.ToDateTime(reader["CreateDateTime"].ToString),
+                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+
+            returnValue.Add(newUserSession);
+        }
+
+        conn.Close();
+        return returnValue;
+    }
 
     public static UserSession? GetUserSession(string authToken)
     {
@@ -21,14 +112,9 @@ public class UserSession : aDatabase, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
-            UserSession returnValue = new()
-            {
-                ID = Convert.ToInt32(reader["ID"].ToString()),
-                UserID = Convert.ToInt32(reader["UserID"].ToString()),
-                Token = reader["ID"].ToString(),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
-            };
+            UserSession returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString),
+                                 reader["Token"].ToString(), Convert.ToDateTime(reader["CreateDateTime"].ToString),
+                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString));
 
             conn.Close();
             return returnValue;
@@ -44,11 +130,7 @@ public class UserSession : aDatabase, iDatabase
         string newToken = Auth.GenAuthToken() + user.ID;
         
         //Create a new user session object
-        UserSession newUserSes = new()
-        {
-            UserID = user.ID,
-            Token = newToken
-        };
+        UserSession newUserSes = new(user.ID, newToken);
 
         if (newUserSes.CreateDB()) return newToken;
         return null;
@@ -73,4 +155,8 @@ public class UserSession : aDatabase, iDatabase
     public override string ToDeleteSQL() => $"DELETE FROM UserSessions WHERE ID = {ID}";
 
     public override string ToSelectSQL() => $"SELECT * FROM UserSessions WHERE ID = {ID}";
+
+    public static string ToSelectByIDSQL(int id) => $"SELECT * FROM UserSessions WHERE ID = {id}";
+
+    public static string ToSelectAllSQL() => "SELECT * FROM UserSessions";
 }

@@ -46,4 +46,8 @@ Log.WriteLine($"Server started, Listening to port: {port}");
 //==================================================================================================
 public record registerDto(string username, string password, string fullname, string email, string phonenumber, DateOnly birthdate);
 public record loginDto(string username, string password);
-public record logoutDto(string authorization);
+public record createPaymentDto(string transaction, decimal amount);
+public record paymentDto(decimal amount, DateOnly date, string method, string issuer, string bank, int sessionID, int parkingLotID);
+public record reservationDto(int userID, int parkingLotID, int vehicleID, DateTime startDateTime, DateTime endDateTime);
+public record updateReservationDto(DateTime startDateTime, DateTime endDateTime, string status);
+public record parkingLotDto(string name, string location, string address, int capacity, decimal tariff, decimal dayTariff, double lat, double lon);

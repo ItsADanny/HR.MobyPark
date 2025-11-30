@@ -1,5 +1,10 @@
-public abstract class aDatabase : iDatabase
+using Newtonsoft.Json.Linq;
+
+public abstract class aModel : iDatabase
 {
+    //IMPLEMENTATION OF THE INTERFACE iDatabase
+    //==============================================================================
+
     //Required to be implemented because these are model specific
     public abstract string ToInsertSQL();
 

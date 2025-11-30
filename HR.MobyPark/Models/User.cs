@@ -1,6 +1,7 @@
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json.Linq;
 
-public class User : aDatabase, iDatabase
+public class User : aModel, iDatabase
 {
     //Original fields on which this class is based
 
@@ -27,6 +28,118 @@ public class User : aDatabase, iDatabase
     public DateTime CreateDateTime { get; private set;}
     public DateTime UpdateDateTime { get; private set;}
 
+    public User(string username, string name, string email, string phonenumber, DateOnly birthDate)
+    {
+        Username = username;
+        _password = "";
+        Name = name;
+        Email = email;
+        Phone = phonenumber;
+        BirthDate = birthDate;
+    }
+
+    private User(int id, string username, string password, string name, string email, string phone, int roleID, DateOnly birthDate, bool active, DateTime createDateTime, DateTime updateDateTime)
+    {
+        ID = id;
+        Username = username;
+        _password = password;
+        Name = name;
+        Email = email;
+        Phone = phone;
+        Role = UserRole.GetByID(roleID);
+        BirthDate = birthDate;
+        Active = active;
+        CreateDateTime = createDateTime;
+        UpdateDateTime = updateDateTime;
+    }
+
+    public static JObject ToJSON(User user)
+    {
+        JObject returnValue = new()
+        {
+            new JProperty("id", user.ID),
+            new JProperty("username", user.Username),
+            new JProperty("name", user.Name),
+            new JProperty("email", user.Email),
+            new JProperty("phone", user.Phone),
+            new JProperty("birthdate", user.BirthDate),
+            new JProperty("roleID", user.Role.ID),
+            new JProperty("roleName", user.Role.Name),
+            new JProperty("active", user.Active),
+            new JProperty("createDateTime", user.CreateDateTime),
+            new JProperty("updateDateTime", user.UpdateDateTime)
+        };
+
+        return returnValue;
+    }
+
+    public static JArray ToJSON(List<User> users)
+    {
+        JArray returnValue = new();
+
+        foreach (User user in users)
+        {
+            returnValue.Add(ToJSON(user));
+        }
+
+        return returnValue;
+    }
+
+    public static User? GetByID(int id)
+    {
+        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        cmd.Connection = conn;
+        cmd.CommandText = ToSelectByIDSQL(id);
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            User returnValue = new (Convert.ToInt32(reader["ID"].ToString()), reader["Username"].ToString(), reader["Password"].ToString(),
+                                 reader["Name"].ToString(), reader["Email"].ToString(), reader["Phone"].ToString(),
+                                 Convert.ToInt32(reader["RoleID"].ToString()), DateOnly.FromDateTime(Convert.ToDateTime(reader["BirthDate"].ToString())),
+                                 GeneralMethods.IntToBool(Convert.ToInt32(reader["Active"].ToString())), Convert.ToDateTime(reader["CreateDateTime"].ToString()),
+                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+            );
+
+            conn.Close();
+            return returnValue;
+        }
+
+        conn.Close();
+        return null;
+    }
+
+    public static List<User> GetAll()
+    {
+        List<User> returnValue = [];
+
+        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        cmd.Connection = conn;
+        cmd.CommandText = ToSelectAllSQL();
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            User newUser = new (Convert.ToInt32(reader["ID"].ToString()), reader["Username"].ToString(), reader["Password"].ToString(),
+                                 reader["Name"].ToString(), reader["Email"].ToString(), reader["Phone"].ToString(),
+                                 Convert.ToInt32(reader["RoleID"].ToString()), DateOnly.FromDateTime(Convert.ToDateTime(reader["BirthDate"].ToString())),
+                                 GeneralMethods.IntToBool(Convert.ToInt32(reader["Active"].ToString())), Convert.ToDateTime(reader["CreateDateTime"].ToString()),
+                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+            );
+
+            returnValue.Add(newUser);
+        }
+
+        conn.Close();
+        return returnValue;
+    }
+
     //This method will simply return a true or false when checking the users password,
     //this will make sure that the password is never exposed or to be accessed outside of this class
     public bool IsPasswordCorrect(string guess, string salt) => Auth.Hash(guess, salt)[0] == _password;
@@ -41,7 +154,35 @@ public class User : aDatabase, iDatabase
         if (new UserSalt(ID, hashedPassword[1]).CreateDB()) UpdateDB();
     }
 
-    public void SetPassword(string password) => _password = password;
+    public void SetPassword(string password)
+    {
+        //Check to see if there is already a salt in the system for this user
+        //When a new account is created then their will not be a salt.
+        //EASY METHOD FOR SEEING IF WE ARE GOING TO UPDATE A PASSWORD
+        UserSalt? salt = UserSalt.GetSalt(ID);
+        if (salt is not null)
+        {
+            //Check to see if the update password isn't the same as the old password.
+            if (_password != Auth.Hash(password, salt.Salt)[0]) {
+                //If its not the same. update it.
+
+                //Create a new salt and hash the password
+                string[] hashedPasswordWithSalt = Auth.Hash(password);
+
+                //Update the new usersalt with the new salt
+                salt.Salt = hashedPasswordWithSalt[1];
+                salt.UpdateDB();
+
+                //Finally update the password
+                _password = hashedPasswordWithSalt[0];
+            }
+        }
+        else
+        {
+            _password = password;
+        }
+    }
+    // => _password = password;
 
     //Static methods
     public static bool DoesEmailExist(string email) => GetUserEmail(email) is not null ? true : false;
@@ -66,20 +207,13 @@ public class User : aDatabase, iDatabase
             MySqlDataReader reader = cmd.ExecuteReader();
             if (reader.Read())
             {
-                User user = new ()
-                {
-                    ID = Convert.ToInt32(reader["ID"].ToString()),
-                    Username = reader["Username"].ToString(),
-                    _password = reader["Password"].ToString(),
-                    Name = reader["Name"].ToString(),
-                    Email = reader["Email"].ToString(),
-                    Phone = reader["Phone"].ToString(),
-                    BirthDate = DateOnly.FromDateTime(Convert.ToDateTime(reader["BirthDate"].ToString())),
-                    Role = UserRole.GetUserRole(Convert.ToInt32(reader["RoleID"].ToString())),
-                    Active = GeneralMethods.IntToBool(Convert.ToInt32(reader["Active"].ToString())),
-                    CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                    UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
-                };
+                User user = new (Convert.ToInt32(reader["ID"].ToString()), reader["Username"].ToString(), reader["Password"].ToString(),
+                                 reader["Name"].ToString(), reader["Email"].ToString(), reader["Phone"].ToString(),
+                                 Convert.ToInt32(reader["RoleID"].ToString()), DateOnly.FromDateTime(Convert.ToDateTime(reader["BirthDate"].ToString())),
+                                 GeneralMethods.IntToBool(Convert.ToInt32(reader["Active"].ToString())), Convert.ToDateTime(reader["CreateDateTime"].ToString()),
+                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                );
+
                 conn.Close();
                 return user;
             }
@@ -119,4 +253,8 @@ public class User : aDatabase, iDatabase
         }
         return false;
     }
+
+    public static string ToSelectByIDSQL(int id) => $"SELECT * FROM Users WHERE ID = {id}";
+
+    public static string ToSelectAllSQL() => "SELECT * FROM Users";
 }

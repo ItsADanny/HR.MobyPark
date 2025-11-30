@@ -11,11 +11,11 @@ public class AuthController : ControllerBase
     // GET
     // ====================================================================================
     [HttpGet("logout")]
-    public ActionResult<string> logout([FromHeader] logoutDto logoutDto)
+    public ActionResult<string> logout([FromHeader(Name = "authorization")] string authorization)
     {
-        if (string.IsNullOrWhiteSpace(logoutDto.authorization)) return BadRequest("Missing session token");
-        if (!UserSession.SessionExist(logoutDto.authorization)) return Unauthorized("Session not found or expired");
-        if (UserSession.RemoveSession(logoutDto.authorization)) return Ok("Logout successful");
+        if (string.IsNullOrWhiteSpace(authorization)) return BadRequest("Missing session token");
+        if (!UserSession.SessionExist(authorization)) return Unauthorized("Session not found or expired");
+        if (UserSession.RemoveSession(authorization)) return Ok("Logout successful");
         
         return Problem("There was an problem while trying to log you out of the application, please try again later");
     }
@@ -32,15 +32,7 @@ public class AuthController : ControllerBase
         else if (MUser.DoesEmailExist(registerDto.email)) return Ok("Email already used");
         else
         {
-            User newAccount = new()
-            {
-                Username = registerDto.username,
-                Name = registerDto.fullname,
-                Email = registerDto.email,
-                Phone = registerDto.phonenumber,
-                BirthDate = registerDto.birthdate
-            };
-
+            User newAccount = new(registerDto.username, registerDto.fullname, registerDto.email, registerDto.phonenumber, registerDto.birthdate);
             newAccount.SetPassword(registerDto.password);
 
             if (newAccount.CreateDB())
@@ -95,11 +87,5 @@ public class AuthController : ControllerBase
         }
         //Otherwise, return a login error
         return Problem("There was an problem while trying to login, please try again later");
-    }
-
-    [HttpPost("pinger")]
-    public ActionResult<string> pinger()
-    {
-        return Ok("ponger");
     }
 }
