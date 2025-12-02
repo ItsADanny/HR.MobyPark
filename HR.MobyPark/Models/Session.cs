@@ -51,7 +51,7 @@ public class Session : aModel, iDatabase
 
     public static Session? GetByID(int id)
     {
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -89,7 +89,7 @@ public class Session : aModel, iDatabase
     {
         List<Session> returnValue = [];
 
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -126,7 +126,7 @@ public class Session : aModel, iDatabase
     {
         List<Session> returnValue = [];
 
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -161,7 +161,7 @@ public class Session : aModel, iDatabase
 
     public static Session? GetByUserID(int userID)
     {
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -199,7 +199,7 @@ public class Session : aModel, iDatabase
     {
         List<Session> returnValue = [];
 
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();

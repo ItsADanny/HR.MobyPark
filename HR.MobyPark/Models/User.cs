@@ -87,7 +87,7 @@ public class User : aModel, iDatabase
 
     public static User? GetByID(int id)
     {
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -116,7 +116,7 @@ public class User : aModel, iDatabase
     {
         List<User> returnValue = [];
 
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -197,7 +197,7 @@ public class User : aModel, iDatabase
     {
         try
         {
-            MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+            MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
             MySqlCommand cmd = new MySqlCommand();
 
             conn.Open();

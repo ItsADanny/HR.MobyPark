@@ -71,7 +71,7 @@ public class Vehicle : aModel, iDatabase
 
     public static Vehicle? GetByID(int id)
     {
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -98,7 +98,7 @@ public class Vehicle : aModel, iDatabase
     {
         List<Vehicle> returnValue = [];
 
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();

@@ -83,7 +83,7 @@ public class AuthController : ControllerBase
                 new JProperty("session_token", token)
             );
 
-            return Ok(returnJSON.ToString());
+            return Ok(returnJSON);
         }
         //Otherwise, return a login error
         return Problem("There was an problem while trying to login, please try again later");

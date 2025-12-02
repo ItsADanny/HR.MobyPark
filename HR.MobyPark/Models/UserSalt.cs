@@ -52,7 +52,7 @@ public class UserSalt : aModel, iDatabase
 
     public static UserSalt? GetByID(int id)
     {
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -78,7 +78,7 @@ public class UserSalt : aModel, iDatabase
     {
         List<UserSalt> returnValue = [];
 
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -101,11 +101,11 @@ public class UserSalt : aModel, iDatabase
 
     public static UserSalt? GetSalt(int userID)
     {
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
-        string query = $"SELECT * FROM Sessions WHERE Token = {userID}";
+        string query = $"SELECT * FROM Sessions WHERE UserID = {userID}";
         cmd.Connection = conn;
         cmd.CommandText = query;
 

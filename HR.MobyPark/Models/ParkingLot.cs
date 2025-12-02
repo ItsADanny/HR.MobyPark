@@ -51,7 +51,7 @@ public class ParkingLot : aModel, iDatabase
 
     public static ParkingLot? GetByID(int id)
     {
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -91,7 +91,7 @@ public class ParkingLot : aModel, iDatabase
     {
         List<ParkingLot> returnValue = [];
 
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();

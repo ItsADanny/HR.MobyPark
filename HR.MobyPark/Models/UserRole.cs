@@ -135,7 +135,7 @@ public class UserRole : aModel, iDatabase
 
     public static UserRole? GetByID(int id)
     {
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -165,7 +165,7 @@ public class UserRole : aModel, iDatabase
     {
         List<UserRole> returnValue = [];
 
-        MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -197,7 +197,7 @@ public class UserRole : aModel, iDatabase
     {
         try
         {
-            MySqlConnection conn = new MySqlConnection(Environment.GetEnvironmentVariable("dbConString"));
+            MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
             MySqlCommand cmd = new MySqlCommand();
 
             conn.Open();

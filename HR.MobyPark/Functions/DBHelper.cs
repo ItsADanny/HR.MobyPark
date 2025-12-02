@@ -33,4 +33,6 @@ public static class DBHelper
 
     public static bool Update(string sqlstatement) => Create(sqlstatement) != 0 ? true : false;
     public static bool Delete(string sqlstatement) => Update(sqlstatement);
+
+    public static string GetConnectionSTR() => dBConfig.GetConnectionSTR();
 }
