@@ -15,4 +15,8 @@
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HR.MobyPark\HR.MobyPark.csproj" />
+  </ItemGroup>
+
 </Project>
