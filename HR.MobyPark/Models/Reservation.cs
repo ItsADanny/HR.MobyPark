@@ -13,7 +13,7 @@ public class Reservation : aModel, iDatabase
     public decimal Amount { get; set; } //Decimal is beter dan double om afronden te voorkomen.
     // public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime CreateDateTime { get; set; }
-    public DateTime UpdateDateTime { get; set; }
+    public DateTime? UpdateDateTime { get; set; }
 
     public static JObject ToJSON(Reservation reservation)
     {
@@ -58,6 +58,15 @@ public class Reservation : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Reservation returnValue = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -68,8 +77,8 @@ public class Reservation : aModel, iDatabase
                 EndDateTime = Convert.ToDateTime(reader["EndDateTime"].ToString()),
                 Status = reader["Status"].ToString(),
                 Amount = Convert.ToDecimal(reader["Amount"].ToString()),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             conn.Close();
@@ -94,6 +103,15 @@ public class Reservation : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Reservation newReservation = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -104,8 +122,8 @@ public class Reservation : aModel, iDatabase
                 EndDateTime = Convert.ToDateTime(reader["EndDateTime"].ToString()),
                 Status = reader["Status"].ToString(),
                 Amount = Convert.ToDecimal(reader["Amount"].ToString()),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             returnValue.Add(newReservation);
@@ -129,6 +147,15 @@ public class Reservation : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Reservation newReservation = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -139,8 +166,8 @@ public class Reservation : aModel, iDatabase
                 EndDateTime = Convert.ToDateTime(reader["EndDateTime"].ToString()),
                 Status = reader["Status"].ToString(),
                 Amount = Convert.ToDecimal(reader["Amount"].ToString()),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             returnValue.Add(newReservation);

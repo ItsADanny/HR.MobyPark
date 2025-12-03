@@ -16,7 +16,7 @@ public class Payment: aModel, iDatabase
     public string Hash { get; set; }
     public DateTime CompletedDateTime { get; set; }
     public DateTime CreateDateTime { get; set; }
-    public DateTime UpdateDateTime { get; set; }
+    public DateTime? UpdateDateTime { get; set; }
 
     public static JObject ToJSON(Payment payment)
     {
@@ -65,6 +65,15 @@ public class Payment: aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Payment returnValue = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -79,8 +88,8 @@ public class Payment: aModel, iDatabase
                 Bank = reader["Bank"].ToString(),
                 Hash = reader["Hash"].ToString(),
                 CompletedDateTime = Convert.ToDateTime(reader["CompletedDateTime"].ToString()),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             conn.Close();
@@ -105,6 +114,15 @@ public class Payment: aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Payment newPayment = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -119,8 +137,8 @@ public class Payment: aModel, iDatabase
                 Bank = reader["Bank"].ToString(),
                 Hash = reader["Hash"].ToString(),
                 CompletedDateTime = Convert.ToDateTime(reader["CompletedDateTime"].ToString()),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             returnValue.Add(newPayment);
@@ -144,6 +162,15 @@ public class Payment: aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Payment newPayment = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -158,8 +185,8 @@ public class Payment: aModel, iDatabase
                 Bank = reader["Bank"].ToString(),
                 Hash = reader["Hash"].ToString(),
                 CompletedDateTime = Convert.ToDateTime(reader["CompletedDateTime"].ToString()),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             returnValue.Add(newPayment);

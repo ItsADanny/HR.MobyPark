@@ -26,7 +26,7 @@ public class User : aModel, iDatabase
     public DateOnly BirthDate { get; set; }
     public bool Active { get; set; }
     public DateTime CreateDateTime { get; private set;}
-    public DateTime UpdateDateTime { get; private set;}
+    public DateTime? UpdateDateTime { get; private set;}
 
     public User(string username, string name, string email, string phonenumber, DateOnly birthDate)
     {
@@ -38,7 +38,7 @@ public class User : aModel, iDatabase
         BirthDate = birthDate;
     }
 
-    private User(int id, string username, string password, string name, string email, string phone, int roleID, DateOnly birthDate, bool active, DateTime createDateTime, DateTime updateDateTime)
+    private User(int id, string username, string password, string name, string email, string phone, int roleID, DateOnly birthDate, bool active, DateTime createDateTime, DateTime? updateDateTime=null)
     {
         ID = id;
         Username = username;
@@ -62,7 +62,7 @@ public class User : aModel, iDatabase
             new JProperty("name", user.Name),
             new JProperty("email", user.Email),
             new JProperty("phone", user.Phone),
-            new JProperty("birthdate", user.BirthDate),
+            new JProperty("birthdate", user.BirthDate.ToString()),
             new JProperty("roleID", user.Role.ID),
             new JProperty("roleName", user.Role.Name),
             new JProperty("active", user.Active),
@@ -97,11 +97,20 @@ public class User : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             User returnValue = new (Convert.ToInt32(reader["ID"].ToString()), reader["Username"].ToString(), reader["Password"].ToString(),
                                  reader["Name"].ToString(), reader["Email"].ToString(), reader["Phone"].ToString(),
                                  Convert.ToInt32(reader["RoleID"].ToString()), DateOnly.FromDateTime(Convert.ToDateTime(reader["BirthDate"].ToString())),
-                                 GeneralMethods.IntToBool(Convert.ToInt32(reader["Active"].ToString())), Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                                 GeneralMethods.IntToBool(Convert.ToInt32(reader["Active"].ToString())), CreateDateTime,
+                                 UpdateDateTime
             );
 
             conn.Close();
@@ -126,11 +135,20 @@ public class User : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             User newUser = new (Convert.ToInt32(reader["ID"].ToString()), reader["Username"].ToString(), reader["Password"].ToString(),
                                  reader["Name"].ToString(), reader["Email"].ToString(), reader["Phone"].ToString(),
                                  Convert.ToInt32(reader["RoleID"].ToString()), DateOnly.FromDateTime(Convert.ToDateTime(reader["BirthDate"].ToString())),
-                                 GeneralMethods.IntToBool(Convert.ToInt32(reader["Active"].ToString())), Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                                 GeneralMethods.IntToBool(Convert.ToInt32(reader["Active"].ToString())), CreateDateTime,
+                                 UpdateDateTime
             );
 
             returnValue.Add(newUser);
@@ -189,8 +207,8 @@ public class User : aModel, iDatabase
     public static bool DoesUsernameExist(string username) => GetUserUsername(username) is not null ? true : false;
 
     public static User? GetUser(int userID) => _mGetUser($"SELECT * FROM Users WHERE ID = {userID}");
-    public static User? GetUserUsername(string accountUsername) => _mGetUser($"SELECT * FROM Users WHERE Username = {accountUsername}");
-    public static User? GetUserEmail(string accountEmail) => _mGetUser($"SELECT * FROM Users WHERE Email = {accountEmail}");
+    public static User? GetUserUsername(string accountUsername) => _mGetUser($"SELECT * FROM Users WHERE Username = \"{accountUsername}\"");
+    public static User? GetUserEmail(string accountEmail) => _mGetUser($"SELECT * FROM Users WHERE Email = \"{accountEmail}\"");
 
     //Private static - Database interactions
     private static User? _mGetUser(string sqlStatement)
@@ -207,11 +225,20 @@ public class User : aModel, iDatabase
             MySqlDataReader reader = cmd.ExecuteReader();
             if (reader.Read())
             {
+                DateTime CreateDateTime = DateTime.Now;
+                DateTime? UpdateDateTime = null;
+
+                string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+                string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+                if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+                if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
                 User user = new (Convert.ToInt32(reader["ID"].ToString()), reader["Username"].ToString(), reader["Password"].ToString(),
                                  reader["Name"].ToString(), reader["Email"].ToString(), reader["Phone"].ToString(),
                                  Convert.ToInt32(reader["RoleID"].ToString()), DateOnly.FromDateTime(Convert.ToDateTime(reader["BirthDate"].ToString())),
-                                 GeneralMethods.IntToBool(Convert.ToInt32(reader["Active"].ToString())), Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                                 GeneralMethods.IntToBool(Convert.ToInt32(reader["Active"].ToString())), CreateDateTime,
+                                 UpdateDateTime
                 );
 
                 conn.Close();
@@ -223,8 +250,9 @@ public class User : aModel, iDatabase
                 return null;
             } 
         }
-        catch
+        catch (Exception e)
         {
+            throw new Exception(e.ToString());
             return null;
         }
     }
@@ -257,4 +285,9 @@ public class User : aModel, iDatabase
     public static string ToSelectByIDSQL(int id) => $"SELECT * FROM Users WHERE ID = {id}";
 
     public static string ToSelectAllSQL() => "SELECT * FROM Users";
+
+    public override string ToString()
+    {
+        return ToJSON(this).ToString();
+    }
 }

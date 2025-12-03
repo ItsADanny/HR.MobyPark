@@ -14,7 +14,7 @@ public class Session : aModel, iDatabase
     public double Amount { get; set; }
     public string PaymentStatus { get; set; } = "unpaid";
     public DateTime CreateDateTime { get; set; }
-    public DateTime UpdateDateTime { get; set; }
+    public DateTime? UpdateDateTime { get; set; }
 
     public static JObject ToJSON(Session session)
     {
@@ -61,6 +61,15 @@ public class Session : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Session returnValue = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -73,8 +82,8 @@ public class Session : aModel, iDatabase
                 Duration = Convert.ToInt32(reader["Duration"].ToString()),
                 Amount = Convert.ToDouble(reader["Amount"].ToString()),
                 PaymentStatus = reader["PaymentStatus"].ToString(),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             conn.Close();
@@ -99,6 +108,15 @@ public class Session : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Session newSession = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -111,8 +129,8 @@ public class Session : aModel, iDatabase
                 Duration = Convert.ToInt32(reader["Duration"].ToString()),
                 Amount = Convert.ToDouble(reader["Amount"].ToString()),
                 PaymentStatus = reader["PaymentStatus"].ToString(),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             returnValue.Add(newSession);
@@ -136,6 +154,15 @@ public class Session : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Session newSession = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -148,8 +175,8 @@ public class Session : aModel, iDatabase
                 Duration = Convert.ToInt32(reader["Duration"].ToString()),
                 Amount = Convert.ToDouble(reader["Amount"].ToString()),
                 PaymentStatus = reader["PaymentStatus"].ToString(),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             returnValue.Add(newSession);
@@ -171,6 +198,15 @@ public class Session : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Session returnValue = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -183,8 +219,8 @@ public class Session : aModel, iDatabase
                 Duration = Convert.ToInt32(reader["Duration"].ToString()),
                 Amount = Convert.ToDouble(reader["Amount"].ToString()),
                 PaymentStatus = reader["PaymentStatus"].ToString(),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             conn.Close();
@@ -209,6 +245,15 @@ public class Session : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             Session newSession = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -221,8 +266,8 @@ public class Session : aModel, iDatabase
                 Duration = Convert.ToInt32(reader["Duration"].ToString()),
                 Amount = Convert.ToDouble(reader["Amount"].ToString()),
                 PaymentStatus = reader["PaymentStatus"].ToString(),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             returnValue.Add(newSession);

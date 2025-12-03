@@ -28,11 +28,11 @@ public class UserRole : aModel, iDatabase
     //premission for GLOBAL Userrole
     public Premission GlobalUserRoles {get; private set;}
     public DateTime CreateDateTime {get; private set;}
-    public DateTime UpdateDateTime {get; private set;}
+    public DateTime? UpdateDateTime {get; private set;}
 
     public UserRole(int? id, string name, int user, int parkinglots, int reservation, int vehicle, int payments, int globalUsers,
                     int globalReservations, int globalVehicles, int globalParkingLots, int globalPayments,
-                    int globalUserRole, DateTime createDateTime, DateTime updateDateTime)
+                    int globalUserRole, DateTime createDateTime, DateTime? updateDateTime=null)
     {
         ID = id;
         Name = name;
@@ -145,13 +145,22 @@ public class UserRole : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             UserRole returnValue = new(Convert.ToInt32(reader["ID"].ToString()), reader["Name"].ToString(),
                                  Convert.ToInt32(reader["User"].ToString()), Convert.ToInt32(reader["ParkingLots"].ToString()), Convert.ToInt32(reader["Reservation"].ToString()),
                                  Convert.ToInt32(reader["Vehicle"].ToString()), Convert.ToInt32(reader["Payments"].ToString()), 
                                  Convert.ToInt32(reader["GlobalUsers"].ToString()), Convert.ToInt32(reader["GlobalReservations"].ToString()), Convert.ToInt32(reader["GlobalVehicle"].ToString()),
                                  Convert.ToInt32(reader["GlobalParkingLots"].ToString()), Convert.ToInt32(reader["GlobalPayments"].ToString()), 
                                  Convert.ToInt32(reader["GlobalUserRole"].ToString()),
-                                 Convert.ToDateTime(reader["CreateDateTime"].ToString), Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+                                 CreateDateTime, UpdateDateTime);
 
             conn.Close();
             return returnValue;
@@ -175,13 +184,22 @@ public class UserRole : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             UserRole newUserRole = new(Convert.ToInt32(reader["ID"].ToString()), reader["Name"].ToString(),
                                  Convert.ToInt32(reader["User"].ToString()), Convert.ToInt32(reader["ParkingLots"].ToString()), Convert.ToInt32(reader["Reservation"].ToString()),
                                  Convert.ToInt32(reader["Vehicle"].ToString()), Convert.ToInt32(reader["Payments"].ToString()), 
                                  Convert.ToInt32(reader["GlobalUsers"].ToString()), Convert.ToInt32(reader["GlobalReservations"].ToString()), Convert.ToInt32(reader["GlobalVehicle"].ToString()),
                                  Convert.ToInt32(reader["GlobalParkingLots"].ToString()), Convert.ToInt32(reader["GlobalPayments"].ToString()), 
                                  Convert.ToInt32(reader["GlobalUserRole"].ToString()),
-                                 Convert.ToDateTime(reader["CreateDateTime"].ToString), Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+                                 CreateDateTime, UpdateDateTime);
 
             returnValue.Add(newUserRole);
         }
@@ -207,13 +225,22 @@ public class UserRole : aModel, iDatabase
             MySqlDataReader reader = cmd.ExecuteReader();
             if (reader.Read())
             {   
+                DateTime CreateDateTime = DateTime.Now;
+                DateTime? UpdateDateTime = null;
+
+                string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+                string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+                if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+                if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
                 UserRole userRole = new(Convert.ToInt32(reader["ID"].ToString()), reader["Name"].ToString(),
                                  Convert.ToInt32(reader["User"].ToString()), Convert.ToInt32(reader["ParkingLots"].ToString()), Convert.ToInt32(reader["Reservation"].ToString()),
                                  Convert.ToInt32(reader["Vehicle"].ToString()), Convert.ToInt32(reader["Payments"].ToString()), 
                                  Convert.ToInt32(reader["GlobalUsers"].ToString()), Convert.ToInt32(reader["GlobalReservations"].ToString()), Convert.ToInt32(reader["GlobalVehicle"].ToString()),
                                  Convert.ToInt32(reader["GlobalParkingLots"].ToString()), Convert.ToInt32(reader["GlobalPayments"].ToString()), 
                                  Convert.ToInt32(reader["GlobalUserRole"].ToString()),
-                                 Convert.ToDateTime(reader["CreateDateTime"].ToString), Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+                                 CreateDateTime, UpdateDateTime);
                 
                 conn.Close();
                 return userRole;

@@ -3,7 +3,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen();
 
 //Loading database connection variables into a DBConfig object at program launch
 DBConfig? dbConfig = builder.Configuration.GetSection("Database").Get<DBConfig>();
@@ -21,8 +21,13 @@ if (app.Environment.IsDevelopment())
     //This will generate a OpenAPI yaml document 
     //when the application is run in DEV mode
     app.MapOpenApi("/openapi/{documentName}.yaml");
-    // app.UseSwagger();
-    // app.UseSwaggerUI();
+    
+    app.UseSwagger();
+    app.UseSwaggerUI(options => // UseSwaggerUI is called only in Development.
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.RoutePrefix = string.Empty;
+    });
 }
 
 //Test endpoint to ping
@@ -34,6 +39,7 @@ app.MapPost("ping", () =>
 
 app.UseHttpsRedirection();
 // app.MapSwagger().RequireAuthorization();
+app.MapSwagger();
 app.MapControllers();
 app.Run();
 

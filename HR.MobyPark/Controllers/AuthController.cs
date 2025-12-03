@@ -50,10 +50,10 @@ public class AuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(loginDto.username) || string.IsNullOrWhiteSpace(loginDto.password)) return BadRequest("Missing credentials");
         
         //Retriev user
-        User? foundUser = MUser.GetUserUsername(loginDto.username);
+        MUser? foundUser = MUser.GetUserUsername(loginDto.username);
 
         //If the foundUser is null, return the message "User not found"
-        if (foundUser is null) return BadRequest("User not found");
+        if (foundUser is null) return NotFound("User not found");
 
         //Preform the check to see if the users password is valid
         if (!foundUser.IsPasswordCorrect(loginDto.password))
