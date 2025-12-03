@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace MyProject.Tests;
 
 [TestClass]
 public sealed class ReservationControllerTests
@@ -26,6 +23,7 @@ public sealed class ReservationControllerTests
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
+
 
     // POST 
     [TestMethod]
