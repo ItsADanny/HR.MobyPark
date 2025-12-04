@@ -53,7 +53,7 @@ public class User : aModel, iDatabase
         UpdateDateTime = updateDateTime;
     }
 
-    public static JObject ToJSON(User user)
+    public static string ToJSON(User user)
     {
         JObject returnValue = new()
         {
@@ -70,17 +70,19 @@ public class User : aModel, iDatabase
             new JProperty("updateDateTime", user.UpdateDateTime)
         };
 
-        return returnValue;
+        return returnValue.ToString();
     }
 
-    public static JArray ToJSON(List<User> users)
+    public static string ToJSON(List<User> users)
     {
-        JArray returnValue = new();
+        string returnValue = "[";
 
         foreach (User user in users)
         {
-            returnValue.Add(ToJSON(user));
+            returnValue += ToJSON(user);
         }
+
+        returnValue += "]";
 
         return returnValue;
     }
@@ -274,9 +276,13 @@ public class User : aModel, iDatabase
 
             int? returnedID = DBHelper.Create(ToInsertSQL());
 
+            //TEMP NEED TO MAKE A DIFFERENT SOLUTION TO THE GET ID FROM INSERT
+            User? foundUser = GetUserEmail(Email);
+            if (foundUser is not null) returnedID = foundUser.ID;
+
             if (returnedID is not null && returnedID != 0)
             {
-                if (new UserSalt(ID, hashedPassword[1]).CreateDB()) return true;
+                if (new UserSalt((int)returnedID, hashedPassword[1]).CreateDB()) return true;
             }
         }
         return false;

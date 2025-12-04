@@ -78,12 +78,11 @@ public class AuthController : ControllerBase
         string? token = UserSession.CreateSession(foundUser);
         if (token is not null)
         {
-            JObject returnJSON = new JObject {
-                {"message", "User logged in"},
-                {"session_token", token}
-            };
+            dynamic returnJSON = new JObject();
+            returnJSON.message = "User logged in";
+            returnJSON.session_token = token;
 
-            return Ok(returnJSON);
+            return Ok(returnJSON.ToString());
         }
         //Otherwise, return a login error
         return Problem("There was an problem while trying to login, please try again later");
