@@ -14,12 +14,7 @@ public static class DBHelper
             cmd.Connection = conn;
             cmd.CommandText = sqlstatement;
             cmd.ExecuteNonQuery();
-
-            //This needs to be repaired, this will currently return a 0 (which is not really what happend)
-            // cmd.CommandText = "SELECT last_insert_id() AS id";
-            // MySqlDataReader reader = cmd.ExecuteReader();
-            // reader.Read();
-            // int insertID = Convert.ToInt32(reader["id"].ToString());
+            // int insertID = Convert.ToInt32(cmd.LastInsertedId);
 
             conn.Close();
 
@@ -36,7 +31,7 @@ public static class DBHelper
         }
     }
 
-    public static bool Update(string sqlstatement) => Create(sqlstatement) != 0 ? true : false;
+    public static bool Update(string sqlstatement) => Create(sqlstatement) != 0;
     public static bool Delete(string sqlstatement) => Update(sqlstatement);
 
     public static string GetConnectionSTR() => dBConfig.GetConnectionSTR();

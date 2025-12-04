@@ -268,21 +268,25 @@ public class User : aModel, iDatabase
 
     public override string ToSelectSQL() => $"SELECT * FROM Users WHERE ID = {ID}";
 
-    public override bool CreateDB()
+    public override bool CreateDB() { return true; }
+
+    public bool CreateDB(string password)
     {
-        if (!string.IsNullOrWhiteSpace(_password)) {
-            string[] hashedPassword = Auth.Hash(_password);
+        if (!string.IsNullOrWhiteSpace(password)) {
+            string[] hashedPassword = Auth.Hash(password);
             _password = hashedPassword[0];
 
             int? returnedID = DBHelper.Create(ToInsertSQL());
 
-            //TEMP NEED TO MAKE A DIFFERENT SOLUTION TO THE GET ID FROM INSERT
+            //TEMP NEED TO MAKE A DIFFERENT SOLUTION TO THE GET ID 
             User? foundUser = GetUserEmail(Email);
             if (foundUser is not null) returnedID = foundUser.ID;
 
             if (returnedID is not null && returnedID != 0)
             {
-                if (new UserSalt((int)returnedID, hashedPassword[1]).CreateDB()) return true;
+                //TEMP
+                int newID = (int)returnedID;
+                if (new UserSalt(newID, hashedPassword[1]).CreateDB()) return true;
             }
         }
         return false;
