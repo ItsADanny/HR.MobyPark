@@ -14,11 +14,16 @@ public static class DBHelper
             cmd.Connection = conn;
             cmd.CommandText = sqlstatement;
             cmd.ExecuteNonQuery();
-            int insertID = Convert.ToInt32(cmd.LastInsertedId);
+
+            //This needs to be repaired, this will currently return a 0 (which is not really what happend)
+            // cmd.CommandText = "SELECT last_insert_id() AS id";
+            // MySqlDataReader reader = cmd.ExecuteReader();
+            // reader.Read();
+            // int insertID = Convert.ToInt32(reader["id"].ToString());
 
             conn.Close();
 
-            return insertID;
+            return 1;
         }
         catch (Exception e)
         {

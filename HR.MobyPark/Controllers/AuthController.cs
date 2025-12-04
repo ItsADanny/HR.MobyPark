@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
         else if (MUser.DoesEmailExist(registerDto.email)) return Ok("Email already used");
         else
         {
-            User newAccount = new(registerDto.username, registerDto.fullname, registerDto.email, registerDto.phonenumber, registerDto.birthdate);
+            MUser newAccount = new(registerDto.username, registerDto.fullname, registerDto.email, registerDto.phonenumber, registerDto.birthdate);
             newAccount.SetPassword(registerDto.password);
 
             if (newAccount.CreateDB())
@@ -78,12 +78,11 @@ public class AuthController : ControllerBase
         string? token = UserSession.CreateSession(foundUser);
         if (token is not null)
         {
-            JObject returnJSON = new JObject(
-                new JProperty("message", "User logged in"),
-                new JProperty("session_token", token)
-            );
+            dynamic returnJSON = new JObject();
+            returnJSON.message = "User logged in";
+            returnJSON.session_token = token;
 
-            return Ok(returnJSON);
+            return Ok(returnJSON.ToString());
         }
         //Otherwise, return a login error
         return Problem("There was an problem while trying to login, please try again later");
