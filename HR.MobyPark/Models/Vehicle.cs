@@ -90,9 +90,9 @@ public class Vehicle : aModel, iDatabase
             if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
             if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
 
-            Vehicle returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString),
+            Vehicle returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
                                  reader["LicensePlate"].ToString(), reader["Make"].ToString(), reader["Model"].ToString(),
-                                 reader["Color"].ToString(), Convert.ToInt32(reader["Year"].ToString),
+                                 reader["Color"].ToString(), Convert.ToInt32(reader["Year"].ToString()),
                                  CreateDateTime, UpdateDateTime);
 
             conn.Close();
@@ -126,9 +126,9 @@ public class Vehicle : aModel, iDatabase
             if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
             if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
 
-            Vehicle newVehicle = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString),
+            Vehicle newVehicle = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
                                  reader["LicensePlate"].ToString(), reader["Make"].ToString(), reader["Model"].ToString(),
-                                 reader["Color"].ToString(), Convert.ToInt32(reader["Year"].ToString),
+                                 reader["Color"].ToString(), Convert.ToInt32(reader["Year"].ToString()),
                                  CreateDateTime, UpdateDateTime);
 
             returnValue.Add(newVehicle);
