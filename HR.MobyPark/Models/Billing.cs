@@ -1,3 +1,5 @@
+using MySql.Data.MySqlClient;
+using Newtonsoft.Json.Linq;
 public class Billing : aModel, iDatabase
 {
     // I need a public ParkingInfo ofzo voor
@@ -7,9 +9,10 @@ public class Billing : aModel, iDatabase
     // I need a public sessionInfo ofzo voor
     // "session": {k: v for k, v in session.items() 
     // if k in ["licenseplate", "started", "stopped"]} | {"hours": hours, "days": days},
+    public int SessionID { get; set; }
+    public int ParkingLotID { get; set; }
     public decimal Amount { get; set; }
-
-    // public string TransactionHash ofzo
+    public string tHash { get; set; }
     public decimal Payed { get; set; }
     public decimal Balance { get; set; }
 
@@ -17,9 +20,13 @@ public class Billing : aModel, iDatabase
     {
         JObject returnValue = new()
         {
+            new JProperty("sessionID", billing.SessionID),
+            new JProperty("parkingLotID", billing.ParkingLotID),
             new JProperty("amount", billing.Amount),
+            new JProperty("tHash", billing.tHash),
             new JProperty("payed", billing.Payed),
             new JProperty("balance", billing.Balance),
+
         };
 
         return returnValue;
@@ -52,7 +59,12 @@ public class Billing : aModel, iDatabase
         {
             Billing returnValue = new()
             {
-                /// HIER NOG
+                SessionID = Convert.ToInt32(reader["SessionID"].ToString()),
+                ParkingLotID = Convert.ToInt32(reader["ParkingLotID"].ToString()),
+                Amount = Convert.ToDecimal(reader["Amount"].ToString()),
+                tHash = reader["tHash"].ToString(),
+                Payed = Convert.ToDecimal(reader["Payed"].ToString()),
+                Balance = Convert.ToDecimal(reader["Balance"].ToString()),
             };
 
             conn.Close();
@@ -80,16 +92,22 @@ public class Billing : aModel, iDatabase
         {
             Billing newBilling = new()
             {
-                //  hier nog
+                SessionID = Convert.ToInt32(reader["SessionID"].ToString()),
+                ParkingLotID = Convert.ToInt32(reader["ParkingLotID"].ToString()),
+                Amount = Convert.ToDecimal(reader["Amount"].ToString()),
+                tHash = reader["tHash"].ToString(),
+                Payed = Convert.ToDecimal(reader["Payed"].ToString()),
+                Balance = Convert.ToDecimal(reader["Balance"].ToString()),
             };
 
             returnValue.Add(newBilling);
         }
 
         conn.Close();
+        return returnValue;
     }
 
-    // deze ook
+
     public static List<Billing> GetAllByUserID(int userID)
     {
         List<Billing> returnValue = [];
@@ -106,7 +124,12 @@ public class Billing : aModel, iDatabase
         {
             Billing newBilling = new()
             {
-                // hier weer
+                SessionID = Convert.ToInt32(reader["SessionID"].ToString()),
+                ParkingLotID = Convert.ToInt32(reader["ParkingLotID"].ToString()),
+                Amount = Convert.ToDecimal(reader["Amount"].ToString()),
+                tHash = reader["tHash"].ToString(),
+                Payed = Convert.ToDecimal(reader["Payed"].ToString()),
+                Balance = Convert.ToDecimal(reader["Balance"].ToString()),
             };
 
             returnValue.Add(newBilling);
@@ -116,4 +139,28 @@ public class Billing : aModel, iDatabase
         return returnValue;
     }
 
+    public override string ToInsertSQL()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override string ToUpdateSQL()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override string ToDeleteSQL()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override string ToSelectSQL()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static string ToSelectByIDSQL(int id) => "";
+    public static string ToSelectByUserIDSQL(int id) => "";
+
+    public static string ToSelectAllSQL() => "SELECT * FROM Billing";
 }
