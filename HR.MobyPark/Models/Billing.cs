@@ -9,6 +9,7 @@ public class Billing : aModel, iDatabase
     // I need a public sessionInfo ofzo voor
     // "session": {k: v for k, v in session.items() 
     // if k in ["licenseplate", "started", "stopped"]} | {"hours": hours, "days": days},
+    public int ID { get; set; }
     public int SessionID { get; set; }
     public int ParkingLotID { get; set; }
     public decimal Amount { get; set; }
@@ -20,6 +21,7 @@ public class Billing : aModel, iDatabase
     {
         JObject returnValue = new()
         {
+            new JProperty("id", billing.ID),
             new JProperty("sessionID", billing.SessionID),
             new JProperty("parkingLotID", billing.ParkingLotID),
             new JProperty("amount", billing.Amount),
@@ -59,6 +61,7 @@ public class Billing : aModel, iDatabase
         {
             Billing returnValue = new()
             {
+                ID = Convert.ToInt32(reader["ID"].ToString()),
                 SessionID = Convert.ToInt32(reader["SessionID"].ToString()),
                 ParkingLotID = Convert.ToInt32(reader["ParkingLotID"].ToString()),
                 Amount = Convert.ToDecimal(reader["Amount"].ToString()),
@@ -92,6 +95,7 @@ public class Billing : aModel, iDatabase
         {
             Billing newBilling = new()
             {
+                ID = Convert.ToInt32(reader["ID"].ToString()),
                 SessionID = Convert.ToInt32(reader["SessionID"].ToString()),
                 ParkingLotID = Convert.ToInt32(reader["ParkingLotID"].ToString()),
                 Amount = Convert.ToDecimal(reader["Amount"].ToString()),
@@ -108,36 +112,36 @@ public class Billing : aModel, iDatabase
     }
 
 
-    public static List<Billing> GetAllByUserID(int userID)
-    {
-        List<Billing> returnValue = [];
+    // public static List<Billing> GetAllByUserID(int userID)
+    // {
+    //     List<Billing> returnValue = [];
 
-        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
-        MySqlCommand cmd = new MySqlCommand();
+    //     MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
+    //     MySqlCommand cmd = new MySqlCommand();
 
-        conn.Open();
-        cmd.Connection = conn;
-        cmd.CommandText = ToSelectByUserIDSQL(userID);
+    //     conn.Open();
+    //     cmd.Connection = conn;
+    //     cmd.CommandText = ToSelectByUserIDSQL(userID);
 
-        MySqlDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            Billing newBilling = new()
-            {
-                SessionID = Convert.ToInt32(reader["SessionID"].ToString()),
-                ParkingLotID = Convert.ToInt32(reader["ParkingLotID"].ToString()),
-                Amount = Convert.ToDecimal(reader["Amount"].ToString()),
-                tHash = reader["tHash"].ToString(),
-                Payed = Convert.ToDecimal(reader["Payed"].ToString()),
-                Balance = Convert.ToDecimal(reader["Balance"].ToString()),
-            };
+    //     MySqlDataReader reader = cmd.ExecuteReader();
+    //     while (reader.Read())
+    //     {
+    //         Billing newBilling = new()
+    //         {
+    //             SessionID = Convert.ToInt32(reader["SessionID"].ToString()),
+    //             ParkingLotID = Convert.ToInt32(reader["ParkingLotID"].ToString()),
+    //             Amount = Convert.ToDecimal(reader["Amount"].ToString()),
+    //             tHash = reader["tHash"].ToString(),
+    //             Payed = Convert.ToDecimal(reader["Payed"].ToString()),
+    //             Balance = Convert.ToDecimal(reader["Balance"].ToString()),
+    //         };
 
-            returnValue.Add(newBilling);
-        }
+    //         returnValue.Add(newBilling);
+    //     }
 
-        conn.Close();
-        return returnValue;
-    }
+    //     conn.Close();
+    //     return returnValue;
+    // }
 
     public override string ToInsertSQL()
     {
@@ -159,8 +163,8 @@ public class Billing : aModel, iDatabase
         throw new NotImplementedException();
     }
 
-    public static string ToSelectByIDSQL(int id) => "";
-    public static string ToSelectByUserIDSQL(int id) => "";
+    public static string ToSelectByIDSQL(int id) => $"SELECT * FROM Billing WHERE ID = {id}";
+    // public static string ToSelectByUserIDSQL(int id) => "";
 
     public static string ToSelectAllSQL() => "SELECT * FROM Billing";
 }
