@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.MobyPark-SessionWorker",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobyPark-DataImporter", "MobyPark-DataImporter\MobyPark-DataImporter.csproj", "{AAC32033-071B-4CEF-A5A3-3E95F9AAE0A6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unittests", "Unittests", "{2F646680-91A4-F107-74F4-9BF3126A0F16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyProject.Tests", "Unittests\MyProject.Tests.csproj", "{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,8 +59,23 @@ Global
 		{AAC32033-071B-4CEF-A5A3-3E95F9AAE0A6}.Release|x64.Build.0 = Release|Any CPU
 		{AAC32033-071B-4CEF-A5A3-3E95F9AAE0A6}.Release|x86.ActiveCfg = Release|Any CPU
 		{AAC32033-071B-4CEF-A5A3-3E95F9AAE0A6}.Release|x86.Build.0 = Release|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Debug|x64.Build.0 = Debug|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Debug|x86.Build.0 = Debug|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Release|x64.ActiveCfg = Release|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Release|x64.Build.0 = Release|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Release|x86.ActiveCfg = Release|Any CPU
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F2A63D56-A5B0-4142-90D6-501F86BCA0DF} = {2F646680-91A4-F107-74F4-9BF3126A0F16}
 	EndGlobalSection
 EndGlobal

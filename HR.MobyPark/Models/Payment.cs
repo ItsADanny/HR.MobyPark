@@ -120,8 +120,11 @@ public class Payment: aModel, iDatabase
             string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
             string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
 
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+            // if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            // if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = reader.GetDateTime("CreateDateTime");
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = reader.GetDateTime("UpdateDateTime");
 
             Payment newPayment = new()
             {
@@ -131,12 +134,12 @@ public class Payment: aModel, iDatabase
                 SessionID = Convert.ToInt32(reader["SessionID"].ToString()),
                 UserID = Convert.ToInt32(reader["UserID"].ToString()),
                 Amount = Convert.ToDecimal(reader["Amount"].ToString()),
-                Date = Convert.ToDateTime(reader["Date"].ToString()),
+                Date = reader.GetDateTime("Date"),
                 Method = reader["Method"].ToString(),
                 Issuer = reader["Issuer"].ToString(),
                 Bank = reader["Bank"].ToString(),
                 Hash = reader["Hash"].ToString(),
-                CompletedDateTime = Convert.ToDateTime(reader["CompletedDateTime"].ToString()),
+                CompletedDateTime = reader.GetDateTime("CompletedDateTime"),
                 CreateDateTime = RCreateDateTime,
                 UpdateDateTime = RUpdateDateTime
             };
@@ -196,9 +199,9 @@ public class Payment: aModel, iDatabase
         return returnValue;
     }
 
-    public override string ToInsertSQL() => $"INSERT INTO Transaction (TransactionID, ParkingLotID, SessionID, UserID, Amount, Date, Method, Issuer, Bank, Hash, CompletedDateTime) VALUES (\"{TransactionID}\", {ParkingLotID}, {SessionID}, {UserID}, {Amount}, {Date}, \"{Method}\", \"{Issuer}\", \"{Bank}\", \"{Hash}\", {CompletedDateTime})";
+    public override string ToInsertSQL() => $"INSERT INTO Transaction (TransactionID, ParkingLotID, SessionID, UserID, Amount, Date, Method, Issuer, Bank, Hash, CompletedDateTime) VALUES (\"{TransactionID}\", {ParkingLotID}, {SessionID}, {UserID}, {Amount}, '{Date:yyyy-MM-dd HH:mm:ss}', \"{Method}\", \"{Issuer}\", \"{Bank}\", \"{Hash}\", '{CompletedDateTime:yyyy-MM-dd HH:mm:ss}')";
 
-    public override string ToUpdateSQL() => $"UPDATE Transaction SET TransactionID = \"{TransactionID}\", ParkingLotID = {ParkingLotID}, SessionID = {SessionID}, UserID = {UserID}, Amount = {Amount}, Date = {Date:YYYY-MM-DD hh:mm:ss}, Method = \"{Method}\", Issuer = \"{Issuer}\", Bank = \"{Bank}\", Hash = \"{Hash}\", CompletedDateTime = {CompletedDateTime:YYYY-MM-DD hh:mm:ss} WHERE ID = {ID}";
+    public override string ToUpdateSQL() => $"UPDATE Transaction SET TransactionID = \"{TransactionID}\", ParkingLotID = {ParkingLotID}, SessionID = {SessionID}, UserID = {UserID}, Amount = {Amount}, Date = '{Date:yyyy-MM-dd HH:mm:ss}', Method = \"{Method}\", Issuer = \"{Issuer}\", Bank = \"{Bank}\", Hash = \"{Hash}\", CompletedDateTime = '{CompletedDateTime:yyyy-MM-dd HH:mm:ss}' WHERE ID = {ID}";
 
     public override string ToDeleteSQL() => $"DELETE FROM Transaction WHERE ID = {ID}";
 
