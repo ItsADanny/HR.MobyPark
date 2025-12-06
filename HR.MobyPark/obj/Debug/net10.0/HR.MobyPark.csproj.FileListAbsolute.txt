@@ -101,3 +101,6 @@
 /Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/obj/Debug/net10.0/HR.MobyPark.pdb
 /Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/obj/Debug/net10.0/HR.MobyPark.genruntimeconfig.cache
 /Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/obj/Debug/net10.0/ref/HR.MobyPark.dll
+/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/bin/Debug/net10.0/Swashbuckle.AspNetCore.Swagger.dll
+/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll

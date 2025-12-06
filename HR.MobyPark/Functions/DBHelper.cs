@@ -14,11 +14,11 @@ public static class DBHelper
             cmd.Connection = conn;
             cmd.CommandText = sqlstatement;
             cmd.ExecuteNonQuery();
-            int insertID = Convert.ToInt32(cmd.LastInsertedId);
+            // int insertID = Convert.ToInt32(cmd.LastInsertedId);
 
             conn.Close();
 
-            return insertID;
+            return 1;
         }
         catch (Exception e)
         {
@@ -31,7 +31,7 @@ public static class DBHelper
         }
     }
 
-    public static bool Update(string sqlstatement) => Create(sqlstatement) != 0 ? true : false;
+    public static bool Update(string sqlstatement) => Create(sqlstatement) != 0;
     public static bool Delete(string sqlstatement) => Update(sqlstatement);
 
     public static string GetConnectionSTR() => dBConfig.GetConnectionSTR();

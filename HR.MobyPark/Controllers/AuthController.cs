@@ -32,10 +32,10 @@ public class AuthController : ControllerBase
         else if (MUser.DoesEmailExist(registerDto.email)) return Ok("Email already used");
         else
         {
-            User newAccount = new(registerDto.username, registerDto.fullname, registerDto.email, registerDto.phonenumber, registerDto.birthdate);
-            newAccount.SetPassword(registerDto.password);
+            MUser newAccount = new(registerDto.username, registerDto.fullname, registerDto.email, registerDto.phonenumber, registerDto.birthdate);
+            // newAccount.SetPassword(registerDto.password);
 
-            if (newAccount.CreateDB())
+            if (newAccount.CreateDB(registerDto.password))
             {
                 return Created((string?)null, "User created");
             }
@@ -50,10 +50,10 @@ public class AuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(loginDto.username) || string.IsNullOrWhiteSpace(loginDto.password)) return BadRequest("Missing credentials");
         
         //Retriev user
-        User? foundUser = MUser.GetUserUsername(loginDto.username);
+        MUser? foundUser = MUser.GetUserUsername(loginDto.username);
 
         //If the foundUser is null, return the message "User not found"
-        if (foundUser is null) return BadRequest("User not found");
+        if (foundUser is null) return NotFound("User not found");
 
         //Preform the check to see if the users password is valid
         if (!foundUser.IsPasswordCorrect(loginDto.password))
@@ -78,12 +78,11 @@ public class AuthController : ControllerBase
         string? token = UserSession.CreateSession(foundUser);
         if (token is not null)
         {
-            JObject returnJSON = new JObject(
-                new JProperty("message", "User logged in"),
-                new JProperty("session_token", token)
-            );
+            dynamic returnJSON = new JObject();
+            returnJSON.message = "User logged in";
+            returnJSON.session_token = token;
 
-            return Ok(returnJSON);
+            return Ok(returnJSON.ToString());
         }
         //Otherwise, return a login error
         return Problem("There was an problem while trying to login, please try again later");

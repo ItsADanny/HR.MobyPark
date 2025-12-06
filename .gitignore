@@ -233,3 +233,4 @@ HR.MobyPark/obj/HR.MobyPark.csproj.nuget.g.props
 HR.MobyPark/obj/HR.MobyPark.csproj.nuget.g.targets
 HR.MobyPark/obj/project.assets.json
 HR.MobyPark/obj/project.nuget.cache
+MobyPark-DataImporter/Import/users.json

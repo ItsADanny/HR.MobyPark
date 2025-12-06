@@ -111,7 +111,7 @@ public class PaymentsController : ControllerBase
         return Created(); //Originally Ok(), but Created() is more logical here
     }
 
-    [HttpPost("")]
+    [HttpPost("refund")]
     public ActionResult<string> POST_CreatePaymentRefund([FromHeader(Name = "authorization")] string authorization, [FromBody] decimal amount)
     {
         //Check to see if the authorization has been filled, If it isn't filled. Return Unauthorized error

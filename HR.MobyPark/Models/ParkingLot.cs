@@ -14,7 +14,7 @@ public class ParkingLot : aModel, iDatabase
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     public DateTime CreateDateTime { get; set; }
-    public DateTime UpdateDateTime { get; set; }
+    public DateTime? UpdateDateTime { get; set; }
 
     public static JObject ToJSON(ParkingLot parkingLot)
     {
@@ -61,10 +61,18 @@ public class ParkingLot : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             ParkingLot returnValue = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
-                
                 Name = reader["ID"].ToString(),
                 Location = reader["ID"].ToString(),
                 Address = reader["ID"].ToString(),
@@ -73,8 +81,8 @@ public class ParkingLot : aModel, iDatabase
                 DayTariff = Convert.ToDecimal(reader["DayTariff"].ToString()),
                 Latitude = Convert.ToDouble(reader["Lat"].ToString()),
                 Longitude = Convert.ToDouble(reader["Lon"].ToString()),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             returnValue.Reserved = Reservation.GetAllByParkingLot(returnValue.ID).Count();
@@ -101,10 +109,18 @@ public class ParkingLot : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             ParkingLot newParkingLot = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
-                
                 Name = reader["ID"].ToString(),
                 Location = reader["ID"].ToString(),
                 Address = reader["ID"].ToString(),
@@ -113,8 +129,8 @@ public class ParkingLot : aModel, iDatabase
                 DayTariff = Convert.ToDecimal(reader["DayTariff"].ToString()),
                 Latitude = Convert.ToDouble(reader["Lat"].ToString()),
                 Longitude = Convert.ToDouble(reader["Lon"].ToString()),
-                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString()),
-                UpdateDateTime = Convert.ToDateTime(reader["UpdateDateTime"].ToString())
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
             };
 
             newParkingLot.Reserved = Reservation.GetAllByParkingLot(newParkingLot.ID).Count();

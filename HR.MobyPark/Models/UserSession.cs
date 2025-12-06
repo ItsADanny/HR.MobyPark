@@ -7,7 +7,7 @@ public class UserSession : aModel, iDatabase
     public int UserID { get; set; }
     public string Token { get; set; }
     public DateTime CreateDateTime { get; set; }
-    public DateTime UpdateDateTime { get; set; }
+    public DateTime? UpdateDateTime { get; set; }
 
     private UserSession(int userID, string token)
     {
@@ -15,7 +15,7 @@ public class UserSession : aModel, iDatabase
         Token = token;
     }
 
-    private UserSession(int id, int userID, string token, DateTime createDateTime, DateTime updateDateTime)
+    private UserSession(int id, int userID, string token, DateTime createDateTime, DateTime? updateDateTime = null)
     {
         ID = id;
         UserID = userID;
@@ -62,9 +62,18 @@ public class UserSession : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
-            UserSession returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString),
-                                 reader["Token"].ToString(), Convert.ToDateTime(reader["CreateDateTime"].ToString),
-                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
+            UserSession returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
+                                 reader["Token"].ToString(), CreateDateTime,
+                                 UpdateDateTime);
 
             conn.Close();
             return returnValue;
@@ -88,9 +97,18 @@ public class UserSession : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            UserSession newUserSession = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString),
-                                 reader["Token"].ToString(), Convert.ToDateTime(reader["CreateDateTime"].ToString),
-                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
+            UserSession newUserSession = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
+                                 reader["Token"].ToString(), CreateDateTime,
+                                 UpdateDateTime);
 
             returnValue.Add(newUserSession);
         }
@@ -105,16 +123,25 @@ public class UserSession : aModel, iDatabase
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
-        string query = $"SELECT * FROM Sessions WHERE Token = {authToken}";
+        string query = $"SELECT * FROM UserSessions WHERE Token = \"{authToken}\"";
         cmd.Connection = conn;
         cmd.CommandText = query;
 
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
-            UserSession returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString),
-                                 reader["Token"].ToString(), Convert.ToDateTime(reader["CreateDateTime"].ToString),
-                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
+            UserSession returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
+                                 reader["Token"].ToString(), CreateDateTime,
+                                 UpdateDateTime);
 
             conn.Close();
             return returnValue;

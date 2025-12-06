@@ -7,7 +7,7 @@ public class UserSalt : aModel, iDatabase
     public int UserID {get; private set;}
     public string Salt {get; set;}
     public DateTime CreateDateTime {get; private set;}
-    public DateTime UpdateDateTime {get; private set;}
+    public DateTime? UpdateDateTime {get; private set;}
 
     public UserSalt(int userID, string salt)
     {
@@ -15,7 +15,7 @@ public class UserSalt : aModel, iDatabase
         Salt = salt;
     }
 
-    public UserSalt(int id, int userID, string salt, DateTime createDateTime, DateTime updateDateTime)
+    public UserSalt(int id, int userID, string salt, DateTime createDateTime, DateTime? updateDateTime=null)
     {
         ID = id;
         UserID = userID;
@@ -62,9 +62,18 @@ public class UserSalt : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
-            UserSalt returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString),
-                                 reader["Salt"].ToString(), Convert.ToDateTime(reader["CreateDateTime"].ToString),
-                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
+            UserSalt returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
+                                 reader["Salt"].ToString(), CreateDateTime,
+                                 UpdateDateTime);
 
             conn.Close();
             return returnValue;
@@ -88,9 +97,18 @@ public class UserSalt : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            UserSalt newUserSalt = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString),
-                                 reader["Salt"].ToString(), Convert.ToDateTime(reader["CreateDateTime"].ToString),
-                                 Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
+            UserSalt newUserSalt = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
+                                 reader["Salt"].ToString(), CreateDateTime,
+                                 UpdateDateTime);
 
             returnValue.Add(newUserSalt);
         }
@@ -105,19 +123,29 @@ public class UserSalt : aModel, iDatabase
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
-        string query = $"SELECT * FROM Sessions WHERE UserID = {userID}";
+        string query = $"SELECT * FROM UserSalt WHERE UserID = {userID}";
         cmd.Connection = conn;
         cmd.CommandText = query;
 
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
             UserSalt returnValue = new(
-                Convert.ToInt32(reader["ID"].ToString), 
-                Convert.ToInt32(reader["UserID"].ToString), 
-                reader["Salt"].ToString(), Convert.ToDateTime(reader["CreateDateTime"].ToString),
-                Convert.ToDateTime(reader["UpdateDateTime"].ToString));
+                Convert.ToInt32(reader["ID"].ToString()), 
+                Convert.ToInt32(reader["UserID"].ToString()), 
+                reader["Salt"].ToString(), CreateDateTime,
+                UpdateDateTime);
             conn.Close();
+
             return returnValue;
         }
 
