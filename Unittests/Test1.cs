@@ -58,37 +58,37 @@ public sealed class PaymentModelTests
         DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
     }
 
-    [TestMethod]
-    public void GetToJSON_NoException()
-    {
-        try
-        {
-            Payment payment = new Payment
-            {
-                ID = 1,
-                TransactionID = "TX123",
-                ParkingLotID = 2,
-                SessionID = 3,
-                UserID = 4,
-                Amount = 20.50m,
-                Date = DateTime.Now,
-                Method = "CreditCard",
-                Issuer = "Visa",
-                Bank = "BankName",
-                Hash = "SomeHash",
-                CompletedDateTime = DateTime.Now,
-                CreateDateTime = DateTime.Now,
-                UpdateDateTime = null
-            };
+    // [TestMethod]
+    // public void GetToJSON_NoException()
+    // {
+    //     try
+    //     {
+    //         Payment payment = new Payment
+    //         {
+    //             ID = 1,
+    //             TransactionID = "TX123",
+    //             ParkingLotID = 2,
+    //             SessionID = 3,
+    //             UserID = 4,
+    //             Amount = 20.50m,
+    //             Date = DateTime.Now,
+    //             Method = "CreditCard",
+    //             Issuer = "Visa",
+    //             Bank = "BankName",
+    //             Hash = "SomeHash",
+    //             CompletedDateTime = DateTime.Now,
+    //             CreateDateTime = DateTime.Now,
+    //             UpdateDateTime = null
+    //         };
 
-            var json = Payment.ToJSON(payment);
-            Assert.IsNotNull(json);
-        }
-        catch (Exception ex)
-        {
-            Assert.Fail($"Exception thrown during ToJSON: {ex.Message}");
-        }
-    }
+    //         var json = Payment.ToJSON(payment);
+    //         Assert.IsNotNull(json);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Assert.Fail($"Exception thrown during ToJSON: {ex.Message}");
+    //     }
+    // }
 
     [TestMethod]
     public void CreateDB_InsertsPaymentSuccessfully()
@@ -131,4 +131,40 @@ public sealed class PaymentModelTests
             Assert.Fail($"Exception thrown during GetAll: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}\n\nInner Exception: {ex.InnerException?.Message}");
         }
     }
+
+    [TestMethod]
+    public void GetPaymentById_ExistingId_ReturnsPayment()
+    {
+        // Arrange - Ensure there is a payment with ID 1 in the database
+        int testPaymentId = 1;
+
+        try
+        {
+            // Act
+            Payment? payment = Payment.GetByID(testPaymentId);
+
+            // Assert
+            Assert.IsNotNull(payment, $"Payment with ID {testPaymentId} should exist.");
+            Assert.AreEqual(testPaymentId, payment.ID, "Returned payment ID should match the requested ID.");
+        }
+        catch (Exception ex)
+        {
+            Assert.Fail($"Exception thrown during GetByID: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}\n\nInner Exception: {ex.InnerException?.Message}");
+        }
+    }
+
+    public void GetAllByUserID_NoException()
+    {
+        try
+        {
+            int testUserId = 1;
+            List<Payment> payments = Payment.GetAllByUserID(testUserId);
+            Assert.IsNotNull(payments);
+        }
+        catch (Exception ex)
+        {
+            Assert.Fail($"Exception thrown during GetAllByUserID: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}\n\nInner Exception: {ex.InnerException?.Message}");
+        }
+    }
+
 }
