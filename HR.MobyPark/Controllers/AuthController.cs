@@ -33,9 +33,9 @@ public class AuthController : ControllerBase
         else
         {
             MUser newAccount = new(registerDto.username, registerDto.fullname, registerDto.email, registerDto.phonenumber, registerDto.birthdate);
-            newAccount.SetPassword(registerDto.password);
+            // newAccount.SetPassword(registerDto.password);
 
-            if (newAccount.CreateDB())
+            if (newAccount.CreateDB(registerDto.password))
             {
                 return Created((string?)null, "User created");
             }

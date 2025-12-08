@@ -145,6 +145,7 @@ public class UserSalt : aModel, iDatabase
                 reader["Salt"].ToString(), CreateDateTime,
                 UpdateDateTime);
             conn.Close();
+
             return returnValue;
         }
 
