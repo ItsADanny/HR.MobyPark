@@ -1,4 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.AspNetCore.Mvc;
 
 [TestClass]
@@ -83,6 +82,72 @@ public class ParkingLotsControllerTest
 
         var result = controller.DELETE_ParkingLot(null!, 1);
 
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void getParkingLotSessions_emptyAuthorization_fail()
+    {
+        var controller = new ParkingLotsController();
+        var result = controller.GET_ParkingLotSessions("", 1);
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void getParkingLotSessions_nullAuthorization_fail()
+    {
+        var controller = new ParkingLotsController();
+        var result = controller.GET_ParkingLotSessions(null!, 1);
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void updateParkingLot_emptyAuthorization_fail()
+    {
+        var controller = new ParkingLotsController();
+        var dto = new parkingLotDto();
+        var result = controller.PUT_UpdateParkingLot("", 1, dto);
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void updateParkingLot_nullAuthorization_fail()
+    {
+        var controller = new ParkingLotsController();
+        var dto = new parkingLotDto();
+        var result = controller.PUT_UpdateParkingLot(null!, 1, dto);
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void deleteParkingLotSessions_emptyAuthorization_fail()
+    {
+        var controller = new ParkingLotsController();
+        var result = controller.DELETE_ParkingLotSessions("", 1);
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void deleteParkingLotSessions_nullAuthorization_fail()
+    {
+        var controller = new ParkingLotsController();
+        var result = controller.DELETE_ParkingLotSessions(null!, 1);
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void deleteParkingLotSession_emptyAuthorization_fail()
+    {
+        var controller = new ParkingLotsController();
+        var result = controller.DELETE_ParkingLotSession("", 1, 1);
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void deleteParkingLotSession_nullAuthorization_fail()
+    {
+        var controller = new ParkingLotsController();
+        var result = controller.DELETE_ParkingLotSession(null!, 1, 1);
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
 }
