@@ -47,7 +47,17 @@ public class ParkingLotsControllerTest
     public void createParkingLot_emptyAuthorization_fail()
     {
         var controller = new ParkingLotsController();
-        var dto = new parkingLotDto();
+        var dto = new parkingLotDto
+        (
+            name: "Lot1",
+            location: "abc",
+            address: "bca",
+            capacity: 200,
+            tariff: 1.5m,
+            dayTariff: 7.0m,
+            lat: 2.1,
+            lon: 4.3 
+        );
 
         var result = controller.POST_CreateParkingLot("", dto);
 
@@ -58,8 +68,17 @@ public class ParkingLotsControllerTest
     public void createParkingLot_nullAuthorization_fail()
     {
         var controller = new ParkingLotsController();
-        var dto = new parkingLotDto();
-
+        var dto = new parkingLotDto
+        (
+            name: "Lot1",
+            location: "abc",
+            address: "bca",
+            capacity: 200,
+            tariff: 1.5m,
+            dayTariff: 7.0m,
+            lat: 2.1,
+            lon: 4.3 
+        );
         var result = controller.POST_CreateParkingLot(null!, dto);
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
@@ -105,7 +124,17 @@ public class ParkingLotsControllerTest
     public void updateParkingLot_emptyAuthorization_fail()
     {
         var controller = new ParkingLotsController();
-        var dto = new parkingLotDto();
+        var dto = new parkingLotDto
+        (
+            name: "Lot1",
+            location: "abc",
+            address: "bca",
+            capacity: 200,
+            tariff: 1.5m,
+            dayTariff: 7.0m,
+            lat: 2.1,
+            lon: 4.3 
+        );
         var result = controller.PUT_UpdateParkingLot("", 1, dto);
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
@@ -114,7 +143,17 @@ public class ParkingLotsControllerTest
     public void updateParkingLot_nullAuthorization_fail()
     {
         var controller = new ParkingLotsController();
-        var dto = new parkingLotDto();
+        var dto = new parkingLotDto
+        (
+            name: "Lot1",
+            location: "abc",
+            address: "bca",
+            capacity: 200,
+            tariff: 1.5m,
+            dayTariff: 7.0m,
+            lat: 2.1,
+            lon: 4.3 
+        );
         var result = controller.PUT_UpdateParkingLot(null!, 1, dto);
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
