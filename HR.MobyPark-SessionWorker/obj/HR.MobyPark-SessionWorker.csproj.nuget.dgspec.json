@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj": {}
+    "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark-SessionWorker\\HR.MobyPark-SessionWorker.csproj": {}
   },
   "projects": {
-    "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj": {
+    "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark-SessionWorker\\HR.MobyPark-SessionWorker.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj",
+        "projectUniqueName": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark-SessionWorker\\HR.MobyPark-SessionWorker.csproj",
         "projectName": "HR.MobyPark-SessionWorker",
-        "projectPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj",
-        "packagesPath": "/Users/dannydesnoo/.nuget/packages/",
-        "outputPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-SessionWorker/obj/",
+        "projectPath": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark-SessionWorker\\HR.MobyPark-SessionWorker.csproj",
+        "packagesPath": "C:\\Users\\Hengy\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark-SessionWorker\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/dannydesnoo/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Hengy\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -69,7 +69,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",

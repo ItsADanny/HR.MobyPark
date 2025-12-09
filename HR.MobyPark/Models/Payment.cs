@@ -174,8 +174,8 @@ public class Payment: aModel, iDatabase
             string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
             string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
 
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = reader.GetDateTime("CreateDateTime");
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = reader.GetDateTime("UpdateDateTime");
 
             Payment newPayment = new()
             {
@@ -185,12 +185,12 @@ public class Payment: aModel, iDatabase
                 SessionID = Convert.ToInt32(reader["SessionID"].ToString()),
                 UserID = Convert.ToInt32(reader["UserID"].ToString()),
                 Amount = Convert.ToDecimal(reader["Amount"].ToString()),
-                Date = Convert.ToDateTime(reader["Date"].ToString()),
+                Date = reader.GetDateTime("Date"),
                 Method = reader["Method"].ToString(),
                 Issuer = reader["Issuer"].ToString(),
                 Bank = reader["Bank"].ToString(),
                 Hash = reader["Hash"].ToString(),
-                CompletedDateTime = Convert.ToDateTime(reader["CompletedDateTime"].ToString()),
+                CompletedDateTime = reader.GetDateTime("CompletedDateTime"),
                 CreateDateTime = RCreateDateTime,
                 UpdateDateTime = RUpdateDateTime
             };
