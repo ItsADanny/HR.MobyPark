@@ -1,3 +1,4 @@
+using System.Globalization;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 
@@ -142,14 +143,14 @@ public class ParkingLot : aModel, iDatabase
         return returnValue;
     }
 
-    //useful methods to check parking lots state
+    //useful methods to check parking lots stat
     public bool HasFreeSpots() => Reserved < Capacity;
     public int GetAvailableSpots() => Capacity - Reserved;
     public bool IsFull() => Reserved >= Capacity;
 
-    public override string ToInsertSQL() => $"INSERT INTO ParkingLots (Name, Location, Address, Capacity, Tariff, DayTariff, Lat, Lon) VALUES (\"{Name}\", \"{Location}\", \"{Address}\", {Capacity}, {Tariff}, {DayTariff}, {Latitude}, {Longitude})";
+    public override string ToInsertSQL() => $"INSERT INTO ParkingLots (Name, Location, Address, Capacity, Tariff, DayTariff, Lat, Lon) VALUES (\"{Name}\", \"{Location}\", \"{Address}\", {Capacity}, {Tariff.ToString(CultureInfo.InvariantCulture)}, {DayTariff.ToString(CultureInfo.InvariantCulture)}, {Latitude.ToString(CultureInfo.InvariantCulture)}, {Longitude.ToString(CultureInfo.InvariantCulture)})";
 
-    public override string ToUpdateSQL() => $"UPDATE ParkingLots SET Name = \"{Name}\", Location = \"{Location}\", Address = \"{Address}\", Capacity = {Capacity}, Tariff = {Tariff}, DayTariff = {DayTariff}, Lat = {Latitude}, Lon = {Longitude} WHERE ID = {ID}";
+    public override string ToUpdateSQL() => $"UPDATE ParkingLots SET Name = \"{Name}\", Location = \"{Location}\", Address = \"{Address}\", Capacity = {Capacity}, Tariff = {Tariff.ToString(CultureInfo.InvariantCulture)}, DayTariff = {DayTariff.ToString(CultureInfo.InvariantCulture)}, Lat = {Latitude.ToString(CultureInfo.InvariantCulture)}, Lon = {Longitude.ToString(CultureInfo.InvariantCulture)} WHERE ID = {ID}";
 
     public override string ToDeleteSQL() => $"DELETE FROM ParkingLots WHERE ID = {ID}";
 

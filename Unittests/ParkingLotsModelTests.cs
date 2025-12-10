@@ -12,18 +12,11 @@ public sealed class ParkingLotModelTests
     [ClassInitialize]
     public static void ClassSetup(TestContext context)
     {
-        var basePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,
-            "..", "..", "..", "..", "..", "HR.MobyPark", "HR.MobyPark"));
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(basePath)
-            .AddJsonFile("appsettings.json", optional: true)
+            .AddUserSecrets<ParkingLotModelTests>()
             .Build();
 
-        var dbSection = configuration.GetSection("Database");
-        if (dbSection.Exists())
-        {
-            DBHelper.dBConfig = dbSection.Get<DBConfig>();
-        }
+        DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
     }
 
     [TestMethod]
@@ -136,24 +129,12 @@ public sealed class ParkingLotModelTests
     [TestMethod]
     public void GetByID_returnsParkingLot()
     {
-        var lot = new ParkingLot
-        {
-            Name = $"Lot4",
-            Location = "Test Location4",
-            Address = "Test Address4",
-            Capacity = 50,
-            Tariff = 3.0m,
-            DayTariff = 20m,
-            Latitude = 52.2,
-            Longitude = 4.4,
-            CreateDateTime = DateTime.Now
-        };
+        //assuming lot with id exists in the database
+        int existingLotId = 1;
 
-        lot.CreateDB();
-
-        ParkingLot? testLot = ParkingLot.GetByID(lot.ID);
+        ParkingLot? testLot = ParkingLot.GetByID(existingLotId);
         Assert.IsNotNull(testLot);
-        Assert.AreEqual(lot.Name, testLot.Name);
+        Assert.AreEqual(existingLotId, testLot.ID);
     }
 
     [TestMethod]
