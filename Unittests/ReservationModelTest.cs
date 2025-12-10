@@ -212,10 +212,8 @@ public sealed class ReservationModelTests
     [TestMethod]
     public void GetByID_ReturnsReservationWhenExists()
     {
-        //reservation met hardcoded ID make
         Reservation reservation = new Reservation
         {
-            ID = 9999,  
             UserID = 93,
             ParkingLotID = 4,
             VehicleID = 7,
@@ -229,10 +227,11 @@ public sealed class ReservationModelTests
 
         reservation.CreateDB();
 
-        Reservation? retrieved = Reservation.GetByID(9999);
-
-        Assert.IsNotNull(retrieved);
-        Assert.AreEqual(9999, retrieved.ID);
+        List<Reservation> allReservations = Reservation.GetAll();
+        Reservation? created = allReservations.FirstOrDefault(r => r.UserID == 93 && r.ParkingLotID == 4);
+        
+        Reservation? retrieved = Reservation.GetByID(created.ID);
+        Assert.AreEqual(created.ID, retrieved.ID);
 
     }
 }
