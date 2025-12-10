@@ -3475,19 +3475,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Hengy\\.nuget\\packages\\": {}
+    "C:\\Users\\hengyi\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\Unittests\\MyProject.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\Unittests\\MyProject.Tests.csproj",
       "projectName": "MyProject.Tests",
-      "projectPath": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\Unittests\\MyProject.Tests.csproj",
-      "packagesPath": "C:\\Users\\Hengy\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\Unittests\\obj\\",
+      "projectPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\Unittests\\MyProject.Tests.csproj",
+      "packagesPath": "C:\\Users\\hengyi\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\Unittests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Hengy\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\hengyi\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -3499,8 +3499,8 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj": {
-              "projectPath": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj"
+            "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj": {
+              "projectPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj"
             }
           }
         }

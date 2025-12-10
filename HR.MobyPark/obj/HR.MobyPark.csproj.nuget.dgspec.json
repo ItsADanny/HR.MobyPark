@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj": {}
+    "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj": {
+    "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj",
+        "projectUniqueName": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj",
         "projectName": "HR.MobyPark",
-        "projectPath": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj",
-        "packagesPath": "C:\\Users\\Hengy\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark\\obj\\",
+        "projectPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj",
+        "packagesPath": "C:\\Users\\hengyi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Hengy\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\hengyi\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
