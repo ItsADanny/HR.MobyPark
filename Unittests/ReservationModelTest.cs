@@ -18,6 +18,7 @@ public sealed class ReservationModelTests
             .SetBasePath(basePath)
             // database credentials laden vanuit user secrets
             .AddUserSecrets("HR.MobyPark")
+            .AddUserSecrets("847a0f53-58fc-4027-99a3-274a19bdf87a")
             .AddJsonFile("appsettings.json", optional: true)
             .Build();
 
