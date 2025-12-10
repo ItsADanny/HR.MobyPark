@@ -718,26 +718,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ryand\\.nuget\\packages\\": {}
+    "C:\\Users\\hengyi\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\INFJAAR2-WEBDEV\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj",
+      "projectUniqueName": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj",
       "projectName": "HR.MobyPark",
-      "projectPath": "c:\\INFJAAR2-WEBDEV\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj",
-      "packagesPath": "C:\\Users\\ryand\\.nuget\\packages\\",
-      "outputPath": "c:\\INFJAAR2-WEBDEV\\HR.MobyPark\\HR.MobyPark\\obj\\",
+      "projectPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj",
+      "packagesPath": "C:\\Users\\hengyi\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\ryand\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\hengyi\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
