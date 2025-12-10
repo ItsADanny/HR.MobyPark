@@ -31,7 +31,7 @@ public class BillingController : ControllerBase
         // ...
 
         //Return the result
-        return Ok(MUser.ToJSON(foundUser));
+        return Ok();
     }
 
     [HttpGet("{userID:int}")]
@@ -57,8 +57,11 @@ public class BillingController : ControllerBase
 
         // misschien zoiets? maar dan hebben we ook UserID nodig nee?
         // Billing? foundBilling = Billing.GetByUserID(userID);
+        // if (foundBilling is null) return NotFound($"No billing found matching ID: {id}");
+
 
         //Return the result
-        return Ok(MUser.ToJSON(foundUser));
+        // return Ok(Billing.ToJSON(foundBilling));
+        return Ok();
     }
 }
