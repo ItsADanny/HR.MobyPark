@@ -16,6 +16,8 @@ public sealed class ReservationModelTests
             "..", "..", "..", "..", "..", "HR.MobyPark", "HR.MobyPark"));
         var configuration = new ConfigurationBuilder()
             .SetBasePath(basePath)
+            // database credentials laden vanuit user secrets
+            .AddUserSecrets("HR.MobyPark")
             .AddJsonFile("appsettings.json", optional: true)
             .Build();
 

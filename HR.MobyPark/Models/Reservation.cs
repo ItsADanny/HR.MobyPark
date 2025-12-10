@@ -177,9 +177,11 @@ public class Reservation : aModel, iDatabase
         return returnValue;
     }
 
-    public override string ToInsertSQL() => $"INSERT INTO Reservations (UserID, ParkingLotID, VehicleID, StartDateTime, EndDateTime) VALUES ({UserID}, {ParkingLotID}, {VehicleID}, {StartDateTime:YYYY-MM-DD hh:mm:ss}, {EndDateTime:YYYY-MM-DD hh:mm:ss})";
+    // public override string ToInsertSQL() => $"INSERT INTO Reservations (UserID, ParkingLotID, VehicleID, StartDateTime, EndDateTime) VALUES ({UserID}, {ParkingLotID}, {VehicleID}, {StartDateTime:YYYY-MM-DD hh:mm:ss}, {EndDateTime:YYYY-MM-DD hh:mm:ss})";
+    public override string ToInsertSQL() => $"INSERT INTO Reservations (UserID, ParkingLotID, VehicleID, StartDateTime, EndDateTime) VALUES ({UserID}, {ParkingLotID}, {VehicleID}, '{StartDateTime:yyyy-MM-dd HH:mm:ss}', '{EndDateTime:yyyy-MM-dd HH:mm:ss}')";
 
-    public override string ToUpdateSQL() => $"UPDATE Reservations SET UserID = {UserID}, ParkingLotID = {ParkingLotID}, VehicleID = {VehicleID}, StartDateTime = {StartDateTime:YYYY-MM-DD hh:mm:ss}, EndDateTime = {EndDateTime:YYYY-MM-DD hh:mm:ss} WHERE ID = {ID}";
+    // public override string ToUpdateSQL() => $"UPDATE Reservations SET UserID = {UserID}, ParkingLotID = {ParkingLotID}, VehicleID = {VehicleID}, StartDateTime = {StartDateTime:YYYY-MM-DD hh:mm:ss}, EndDateTime = {EndDateTime:YYYY-MM-DD hh:mm:ss} WHERE ID = {ID}";
+    public override string ToUpdateSQL() => $"UPDATE Reservations SET UserID = {UserID}, ParkingLotID = {ParkingLotID}, VehicleID = {VehicleID}, StartDateTime = '{StartDateTime:yyyy-MM-dd HH:mm:ss}', EndDateTime = '{EndDateTime:yyyy-MM-dd HH:mm:ss}' WHERE ID = {ID}";
 
     public override string ToDeleteSQL() => $"DELETE FROM Reservations WHERE ID = {ID}";
 
