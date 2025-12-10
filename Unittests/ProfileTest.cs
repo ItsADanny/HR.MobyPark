@@ -8,16 +8,16 @@ public sealed class ProfileControllerTests
     public void GetProfile_NullAuthorization()
     {
         var controller = new ProfileController();
-        var result = controller.Profile(null!);
+        var result = controller.GETProfile(null!);
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
 
     [TestMethod]
-    public void GetBilling_EmptyAuthorization()
+    public void GetProfile_EmptyAuthorization()
     {
         var controller = new BillingController();
-        var result = controller.GET_Billing("");
+        var result = controller.GETProfile("");
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
