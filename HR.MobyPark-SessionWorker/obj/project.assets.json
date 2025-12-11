@@ -1994,19 +1994,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Hengy\\.nuget\\packages\\": {}
+    "C:\\Users\\hengyi\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark-SessionWorker\\HR.MobyPark-SessionWorker.csproj",
+      "projectUniqueName": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-SessionWorker\\HR.MobyPark-SessionWorker.csproj",
       "projectName": "HR.MobyPark-SessionWorker",
-      "projectPath": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark-SessionWorker\\HR.MobyPark-SessionWorker.csproj",
-      "packagesPath": "C:\\Users\\Hengy\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Hengy\\Documents\\project MobyPark\\HR.MobyPark\\HR.MobyPark-SessionWorker\\obj\\",
+      "projectPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-SessionWorker\\HR.MobyPark-SessionWorker.csproj",
+      "packagesPath": "C:\\Users\\hengyi\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-SessionWorker\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Hengy\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\hengyi\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"

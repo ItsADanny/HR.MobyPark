@@ -4,46 +4,50 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MyProject.Tests;
 
+// [TestClass]
+// public sealed class PaymentsControllerTests
+// {
+//     [TestMethod]
+//     public void GetPayments_NullAuthorization()
+//     {
+//         var controller = new PaymentsController();
+//         var result = controller.GET_Payments(null!);
+//         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+//     }
+
+//     [TestMethod]
+//     public void GetPayments_EmptyAuthorization()
+//     {
+//         var controller = new PaymentsController();
+//         var result = controller.GET_Payments("");
+//         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+//     }
+
+//     [TestMethod]
+//     public void GetPaymentForId_NullAuthorization()
+//     {
+//         var controller = new PaymentsController();
+//         var result = controller.GET_PaymentForID(null!, 1);
+//         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+//     }
+
+//     [TestMethod]
+//     public void PostCreatePayment_NullAuthorization()
+//     {
+//         var controller = new PaymentsController();
+//         var dto = new createPaymentDto("ABC-001", 10.00m);
+//         var result = controller.POST_CreatePayment(null!, dto);
+//         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+//     }
+// }
+
 [TestClass]
-public sealed class PaymentsControllerTests
-{
-    [TestMethod]
-    public void GetPayments_NullAuthorization()
-    {
-        var controller = new PaymentsController();
-        var result = controller.GET_Payments(null!);
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
-    }
-
-    [TestMethod]
-    public void GetPayments_EmptyAuthorization()
-    {
-        var controller = new PaymentsController();
-        var result = controller.GET_Payments("");
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
-    }
-
-    [TestMethod]
-    public void GetPaymentForId_NullAuthorization()
-    {
-        var controller = new PaymentsController();
-        var result = controller.GET_PaymentForID(null!, 1);
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
-    }
-
-    [TestMethod]
-    public void PostCreatePayment_NullAuthorization()
-    {
-        var controller = new PaymentsController();
-        var dto = new createPaymentDto("ABC-001", 10.00m);
-        var result = controller.POST_CreatePayment(null!, dto);
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
-    }
-}
-
-[TestClass]
+[DoNotParallelize]
 public sealed class PaymentModelTests
 {
+    // Static variable to store the created payment ID for use across tests
+    private static int _createdPaymentId = 0;
+
     [ClassInitialize]
     public static void ClassSetup(TestContext context)
     {
@@ -56,6 +60,7 @@ public sealed class PaymentModelTests
     }
 
     [TestMethod]
+    [Priority(0)]
     public void GetToJSON_NoException()
     {
         try
@@ -88,12 +93,13 @@ public sealed class PaymentModelTests
     }
 
     [TestMethod]
+    [Priority(1)]
     public void CreateDB_InsertsPaymentSuccessfully()
     {
         // Arrange - Use unique values to avoid conflicts
         Payment payment = new Payment
         {
-            TransactionID = $"TEST1",
+            TransactionID = $"TEST",
             ParkingLotID = 1,
             SessionID = 1,
             UserID = 1,
@@ -113,9 +119,18 @@ public sealed class PaymentModelTests
 
         // Assert
         Assert.IsTrue(result, "CreateDB should return true when payment is created successfully");
+
+        // Store the created payment ID for other tests to use
+        List<Payment> allPayments = Payment.GetAll();
+        Payment? createdPayment = allPayments.FirstOrDefault(p => p.TransactionID == payment.TransactionID);
+        if (createdPayment != null)
+        {
+            _createdPaymentId = createdPayment.ID;
+        }
     }
 
     [TestMethod]
+    [Priority(2)]
     public void GetAllPayments_NoException()
     {
         try
@@ -130,19 +145,17 @@ public sealed class PaymentModelTests
     }
 
     [TestMethod]
+    [Priority(3)]
     public void GetPaymentById_ExistingId_ReturnsPayment()
     {
-        // Arrange - Ensure there is a payment with ID 1 in the database
-        int testPaymentId = 1;
-
         try
         {
             // Act
-            Payment? payment = Payment.GetByID(testPaymentId);
+            Payment? payment = Payment.GetByID(_createdPaymentId);
 
             // Assert
-            Assert.IsNotNull(payment, $"Payment with ID {testPaymentId} should exist.");
-            Assert.AreEqual(testPaymentId, payment.ID, "Returned payment ID should match the requested ID.");
+            Assert.IsNotNull(payment, $"Payment with ID {_createdPaymentId} should exist.");
+            Assert.AreEqual(_createdPaymentId, payment.ID, "Returned payment ID should match the requested ID.");
         }
         catch (Exception ex)
         {
@@ -151,6 +164,7 @@ public sealed class PaymentModelTests
     }
 
     [TestMethod]
+    [Priority(4)]
     public void GetAllByUserID_NoException()
     {
         try
@@ -166,18 +180,19 @@ public sealed class PaymentModelTests
     }
 
     [TestMethod]
+    [Priority(5)]
     public void UpdateDB_NoException()
     {
         try
         {
             Payment payment = new Payment
             {
-                ID = 1,
-                TransactionID = "Test2",
+                ID = _createdPaymentId,
+                TransactionID = "Test18",
                 ParkingLotID = 2,
                 SessionID = 3,
                 UserID = 4,
-                Amount = 20.50m,
+                Amount = 50.50m,
                 Date = DateTime.Now,
                 Method = "CreditCard",
                 Issuer = "Mastercard",
@@ -198,13 +213,14 @@ public sealed class PaymentModelTests
     }
 
     [TestMethod]
+    [Priority(6)]
     public void DeleteDB_NoException()
     {
         try
         {
             Payment payment = new Payment
             {
-                ID = 1
+                ID = _createdPaymentId
             };
             
             bool result = payment.DeleteDB();

@@ -202,9 +202,9 @@ public class Payment: aModel, iDatabase
         return returnValue;
     }
 
-    public override string ToInsertSQL() => $"INSERT INTO Transaction (TransactionID, ParkingLotID, SessionID, UserID, Amount, Date, Method, Issuer, Bank, Hash, CompletedDateTime) VALUES (\"{TransactionID}\", {ParkingLotID}, {SessionID}, {UserID}, {Amount}, '{Date:yyyy-MM-dd HH:mm:ss}', \"{Method}\", \"{Issuer}\", \"{Bank}\", \"{Hash}\", '{CompletedDateTime:yyyy-MM-dd HH:mm:ss}')";
+    public override string ToInsertSQL() => $"INSERT INTO Transaction (TransactionID, ParkingLotID, SessionID, UserID, Amount, Date, Method, Issuer, Bank, Hash, CompletedDateTime, CreateDateTime) VALUES (\"{TransactionID}\", {ParkingLotID}, {SessionID}, {UserID}, {Amount}, '{Date:yyyy-MM-dd HH:mm:ss}', \"{Method}\", \"{Issuer}\", \"{Bank}\", \"{Hash}\", '{CompletedDateTime:yyyy-MM-dd HH:mm:ss}', '{CreateDateTime:yyyy-MM-dd HH:mm:ss}')";
 
-    public override string ToUpdateSQL() => $"UPDATE Transaction SET TransactionID = \"{TransactionID}\", ParkingLotID = {ParkingLotID}, SessionID = {SessionID}, UserID = {UserID}, Amount = {Amount}, Date = '{Date:yyyy-MM-dd HH:mm:ss}', Method = \"{Method}\", Issuer = \"{Issuer}\", Bank = \"{Bank}\", Hash = \"{Hash}\", CompletedDateTime = '{CompletedDateTime:yyyy-MM-dd HH:mm:ss}' WHERE ID = {ID}";
+    public override string ToUpdateSQL() => $"UPDATE Transaction SET TransactionID = \"{TransactionID}\", ParkingLotID = {ParkingLotID}, SessionID = {SessionID}, UserID = {UserID}, Amount = {Amount}, Date = '{Date:yyyy-MM-dd HH:mm:ss}', Method = \"{Method}\", Issuer = \"{Issuer}\", Bank = \"{Bank}\", Hash = \"{Hash}\", CompletedDateTime = '{CompletedDateTime:yyyy-MM-dd HH:mm:ss}', UpdateDateTime = '{DateTime.Now:yyyy-MM-dd HH:mm:ss}' WHERE ID = {ID}";
 
     public override string ToDeleteSQL() => $"DELETE FROM Transaction WHERE ID = {ID}";
 
