@@ -9,16 +9,12 @@ public sealed class BillingControllerTest
 public sealed class BillingModelTests
 {
     [ClassInitialize]
-    public static void ClassInitialize(TestContext context)
+    public static void ClassSetup(TestContext context)
     {
-        // Load configuration from backend's appsettings.Development.json
-        var basePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\..\HR.MobyPark\HR.MobyPark"));
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(basePath)
-            .AddJsonFile("appsettings.Development.json")
+            .AddUserSecrets<BillingModelTests>()
             .Build();
 
-        // Initialize DBHelper with configuration from backend
         DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
     }
 

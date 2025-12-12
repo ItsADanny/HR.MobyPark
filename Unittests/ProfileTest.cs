@@ -1,5 +1,5 @@
 [TestClass]
-public sealed class ProfileControllerTests
+public class ProfileControllerTests
 {
     // ------------------------------
     // GET
@@ -16,7 +16,7 @@ public sealed class ProfileControllerTests
     [TestMethod]
     public void GetProfile_EmptyAuthorization()
     {
-        var controller = new BillingController();
+        var controller = new ProfileController();
         var result = controller.GETProfile("");
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
@@ -46,4 +46,20 @@ public sealed class ProfileControllerTests
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
+}
+
+[TestClass]
+public class ProfileModelTests
+{
+    [ClassInitialize]
+    public static void ClassSetup(TestContext context)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddUserSecrets<ProfileModelTests>()
+            .Build();
+
+        DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
+    }   
+
+    // wat nu?
 }
