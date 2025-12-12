@@ -3,7 +3,46 @@ namespace MyProject.Tests;
 [TestClass]
 public sealed class BillingControllerTest
 {
-    // Controller not yet made
+    // ------------------------------
+    // GET
+    // ------------------------------
+    [TestMethod]
+    public void GetBilling_NullAuthorization()
+    {
+        var controller = new BillingController();
+        var result = controller.GET_Billing(null!);
+
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void GetBilling_EmptyAuthorization()
+    {
+        var controller = new BillingController();
+        var result = controller.GET_Billing("");
+
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    // deze twee nog afmaken
+    [TestMethod]
+    public void GetBillingForSpecificUser_NullAuthorization()
+    {
+        var controller = new BillingController();
+        var result = controller.GET_BillingForSpecificUser(null!);
+
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void GetBillingForSpecificUser_EmptyAuthorization()
+    {
+        var controller = new BillingController();
+        var result = controller.GET_BillingForSpecificUser("");
+
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
 }
 
 public sealed class BillingModelTests
