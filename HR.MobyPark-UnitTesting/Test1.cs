@@ -1,4 +1,4 @@
-﻿namespace MyProject.Tests;
+﻿namespace HR.MobyPark_UnitTesting;
 
 [TestClass]
 public sealed class Test1

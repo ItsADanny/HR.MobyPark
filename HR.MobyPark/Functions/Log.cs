@@ -51,6 +51,8 @@ public static class Log
         _mWriteLine(_mGetTimeStamp(), line);
     }
 
+    public static void WriteErrorLine(string errorLine) => WriteErrorLine(_mGetTimeStamp(), errorLine);
+
     public static void WriteErrorLine(string? dateTime, string errorLine)
     {
         string ErrorIncidentCode = _mGenIncCode();
