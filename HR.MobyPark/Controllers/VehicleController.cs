@@ -26,15 +26,13 @@ public class VehicleController : ControllerBase
         //return a Unauthorized error
         if (!foundUser.Role.User.HasReadPremission()) return Unauthorized();
 
-
-        // placeholder
-        return Ok();
-
+        // niet sure of het zo moet?
+        return Ok(Vehicle.ToJSON(Vehicle.GetAll()));
 
     }
 
     [HttpGet("reservations")]
-    public ActionResult<string> GET_VehiclesReservations([FromHeader(Name = "authorization")] string authorization)
+    public ActionResult<string> GET_VehiclesReservations([FromHeader(Name = "authorization")] string authorization, int ID)
     {
         //Check to see if the authorization has been filled, If it isn't filled. Return Unauthorized error
         if (string.IsNullOrEmpty(authorization)) return Unauthorized();
@@ -51,8 +49,15 @@ public class VehicleController : ControllerBase
         //return a Unauthorized error
         if (!foundUser.Role.User.HasReadPremission()) return Unauthorized();
 
+        // ik heb no clue wat hier moet komen
+        // ???
+        List<Vehicle> vehicles = Vehicle.GetByID(ID);
+
+        //geen idee
+
         // placeholder
-        return Ok();
+        return Ok(Vehicle.ToJSON(vehicles));    
+
     }
 
     [HttpGet("history")]
@@ -73,6 +78,8 @@ public class VehicleController : ControllerBase
         //return a Unauthorized error
         if (!foundUser.Role.User.HasReadPremission()) return Unauthorized();
 
+        // volgensmij heeft dit iets te maken met reservaties van voertuigen ook
+        
         // placeholder
         return Ok();
     }

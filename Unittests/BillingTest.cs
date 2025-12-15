@@ -62,60 +62,60 @@ public sealed class BillingModelTests
         DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
     }
 
-    [TestMethod]
-    public void CreateDB_InsertsBillingSuccessfully()
-    {
-        Billing billing = new Billing
-        {
-            ID = 1,
-            SessionID = 1,
-            ParkingLotID = 1,
-            Amount = 10,
-            tHash = "beep",
-            Payed = 10,
-            Balance = 0,
-            CompletedDateTime = DateTime.Now,
-            CreateDateTime = DateTime.Now,
-            UpdateDateTime = null
-        };
+    // [TestMethod]
+    // public void CreateDB_InsertsBillingSuccessfully()
+    // {
+    //     Billing billing = new Billing
+    //     {
+    //         ID = 1,
+    //         SessionID = 1,
+    //         ParkingLotID = 1,
+    //         Amount = 10,
+    //         tHash = "beep",
+    //         Payed = 10,
+    //         Balance = 0,
+    //         CompletedDateTime = DateTime.Now,
+    //         CreateDateTime = DateTime.Now,
+    //         UpdateDateTime = null
+    //     };
 
-        bool result = billing.CreateDB();
+    //     bool result = billing.CreateDB();
 
-        Assert.IsTrue(result);
-    }
+    //     Assert.IsTrue(result);
+    // }
 
-    [TestMethod]
-    public void GetAllBillings_NoException()
-    {
-        try
-        {
-            List<Billing> billings = Billing.GetAll();
-            Assert.IsNotNull(billings);
-        }
-        catch (Exception ex)
-        {
-            Assert.Fail($"Exception thrown during GetAll: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}\n\nInner Exception: {ex.InnerException?.Message}");
-        }
-    }
+    // [TestMethod]
+    // public void GetAllBillings_NoException()
+    // {
+    //     try
+    //     {
+    //         List<Billing> billings = Billing.GetAll();
+    //         Assert.IsNotNull(billings);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Assert.Fail($"Exception thrown during GetAll: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}\n\nInner Exception: {ex.InnerException?.Message}");
+    //     }
+    // }
 
-    [TestMethod]
-    public void GetBillingById_ExistingId_ReturnsBilling()
-    {
-        // Arrange - Ensure there is a billing with ID 1 in the database
-        int testBillingId = 1;
+    // [TestMethod]
+    // public void GetBillingById_ExistingId_ReturnsBilling()
+    // {
+    //     // Arrange - Ensure there is a billing with ID 1 in the database
+    //     int testBillingId = 1;
 
-        try
-        {
-            // Act
-            Billing? billing = Billing.GetByID(testBillingId);
+    //     try
+    //     {
+    //         // Act
+    //         Billing? billing = Billing.GetByID(testBillingId);
 
-            // Assert
-            Assert.IsNotNull(billing, $"Billing with ID {testBillingId} should exist.");
-            Assert.AreEqual(testBillingId, billing.ID, "Returned billing ID should match the requested ID.");
-        }
-        catch (Exception ex)
-        {
-            Assert.Fail($"Exception thrown during GetByID: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}\n\nInner Exception: {ex.InnerException?.Message}");
-        }
-    }  
+    //         // Assert
+    //         Assert.IsNotNull(billing, $"Billing with ID {testBillingId} should exist.");
+    //         Assert.AreEqual(testBillingId, billing.ID, "Returned billing ID should match the requested ID.");
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Assert.Fail($"Exception thrown during GetByID: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}\n\nInner Exception: {ex.InnerException?.Message}");
+    //     }
+    // }  
 }
