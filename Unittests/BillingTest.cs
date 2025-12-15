@@ -1,3 +1,7 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc;
+
 namespace MyProject.Tests;
 
 [TestClass]
@@ -29,7 +33,7 @@ public sealed class BillingControllerTest
     public void GetBillingForSpecificUser_NullAuthorization()
     {
         var controller = new BillingController();
-        var result = controller.GET_BillingForSpecificUser(null!);
+        var result = controller.GET_BillingForSpecificUser(null!, 1);
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
@@ -38,13 +42,14 @@ public sealed class BillingControllerTest
     public void GetBillingForSpecificUser_EmptyAuthorization()
     {
         var controller = new BillingController();
-        var result = controller.GET_BillingForSpecificUser("");
+        var result = controller.GET_BillingForSpecificUser("", 1);
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
 
 }
 
+[TestClass]
 public sealed class BillingModelTests
 {
     [ClassInitialize]
@@ -62,7 +67,7 @@ public sealed class BillingModelTests
     {
         Billing billing = new Billing
         {
-            BillingId = 1,
+            ID = 1,
             SessionID = 1,
             ParkingLotID = 1,
             Amount = 10,

@@ -132,6 +132,50 @@ public class Billing : aModel, iDatabase
         return returnValue;
     }
 
+    public static List<Billing> GetAllByUserID(int userID)
+    {
+        List<Billing> returnValue = [];
+
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        cmd.Connection = conn;
+        cmd.CommandText = ToSelectAllSQL();
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
+            Billing newBilling = new()
+            {
+                ID = Convert.ToInt32(reader["ID"].ToString()),
+                SessionID = Convert.ToInt32(reader["SessionID"].ToString()),
+                ParkingLotID = Convert.ToInt32(reader["ParkingLotID"].ToString()),
+                Amount = Convert.ToDecimal(reader["Amount"].ToString()),
+                tHash = reader["tHash"].ToString(),
+                Payed = Convert.ToDecimal(reader["Payed"].ToString()),
+                Balance = Convert.ToDecimal(reader["Balance"].ToString()),
+                CompletedDateTime = Convert.ToDateTime(reader["CompletedDateTime"].ToString()),
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
+            };
+
+            returnValue.Add(newBilling);
+        }
+
+        conn.Close();
+        return returnValue;
+    }
+
 
     public override string ToInsertSQL() => $"INSERT INTO Billing (SessionID, ParkingLotID, Amount, tHash, Payed, Balance, CompletedDateTime) VALUES ({SessionID}, {ParkingLotID}, {Amount}, \"{tHash}\", {Payed}, {Balance}, {CompletedDateTime})";
 

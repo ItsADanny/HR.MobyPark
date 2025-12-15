@@ -24,14 +24,13 @@ public class BillingController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.User.HasReadPremission()) return Unauthorized();
+        if (!foundUser.Role.Payments.HasReadPremission()) return Unauthorized();
 
         // return all the billings from the user
-        // wat moet ik hier doen?
-        // ...
+        List<Billing> foundBillings = Billing.GetAllByUserID(foundUser.ID);
 
         //Return the result
-        return Ok();
+        return Ok(Billing.ToJSON(foundBillings));
     }
 
     [HttpGet("{userID:int}")]
@@ -50,18 +49,12 @@ public class BillingController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.User.HasReadPremission()) return Unauthorized();
-        
-        // hoe check ik admin rights?
+        if (!foundUser.Role.GlobalPayments.HasReadPremission()) return Unauthorized();
 
-
-        // misschien zoiets? maar dan hebben we ook UserID nodig nee?
-        // Billing? foundBilling = Billing.GetByUserID(userID);
-        // if (foundBilling is null) return NotFound($"No billing found matching ID: {id}");
-
+        // return all the billings from the user
+        List<Billing> foundBillings = Billing.GetAllByUserID(userID);
 
         //Return the result
-        // return Ok(Billing.ToJSON(foundBilling));
-        return Ok();
+        return Ok(Billing.ToJSON(foundBillings));
     }
 }
