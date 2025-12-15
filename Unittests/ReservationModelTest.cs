@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Configuration;
@@ -12,21 +11,11 @@ public sealed class ReservationModelTests
     [ClassInitialize]
     public static void ClassSetup(TestContext context)
     {
-        var basePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,
-            "..", "..", "..", "..", "..", "HR.MobyPark", "HR.MobyPark"));
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(basePath)
-            // database credentials laden vanuit user secrets
-            .AddUserSecrets("HR.MobyPark")
-            .AddUserSecrets("847a0f53-58fc-4027-99a3-274a19bdf87a")
-            .AddJsonFile("appsettings.json", optional: true)
+            .AddUserSecrets<ReservationModelTests>()
             .Build();
 
-        var dbSection = configuration.GetSection("Database");
-        if (dbSection.Exists())
-        {
-            DBHelper.dBConfig = dbSection.Get<DBConfig>();
-        }
+        DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
     }
 
     [TestMethod]
