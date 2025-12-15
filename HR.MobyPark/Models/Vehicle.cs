@@ -39,6 +39,10 @@ public class Vehicle : aModel, iDatabase
         UpdateDateTime = updateDateTime;
     }
 
+    public Vehicle()
+    {
+    }
+
     public static JObject ToJSON(Vehicle vehicle)
     {
         JObject returnValue = new()
