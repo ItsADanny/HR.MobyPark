@@ -2275,19 +2275,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/younes/.nuget/packages/": {}
+    "/Users/dannydesnoo/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/younes/Documents/GitHub/HR.MobyPark/MyProject.Tests/MyProject.Tests.csproj",
-      "projectName": "MyProject.Tests",
-      "projectPath": "/Users/younes/Documents/GitHub/HR.MobyPark/MyProject.Tests/MyProject.Tests.csproj",
-      "packagesPath": "/Users/younes/.nuget/packages/",
-      "outputPath": "/Users/younes/Documents/GitHub/HR.MobyPark/MyProject.Tests/obj/",
+      "projectUniqueName": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnitTesting/HR.MobyPark-UnitTesting.csproj",
+      "projectName": "HR.MobyPark-UnitTesting",
+      "projectPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnitTesting/HR.MobyPark-UnitTesting.csproj",
+      "packagesPath": "/Users/dannydesnoo/.nuget/packages/",
+      "outputPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnitTesting/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/younes/.nuget/NuGet/NuGet.Config"
+        "/Users/dannydesnoo/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
