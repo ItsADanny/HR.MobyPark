@@ -5,6 +5,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 [TestClass]
 public sealed class ParkingLotModelTests
@@ -129,20 +131,52 @@ public sealed class ParkingLotModelTests
     [TestMethod]
     public void GetByID_returnsParkingLot()
     {
-        //assuming lot with id exists in the database
-        int existingLotId = 1;
+        var lot = new ParkingLot
+        {
+            Name = $"Lot4",
+            Location = "Test Location4",
+            Address = "Test Address4",
+            Capacity = 75,
+            Tariff = 2.0m,
+            DayTariff = 15m,
+            Latitude = 10.2,
+            Longitude = 7.4,
+            CreateDateTime = DateTime.Now
+        };
+        lot.CreateDB();
 
-        ParkingLot? testLot = ParkingLot.GetByID(existingLotId);
-        Assert.IsNotNull(testLot);
-        Assert.AreEqual(existingLotId, testLot.ID);
+        List<ParkingLot> lotsInDb = ParkingLot.GetAll();
+        ParkingLot? createdLot = lotsInDb.FirstOrDefault(l => l.Name == lot.Name && l.Location == lot.Location);
+
+        ParkingLot? retrievedLot = ParkingLot.GetByID(createdLot.ID);
+        Assert.AreEqual(createdLot.ID, retrievedLot.ID);
     }
 
     [TestMethod]
     public void GetAll_returnsListOfParkingLots()
     {
-        List<ParkingLot> lots = ParkingLot.GetAll();
-        Assert.IsNotNull(lots);
-        Assert.IsTrue(lots.Count > 0);
+        var lot = new ParkingLot
+        {
+            Name = $"Lot6",
+            Location = "Test Location6",
+            Address = "Test Address6",
+            Capacity = 50,
+            Tariff = 3.0m,
+            DayTariff = 20m,
+            Latitude = 52.2,
+            Longitude = 4.4,
+            CreateDateTime = DateTime.Now
+        };
+
+        lot.CreateDB();
+
+        List<ParkingLot> lotsInDb = ParkingLot.GetAll();
+
+        Assert.IsNotNull(lotsInDb);
+        Assert.IsNotEmpty(lotsInDb);
+
+        bool foundLot = lotsInDb.Any(l => l.Name == "Lot6");
+        Assert.IsTrue(foundLot);
     }
 
     [TestMethod]
