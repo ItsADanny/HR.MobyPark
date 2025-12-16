@@ -57,7 +57,7 @@ public class Billing : aModel, iDatabase
         return returnValue;
     }
 
-    public override string ToInsertSQL() => $"INSERT INTO Billing (ID, SessionID, ParkingLotID, Amount, tHash, Payed, Balance, CompletedDateTime, CreateDateTime, UpdateDateTime) VALUES ({ID}, {SessionID}, {ParkingLotID}, {Amount}, \"{tHash}\", {Payed}, {Balance}, '{CompletedDateTime::YYYY-MM-DD hh:mm:ss}', '{CreateDateTime::YYYY-MM-DD hh:mm:ss}', '{UpdateDateTime::YYYY-MM-DD hh:mm:ss}')";
+    public override string ToInsertSQL() => $"INSERT INTO Billing (ID, SessionID, ParkingLotID, Amount, tHash, Payed, Balance, CompletedDateTime, CreateDateTime, UpdateDateTime) VALUES ({ID}, {SessionID}, {ParkingLotID}, {Amount}, \"{tHash}\", {Payed}, {Balance}, '{CompletedDateTime:YYYY-MM-DD hh:mm:ss}', '{CreateDateTime:YYYY-MM-DD hh:mm:ss}', '{UpdateDateTime:YYYY-MM-DD hh:mm:ss}')";
     public static string ToSelectAllSQL() => "SELECT * FROM Billing";
     public static string ToDeleteAllSQL() => "DELETE FROM `Billing`";
 }

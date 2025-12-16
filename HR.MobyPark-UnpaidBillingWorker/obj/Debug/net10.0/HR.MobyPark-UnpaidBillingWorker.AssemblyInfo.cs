@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HR.MobyPark-UnpaidBillingWorker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a5a60b52daa829f72ce3eab382b571f4f467cc8f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cf774a536f49da1d4534982a9b01653f7049f1d3")]
 [assembly: System.Reflection.AssemblyProductAttribute("HR.MobyPark-UnpaidBillingWorker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HR.MobyPark-UnpaidBillingWorker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

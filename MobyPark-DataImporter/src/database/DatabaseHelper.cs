@@ -59,7 +59,7 @@ public static class DatabaseHelper
 
                 User user = new ()
                 {
-                    id = reader["OrigID"].ToString(),
+                    id = reader["ID"].ToString(),
                     username = reader["Username"].ToString(),
                     password = reader["Password"].ToString(),
                     name = reader["Name"].ToString(),
@@ -85,7 +85,7 @@ public static class DatabaseHelper
         }
     } 
 
-    public static User? GetUserByEmail(string email)
+    public static NewUser? GetUserByEmail(string email)
     {
         try
         {
@@ -93,29 +93,22 @@ public static class DatabaseHelper
             MySqlCommand cmd = new MySqlCommand();
 
             conn.Open();
-            string query = $"SELECT * FROM Users WHERE Email = {email}";
+            string query = $"SELECT * FROM Users WHERE Email = \"{email}\"";
             cmd.Connection = conn;
             cmd.CommandText = query;
 
             MySqlDataReader reader = cmd.ExecuteReader();
             if (reader.Read())
             {
-                int? newUserID = null;
-                if (reader["NewUserID"] is not DBNull) newUserID = Convert.ToInt32(reader["NewUserID"].ToString());
-
                 NewUser user = new ()
                 {
                     ID = Convert.ToInt32(reader["ID"].ToString()),
-                    username = reader["Username"].ToString(),
-                    password = reader["Password"].ToString(),
-                    name = reader["Name"].ToString(),
-                    email = reader["Email"].ToString(),
-                    phone = reader["Phone"].ToString(),
-                    role = reader["Role"].ToString(),
-                    created_at = reader["CreatedAt"].ToString(),
-                    birth_year = Convert.ToInt32(reader["BirthYear"].ToString()),
-                    active = Convert.ToBoolean(reader["Active"].ToString()),
-                    NewUserID = newUserID
+                    Username = reader["Username"].ToString(),
+                    Password = reader["Password"].ToString(),
+                    Name = reader["Name"].ToString(),
+                    Email = reader["Email"].ToString(),
+                    Phone = reader["Phone"].ToString(),
+                    BirthDate = DateOnly.FromDateTime(Convert.ToDateTime(reader["BirthDate"].ToString()))
                 };
                 conn.Close();
                 return user;
@@ -126,11 +119,42 @@ public static class DatabaseHelper
                 return null;
             } 
         }
-        catch
+        catch (Exception e)
         {
+            Console.WriteLine(e);
+            Thread.Sleep(100000);
             return null;
         }
     }
 
-    public static bool DoesUserExist(string email) => GetUserByEmail(email) == null ? true : false;
+    public static int? GetNewUserIDFromOld(string orgID)
+    {
+        int? returnValue = null;
+
+        try {
+            MySqlConnection conn = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand();
+
+            conn.Open();
+            cmd.Connection = conn;
+            cmd.CommandText = $"SELECT * FROM LegacyAccounts WHERE OrigID = {orgID}";
+            
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            
+            if(reader.Read())
+            {
+                returnValue = Convert.ToInt32(reader["NewUserID"].ToString());
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Thread.Sleep(3000);
+        }
+
+        return returnValue;
+    }
+
+    public static bool DoesUserExist(string email) => GetUserByEmail(email) == null ? false : true;
 }

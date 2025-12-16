@@ -49,9 +49,9 @@ public static class Import
     {
         //User import file tasks
         // ImUsers();
-        MergeUsers();
-
-        //
+        // MergeUsers();
+        ImVehicle();
+        
     }
     
     private static void ImUsers()
@@ -75,22 +75,55 @@ public static class Import
         ImportToDB(users, "user", Program.JSONFile_Users);
     }
 
-    // private static void ImVehicle()
+    private static void ImVehicle()
+    {
+        List<Vehicle> vehicles;
+
+        Console.Clear();
+        Console.WriteLine("Import USERS started");
+        Console.WriteLine("Retrieving data from \"users.json\"");
+
+        using (StreamReader r = new StreamReader(_importFolderLocation + "/" + Program.JSONFile_Vehicles))
+        {
+            string json = r.ReadToEnd();
+            vehicles = JsonConvert.DeserializeObject<List<Vehicle>>(json);
+            if (vehicles is null)
+            {
+                throw new NullReferenceException("Unable to convert valid data into user objects, please check the import data file \"users.json\"");
+            }
+        }
+
+        foreach (Vehicle vehicle in vehicles)
+        {
+            int? NewUserID = DatabaseHelper.GetNewUserIDFromOld(vehicle.user_id);
+            if (NewUserID is not null) vehicle.user_id = NewUserID.ToString();
+        }
+
+        ImportToDB(vehicles, "vehicle", Program.JSONFile_Vehicles);
+    }
+
+    // private static void ImParkingLots()
     // {
-    //     List<User> vehicles;
+    //     List<ParkingLot> parkingLots;
 
     //     Console.Clear();
-    //     Console.WriteLine("Import USERS started");
-    //     Console.WriteLine("Retrieving data from \"users.json\"");
+    //     Console.WriteLine("Import PARKING-LOTS started");
+    //     Console.WriteLine($"Retrieving data from \"{Program.JSoNFile_ParkingLots}\"");
 
-    //     using (StreamReader r = new StreamReader(_importFolderLocation + "/" + Program.JSONFile_Vehicles))
+    //     using (StreamReader r = new StreamReader(_importFolderLocation + "/" + Program.JSoNFile_ParkingLots))
     //     {
     //         string json = r.ReadToEnd();
-    //         vehicles = JsonConvert.DeserializeObject<List<Vehicle>>(json);
-    //         if (vehicles is null)
+    //         parkingLots = JsonConvert.DeserializeObject<List<ParkingLot>>(json);
+    //         if (parkingLots is null)
     //         {
     //             throw new NullReferenceException("Unable to convert valid data into user objects, please check the import data file \"users.json\"");
     //         }
+    //     }
+
+    //     foreach (Vehicle vehicle in vehicles)
+    //     {
+    //         int? NewUserID = DatabaseHelper.GetNewUserIDFromOld(vehicle.user_id);
+    //         if (NewUserID is not null) vehicle.user_id = NewUserID.ToString();
     //     }
 
     //     ImportToDB(vehicles, "vehicle", Program.JSONFile_Vehicles);
@@ -135,7 +168,6 @@ public static class Import
         int totalLegacyAccounts = 0;
         int newCreatedAccounts = 0;
         int totalMergedAccounts = 0;
-        int totalUnMergableAccounts = 0;
 
         //Create a new Culture info for Year conversion
         CultureInfo format = new CultureInfo("en-US");
@@ -145,19 +177,16 @@ public static class Import
         totalLegacyAccounts = LegacyUsers.Count();
 
         int count = 0;
-        int errors = 0;
         foreach (User legacyUser in LegacyUsers)
         {
             Console.Clear();
             Console.WriteLine(AppUI.GenProgressBar(count, LegacyUsers.Count()));
+            Console.WriteLine($"Progress: {Math.Round((100 / (double) totalLegacyAccounts) * count, 2)}%, {count} / {totalLegacyAccounts}");
             Console.WriteLine($"New accounts created: {newCreatedAccounts}");
             Console.WriteLine($"Accounts merged: {totalMergedAccounts}\n");
-            Console.WriteLine($"Account : {count}");
 
             if (!DatabaseHelper.DoesUserExist(legacyUser.email))
             {
-                Console.WriteLine("Kom ik hier?");
-
                 NewUser newUser = new()
                 {
                     Username = legacyUser.username,
@@ -165,30 +194,34 @@ public static class Import
                     Name = legacyUser.name,
                     Email = legacyUser.email,
                     Phone = legacyUser.phone,
-                    BirthDate = DateOnly.TryParse($"{legacyUser.birth_year}", format, out DateOnly result) ? result : DateOnly.FromDateTime(DateTime.Now),
+                    BirthDate = new DateOnly(legacyUser.birth_year, 1, 1)
                 };
 
                 int response = DatabaseHelper.INSERT(newUser.ToInsertSQL());
                 if(response != 0)
                 {
                     newCreatedAccounts++;
-                    legacyUser.NewUserID = response;
+                    NewUser? foundUser = DatabaseHelper.GetUserByEmail(legacyUser.email);
+                    if (foundUser is null)
+                    {
+                        throw new Exception("Couldn't find just inserted user, something is wrong with or the insert or retrieval");
+                    }
+                    legacyUser.NewUserID = foundUser.ID;
 
-                    DatabaseHelper.Update(legacyUser.ToUpdateSQL());
+                    DatabaseHelper.INSERT(legacyUser.ToUpdateSQL());
                 }
-
-                newCreatedAccounts++;
             }
             else
             {
-                User? foundUser = DatabaseHelper.GetUserByEmail(legacyUser.email);
+                NewUser? foundUser = DatabaseHelper.GetUserByEmail(legacyUser.email);
                 if (foundUser is not null)
                 {
-                    legacyUser.NewUserID = Convert.ToInt32(foundUser.id);
+                    legacyUser.NewUserID = Convert.ToInt32(foundUser.ID);
                     DatabaseHelper.Update(legacyUser.ToUpdateSQL());
                     totalMergedAccounts++;
                 }
             }
+            count++;
         }
     }
 
