@@ -103,6 +103,41 @@ public class Vehicle : aModel, iDatabase
         return null;
     }
 
+    public static List<Vehicle> GetByUserID(int userID)
+    {
+        List<Vehicle> returnValue = [];
+
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        cmd.Connection = conn;
+        cmd.CommandText = ToSelectByUserIDSQL(userID);
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            DateTime CreateDateTime = DateTime.Now;
+            DateTime? UpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
+            Vehicle newVehicle = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
+                                 reader["LicensePlate"].ToString(), reader["Make"].ToString(), reader["Model"].ToString(),
+                                 reader["Color"].ToString(), Convert.ToInt32(reader["Year"].ToString()),
+                                 CreateDateTime, UpdateDateTime);
+
+            returnValue.Add(newVehicle);
+        }
+
+        conn.Close();
+        return returnValue;
+    }
+
     public static List<Vehicle> GetAll()
     {
         List<Vehicle> returnValue = [];
@@ -149,4 +184,6 @@ public class Vehicle : aModel, iDatabase
     public static string ToSelectByIDSQL(int id) => $"SELECT * FROM Vehicles WHERE ID = {id}";
 
     public static string ToSelectAllSQL() => "SELECT * FROM Vehicles";
+
+    public static string ToSelectByUserIDSQL(int userID) => $"SELECT * FROM Vehicles WHERE UserID = {userID}";
 }

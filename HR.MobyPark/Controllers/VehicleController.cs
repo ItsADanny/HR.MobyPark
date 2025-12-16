@@ -24,14 +24,20 @@ public class VehicleController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.User.HasReadPremission()) return Unauthorized();
+        if (!foundUser.Role.Vehicle.HasReadPremission()) return Unauthorized();
+
+        if (foundUser.Role.GlobalVehicle.HasReadPremission())
+        {
+            //Return all vehicles in the system
+            return Ok(Vehicle.ToJSON(Vehicle.GetByID(userID)));
+        }
 
         // niet sure of het zo moet?
-        return Ok(Vehicle.ToJSON(Vehicle.GetAll()));
+        return Ok(Vehicle.ToJSON(Vehicle.GetByID(foundUser.ID)));
 
     }
 
-    [HttpGet("reservations")]
+    [HttpGet("reservations/{ID:int}")]
     public ActionResult<string> GET_VehiclesReservations([FromHeader(Name = "authorization")] string authorization, int ID)
     {
         //Check to see if the authorization has been filled, If it isn't filled. Return Unauthorized error
@@ -47,21 +53,25 @@ public class VehicleController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.User.HasReadPremission()) return Unauthorized();
+        if (!foundUser.Role.Vehicle.HasReadPremission()) return Unauthorized();
 
-        // ik heb no clue wat hier moet komen
-        // ???
-        List<Vehicle> vehicles = Vehicle.GetByID(ID);
+        List<Vehicle> vehicles = Vehicle.GetByUserID(foundUser.ID);
 
-        //geen idee
+        foreach (Vehicle vehicle in vehicles)
+        {
+            if (vehicle.ID == ID)
+            {
+                List<Reservation> reservations = Reservation.GetAllByVehicle(vehicle.ID);
+                return Ok(Reservation.ToJSON(reservations));
+            }
+        }
 
-        // placeholder
-        return Ok(Vehicle.ToJSON(vehicles));    
+        return NotFound("No reservations found for this vehicle");
 
     }
 
-    [HttpGet("history")]
-    public ActionResult<string> GET_VehiclesHistory([FromHeader(Name = "authorization")] string authorization)
+    [HttpGet("history/{ID:int}")]
+    public ActionResult<string> GET_VehiclesHistory([FromHeader(Name = "authorization")] string authorization, int ID)
     {
         //Check to see if the authorization has been filled, If it isn't filled. Return Unauthorized error
         if (string.IsNullOrEmpty(authorization)) return Unauthorized();
@@ -76,12 +86,27 @@ public class VehicleController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.User.HasReadPremission()) return Unauthorized();
+        if (!foundUser.Role.Vehicle.HasReadPremission()) return Unauthorized();
 
-        // volgensmij heeft dit iets te maken met reservaties van voertuigen ook
-        
-        // placeholder
-        return Ok();
+        List<Vehicle> vehicles = Vehicle.GetByUserID(foundUser.ID);
+
+        foreach (Vehicle vehicle in vehicles)
+        {
+            if (vehicle.ID == ID)
+            {
+                List<Reservation> reservations = Reservation.GetAllByVehicle(vehicle.ID);
+                foreach (Reservation reservation in reservations)
+                {
+                    if (reservation.EndDateTime > DateTime.Now)
+                    {
+                        reservations.Remove(reservation);
+                    }
+                }
+                return Ok(Reservation.ToJSON(reservations));
+            }
+        }
+
+        return NotFound("No reservations found for this vehicle");
     }
 
     // ====================================================================================
