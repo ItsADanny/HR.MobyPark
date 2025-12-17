@@ -71,7 +71,7 @@
           }
         }
       },
-      "Microsoft.AspNetCore.OpenApi/10.0.0": {
+      "Microsoft.AspNetCore.OpenApi/10.0.1": {
         "type": "package",
         "dependencies": {
           "Microsoft.OpenApi": "2.0.0"
@@ -404,10 +404,10 @@
         "lib/netstandard2.1/K4os.Hash.xxHash.xml"
       ]
     },
-    "Microsoft.AspNetCore.OpenApi/10.0.0": {
-      "sha512": "0aqIF1t+sA2T62LIeMtXGSiaV7keGQaJnvwwmu+htQdjCaKYARfXAeqp4nHH9y2etpilyZ/tnQzZg4Ilmo/c4Q==",
+    "Microsoft.AspNetCore.OpenApi/10.0.1": {
+      "sha512": "gMY53EggRIFawhue66GanHcm1Tcd0+QzzMwnMl60LrEoJhGgzA9qAbLx6t/ON3hX4flc2NcEbTK1Z5GCLYHcwA==",
       "type": "package",
-      "path": "microsoft.aspnetcore.openapi/10.0.0",
+      "path": "microsoft.aspnetcore.openapi/10.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -418,7 +418,7 @@
         "build/Microsoft.AspNetCore.OpenApi.targets",
         "lib/net10.0/Microsoft.AspNetCore.OpenApi.dll",
         "lib/net10.0/Microsoft.AspNetCore.OpenApi.xml",
-        "microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
+        "microsoft.aspnetcore.openapi.10.0.1.nupkg.sha512",
         "microsoft.aspnetcore.openapi.nuspec"
       ]
     },
@@ -710,7 +710,7 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
-      "Microsoft.AspNetCore.OpenApi >= 10.0.0",
+      "Microsoft.AspNetCore.OpenApi >= 10.0.1",
       "MySql.Data >= 9.5.0",
       "Newtonsoft.Json >= 13.0.4",
       "Swashbuckle.AspNetCore.SwaggerGen >= 10.0.1",
@@ -718,26 +718,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ryand\\.nuget\\packages\\": {}
+    "/Users/dannydesnoo/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\INFJAAR2-WEBDEV\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj",
+      "projectUniqueName": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj",
       "projectName": "HR.MobyPark",
-      "projectPath": "c:\\INFJAAR2-WEBDEV\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj",
-      "packagesPath": "C:\\Users\\ryand\\.nuget\\packages\\",
-      "outputPath": "c:\\INFJAAR2-WEBDEV\\HR.MobyPark\\HR.MobyPark\\obj\\",
+      "projectPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj",
+      "packagesPath": "/Users/dannydesnoo/.nuget/packages/",
+      "outputPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\ryand\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/Users/dannydesnoo/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -764,7 +762,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.OpenApi": {
             "target": "Package",
-            "version": "[10.0.0, )"
+            "version": "[10.0.1, )"
           },
           "MySql.Data": {
             "target": "Package",
@@ -802,7 +800,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

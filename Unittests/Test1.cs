@@ -47,14 +47,25 @@ public sealed class PaymentModelTests
     [ClassInitialize]
     public static void ClassSetup(TestContext context)
     {
-        // Load configuration from backend's appsettings.Development.json
-        var basePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\..\HR.MobyPark\HR.MobyPark"));
+        //[NOTE: ITSDANNY]
+        //This is the old method and incorrect way of loading the data into the config for the database
+        //For this we can use the method Zakaria found for doing this
+
+        // // Load configuration from backend's appsettings.Development.json
+        // var basePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\..\HR.MobyPark\HR.MobyPark"));
+        // var configuration = new ConfigurationBuilder()
+        //     .SetBasePath(basePath)
+        //     .AddJsonFile("appsettings.Development.json")
+        //     .Build();
+
+        // // Initialize DBHelper with configuration from backend
+        // DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
+
+        //[NEW VERSION]
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(basePath)
-            .AddJsonFile("appsettings.Development.json")
+            .AddUserSecrets<PaymentModelTests>()
             .Build();
 
-        // Initialize DBHelper with configuration from backend
         DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
     }
 
