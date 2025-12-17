@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HR.MobyPark-SessionWorker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+586762feefde0c1b12ec8cd9c94c0fc8aa33a6f9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22ca7f06b8fc225ef932c217bedec2be18549863")]
 [assembly: System.Reflection.AssemblyProductAttribute("HR.MobyPark-SessionWorker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HR.MobyPark-SessionWorker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
