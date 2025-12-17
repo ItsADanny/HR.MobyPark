@@ -62,6 +62,71 @@ public sealed class BillingModelTests
         DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
     }
 
+    [TestMethod]
+    public void ToJSON_SingleBilling()
+    {
+        Billing billing = new Billing
+        {
+            ID = 1,
+            SessionID = 1,
+            ParkingLotID = 1,
+            Amount = 10,
+            tHash = "beep",
+            Payed = 10,
+            Balance = 0,
+            CompletedDateTime = DateTime.Now,
+            CreateDateTime = DateTime.Now,
+            UpdateDateTime = DateTime.Now
+        };
+
+        var json = Billing.ToJSON(billing);
+
+        Assert.IsNotNull(json);
+        Assert.AreEqual(billing.ID, json.Value<int>("id"));
+    }
+
+    [TestMethod]
+    public void ToJSON_ListOfBillings()
+    {
+        List<Billing> billings = new List<Billing>
+        {
+            new Billing
+            {
+                ID = 1,
+                SessionID = 1,
+                ParkingLotID = 1,
+                Amount = 10,
+                tHash = "beep",
+                Payed = 10,
+                Balance = 0,
+                CompletedDateTime = DateTime.Now,
+                CreateDateTime = DateTime.Now,
+                UpdateDateTime = DateTime.Now
+            },
+            new Billing
+            {
+                ID = 2,
+                SessionID = 2,
+                ParkingLotID = 2,
+                Amount = 20,
+                tHash = "boop",
+                Payed = 15,
+                Balance = 5,
+                CompletedDateTime = DateTime.Now,
+                CreateDateTime = DateTime.Now,
+                UpdateDateTime = DateTime.Now
+            }
+        };
+
+        var jsonArray = Billing.ToJSON(billings);
+
+        Assert.IsNotNull(jsonArray);
+        Assert.AreEqual(2, jsonArray.Count);
+        Assert.AreEqual(billings[0].ID, jsonArray[0].Value<int>("id"));
+        Assert.AreEqual(billings[1].ID, jsonArray[1].Value<int>("id"));
+    }
+
+    //gaat fout?
     // [TestMethod]
     // public void CreateDB_InsertsBillingSuccessfully()
     // {
@@ -76,7 +141,7 @@ public sealed class BillingModelTests
     //         Balance = 0,
     //         CompletedDateTime = DateTime.Now,
     //         CreateDateTime = DateTime.Now,
-    //         UpdateDateTime = null
+    //         UpdateDateTime = DateTime.Now
     //     };
 
     //     bool result = billing.CreateDB();
@@ -87,35 +152,49 @@ public sealed class BillingModelTests
     // [TestMethod]
     // public void GetAllBillings_NoException()
     // {
-    //     try
+    //     Billing billing= new Billing
     //     {
-    //         List<Billing> billings = Billing.GetAll();
-    //         Assert.IsNotNull(billings);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Assert.Fail($"Exception thrown during GetAll: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}\n\nInner Exception: {ex.InnerException?.Message}");
-    //     }
+    //         ID = 1,
+    //         SessionID = 1,
+    //         ParkingLotID = 1,
+    //         Amount = 10,
+    //         tHash = "beep",
+    //         Payed = 10,
+    //         Balance = 0,
+    //         CompletedDateTime = DateTime.Now,
+    //         CreateDateTime = DateTime.Now,
+    //         UpdateDateTime = DateTime.Now
+    //     };
+
+    //     billing.CreateDB();
+
+    //     List<Billing> billings = Billing.GetAll();
+    //     Assert.IsNotNull(billings);
+    //     Assert.IsTrue(billings.Count > 0);
     // }
 
     // [TestMethod]
     // public void GetBillingById_ExistingId_ReturnsBilling()
     // {
-    //     // Arrange - Ensure there is a billing with ID 1 in the database
-    //     int testBillingId = 1;
-
-    //     try
+    //     var billing = new Billing
     //     {
-    //         // Act
-    //         Billing? billing = Billing.GetByID(testBillingId);
+    //         ID = 1,
+    //         SessionID = 1,
+    //         ParkingLotID = 1,
+    //         Amount = 10,
+    //         tHash = "beep",
+    //         Payed = 10,
+    //         Balance = 0,
+    //         CompletedDateTime = DateTime.Now,
+    //         CreateDateTime = DateTime.Now,
+    //         UpdateDateTime = DateTime.Now
+    //     };
 
-    //         // Assert
-    //         Assert.IsNotNull(billing, $"Billing with ID {testBillingId} should exist.");
-    //         Assert.AreEqual(testBillingId, billing.ID, "Returned billing ID should match the requested ID.");
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Assert.Fail($"Exception thrown during GetByID: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}\n\nInner Exception: {ex.InnerException?.Message}");
-    //     }
+    //     billing.CreateDB();
+
+    //     List<Billing> billingList = Billing.GetAll();
+    //     var retrievedBilling = Billing.GetByID(billingList[0].ID);
+    //     Assert.IsNotNull(retrievedBilling);
     // }  
+
 }
