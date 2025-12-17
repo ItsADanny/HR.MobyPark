@@ -23,9 +23,9 @@ public class UserSession
         UpdateDateTime = updateDateTime;
     }
 
-    public static UserSession? GetByID(int id)
+    public static UserSession? GetByID(DBHelper dbHelper, int id)
     {
-        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
+        MySqlConnection conn = new MySqlConnection(dbHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -56,11 +56,11 @@ public class UserSession
         return null;
     }
 
-    public static List<UserSession> GetAll()
+    public static List<UserSession> GetAll(DBHelper dbHelper)
     {
         List<UserSession> returnValue = [];
 
-        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
+        MySqlConnection conn = new MySqlConnection(dbHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -90,9 +90,9 @@ public class UserSession
         return returnValue;
     }
 
-    public static UserSession? GetUserSession(string authToken)
+    public static UserSession? GetUserSession(DBHelper dbHelper, string authToken)
     {
-        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
+        MySqlConnection conn = new MySqlConnection(dbHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
@@ -124,14 +124,14 @@ public class UserSession
         return null;
     }
 
-    public static bool SessionExist(string token) => GetUserSession(token) is not null;
+    public static bool SessionExist(DBHelper dbHelper, string token) => GetUserSession(dbHelper, token) is not null;
 
-    public static bool RemoveSession(string token)
+    public static bool RemoveSession(DBHelper dbHelper, string token)
     {
-        UserSession? foundSession = GetUserSession(token);
+        UserSession? foundSession = GetUserSession(dbHelper, token);
         if (foundSession is not null)
         {
-            return foundSession.DeleteDB();
+            return foundSession.DeleteDB(dbHelper);
         }
         return false;
     }
@@ -144,5 +144,5 @@ public class UserSession
 
     public static string ToSelectAllSQL() => "SELECT * FROM UserSessions";
 
-    public bool DeleteDB() => DBHelper.Delete(ToDeleteSQL(ID));
+    public bool DeleteDB(DBHelper dbHelper) => dbHelper.Delete(ToDeleteSQL(ID));
 }
