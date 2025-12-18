@@ -1,7 +1,7 @@
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 
 [TestClass]
 public sealed class VehicleTest
@@ -19,15 +19,21 @@ public sealed class VehicleTest
     [TestMethod]
     public void UpdateDB_updatesVehicleSuccessfully()
     {
-        // vehicle with id must be in database
-        int existingVehicleId = 1;
+        var vehicle = new Vehicle
+        {
+            UserID = 10,
+            LicensePlate = "12-df-9",
+            Make = "KIA",
+            Model = "Picanto",
+            Color = "Blue",
+            ModelYear = 2006,
+            CreateDateTime = DateTime.Now
+        };
+        vehicle.CreateDB();
 
-        Vehicle? vehicle = Vehicle.GetByID(existingVehicleId);
-        Assert.IsNotNull(vehicle);
-
-        vehicle.Make = "updatedMakeTest";
-        vehicle.Model = "updatedModelTest";
-        vehicle.Color = "updatedColorTest";
+        vehicle.Make = "updateMake";
+        vehicle.Model = "updateModel";
+        vehicle.Color = "updateColor";
         vehicle.ModelYear = 2025;
         vehicle.UpdateDateTime = DateTime.Now;
 
@@ -36,12 +42,12 @@ public sealed class VehicleTest
         Assert.IsTrue(result);
 
         // reload vehicle to double check
-        Vehicle? updatedVehicle = Vehicle.GetByID(existingVehicleId);
+        Vehicle? updatedVehicle = Vehicle.GetByID(vehicle.ID);
         Assert.IsNotNull(updatedVehicle);
 
-        Assert.AreEqual("updatedMakeTest", updatedVehicle.Make);
-        Assert.AreEqual("updatedModelTest", updatedVehicle.Model);
-        Assert.AreEqual("updatedColorTest", updatedVehicle.Color);
+        Assert.AreEqual("updateMake", updatedVehicle.Make);
+        Assert.AreEqual("updateModel", updatedVehicle.Model);
+        Assert.AreEqual("updateColor", updatedVehicle.Color);
         Assert.AreEqual(2025, updatedVehicle.ModelYear);
     }
 
@@ -86,5 +92,47 @@ public sealed class VehicleTest
         var result = controller.PUT_UpdateVehicle(1, null!, dto);
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public void updateVehicle_validAuth_pass()
+    {
+        var testToken = "update-test-123";
+        var testUserId = 10;
+
+        string insertSql = $"INSERT INTO UserSessions (UserID, Token, CreateDateTime) VALUES ({testUserId}, '{testToken}', NOW())";
+        DBHelper.Create(insertSql);
+
+        var testVehicle = new Vehicle
+        {
+            UserID = 11,
+            LicensePlate = "67-tyt-3",
+            Make = "abc",
+            Model = "bca",
+            Color = "white",
+            ModelYear = 1990,
+            CreateDateTime = DateTime.Now
+        };
+        testVehicle.CreateDB();
+
+        List<Vehicle> vehiclesInDb = Vehicle.GetAll();
+        Vehicle? createdVehicle = vehiclesInDb.FirstOrDefault(v => v.UserID == 11 && v.LicensePlate == "67-tyt-3");
+        Assert.IsNotNull(createdVehicle, "test vehicle failed to create");
+
+        var controller = new VehicleController();
+        var dto = new updateVehicleDto
+        (
+            licensePlate: "12-dfi-3",
+            make: "updatedMake",
+            model: "updatedModel",
+            color: "updatedColor",
+            modelYear: 2024
+        );
+        var result = controller.PUT_UpdateVehicle(createdVehicle.ID, testToken, dto);
+        Assert.IsFalse(result.Result is UnauthorizedResult, "PUT should not return unauthorized ");
+
+        testVehicle.DeleteDB();
+        DBHelper.Delete($"DELETE FROM UserSessions WHERE Token = '{testToken}'");
+        
     }
 }

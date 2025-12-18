@@ -88,7 +88,7 @@ public class VehicleController : ControllerBase
     // PUT
     // ====================================================================================
     [HttpPut("{id:int}")]
-    public ActionResult<string> PUT_UpdateVehicle(int id,[FromHeader(Name = "authorization")] string authorization,[FromBody] vehicleDto dto)
+    public ActionResult<string> PUT_UpdateVehicle(int id,[FromHeader(Name = "authorization")] string authorization,[FromBody] updateVehicleDto dto)
     {
         if (string.IsNullOrEmpty(authorization)) return Unauthorized("Missing authorization header");
 
