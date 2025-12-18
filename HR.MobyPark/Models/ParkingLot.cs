@@ -74,9 +74,9 @@ public class ParkingLot : aModel, iDatabase
             ParkingLot returnValue = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
-                Name = reader["ID"].ToString(),
-                Location = reader["ID"].ToString(),
-                Address = reader["ID"].ToString(),
+                Name = reader["Name"].ToString(),
+                Location = reader["Location"].ToString(),
+                Address = reader["Address"].ToString(),
                 Capacity = Convert.ToInt32(reader["Capacity"].ToString()),
                 Tariff = Convert.ToDecimal(reader["Tariff"].ToString()),
                 DayTariff = Convert.ToDecimal(reader["DayTariff"].ToString()),
@@ -122,9 +122,9 @@ public class ParkingLot : aModel, iDatabase
             ParkingLot newParkingLot = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
-                Name = reader["ID"].ToString(),
-                Location = reader["ID"].ToString(),
-                Address = reader["ID"].ToString(),
+                Name = reader["Name"].ToString(),
+                Location = reader["Location"].ToString(),
+                Address = reader["Address"].ToString(),
                 Capacity = Convert.ToInt32(reader["Capacity"].ToString()),
                 Tariff = Convert.ToDecimal(reader["Tariff"].ToString()),
                 DayTariff = Convert.ToDecimal(reader["DayTariff"].ToString()),
