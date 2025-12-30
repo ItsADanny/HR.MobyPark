@@ -86,7 +86,7 @@ public class PaymentsController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.GlobalPayments.HasWritePremission()) return Unauthorized();
+        if (!foundUser.Role.Payments.HasWritePremission()) return Unauthorized();
 
         //Check to see if the transaction is filled and the amount is equal or above 0
         if (string.IsNullOrEmpty(createPaymentDto.transaction) || createPaymentDto.amount <= 0) return BadRequest("Require field missing");
@@ -102,11 +102,15 @@ public class PaymentsController : ControllerBase
             SessionID = CurrentSession.ID,
             UserID = CurrentSession.UserID,
             Amount = createPaymentDto.amount,
+            Date = DateTime.Now,
             Method = "Unknown", // method is not provided in the request, assuming a default value of "Unknown"
-            Issuer = "Unknown", // issuer is not provided in the request, assuming a default value of "
-            Bank = "Unknown" // bank is not provided in the request, assuming a default value of "Unknown"
+            Issuer = "Unknown", // issuer is not provided in the request, assuming a default value of "Unknown"
+            Bank = "Unknown", // bank is not provided in the request, assuming a default value of "Unknown"
+            Hash = "", // hash is not provided in the request, using empty string
+            CompletedDateTime = DateTime.Now,
+            CreateDateTime = DateTime.Now
         };
-        if (payment.CreateDB()) return Problem("There was an problem while trying to create a payment, try again later");
+        if (!payment.CreateDB()) return Problem("There was an problem while trying to create a payment, try again later");
 
         return Created(); //Originally Ok(), but Created() is more logical here
     }
@@ -127,7 +131,7 @@ public class PaymentsController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.GlobalPayments.HasWritePremission()) return Unauthorized();
+        if (!foundUser.Role.Payments.HasWritePremission()) return Unauthorized();
 
         //Check to see if the transaction is filled and the amount is equal or above 0
         if (amount <= Convert.ToDecimal(0.0)) return BadRequest("Require field missing");
@@ -144,12 +148,16 @@ public class PaymentsController : ControllerBase
             ParkingLotID = CurrentSession.ParkingLotId,
             SessionID = CurrentSession.ID,
             UserID = userSession.UserID, 
-            Amount = amount, 
+            Amount = amount,
+            Date = DateTime.Now,
             Method = "Unknown", // method is not provided in the request, assuming a default value of "Unknown"
-            Issuer = "Unknown", // issuer is not provided in the request, assuming a default value of "
-            Bank = "Unknown"  // bank is not provided in the request, assuming a default value of "Unknown"
+            Issuer = "Unknown", // issuer is not provided in the request, assuming a default value of "Unknown"
+            Bank = "Unknown",  // bank is not provided in the request, assuming a default value of "Unknown"
+            Hash = "", // hash is not provided in the request, using empty string
+            CompletedDateTime = DateTime.Now,
+            CreateDateTime = DateTime.Now
         };
-        if (refundPayment.CreateDB()) return Problem("There was an problem while trying to create a refund, try again later");
+        if (!refundPayment.CreateDB()) return Problem("There was an problem while trying to create a refund, try again later");
 
         return Created(); //Originally Ok(), but Created() is more logical here
     }
@@ -173,7 +181,7 @@ public class PaymentsController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.GlobalPayments.HasWritePremission()) return Unauthorized();
+        if (!foundUser.Role.Payments.HasWritePremission()) return Unauthorized();
 
         //Check to see if the transaction is filled and the amount is equal or above 0
         if (paymentDto.amount <= Convert.ToDecimal(0.0) || 

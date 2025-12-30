@@ -59,19 +59,30 @@ public sealed class PaymentModelTests
     [Priority(1)]
     public void CreateDB_InsertsPaymentSuccessfully()
     {
-        // Arrange - Use unique values to avoid conflicts
+        // Get existing data from database to use as foreign keys
+        var existingUsers = User.GetAll();
+        var existingSessions = Session.GetAll();
+        var existingParkingLots = ParkingLot.GetAll();
+
+        if (existingUsers.Count == 0 || existingSessions.Count == 0 || existingParkingLots.Count == 0)
+        {
+            Assert.Inconclusive("Test requires at least one User, Session, and ParkingLot in the database");
+            return;
+        }
+
+        // Arrange - Use existing IDs from database
         Payment payment = new Payment
         {
-            TransactionID = $"TEST",
-            ParkingLotID = 1,
-            SessionID = 1,
-            UserID = 1,
+            TransactionID = $"TEST-{DateTime.Now.Ticks}",
+            ParkingLotID = existingParkingLots[0].ID,
+            SessionID = existingSessions[0].ID,
+            UserID = existingUsers[0].ID,
             Amount = 25.75m,
             Date = DateTime.Now,
             Method = "CreditCard",
             Issuer = "Visa",
             Bank = "TestBank",
-            Hash = $"HASH",
+            Hash = $"HASH-{DateTime.Now.Ticks}",
             CompletedDateTime = DateTime.Now,
             CreateDateTime = DateTime.Now,
             UpdateDateTime = null
@@ -148,13 +159,18 @@ public sealed class PaymentModelTests
     {
         try
         {
+            // Get existing data from database to use as foreign keys
+            var existingUsers = User.GetAll();
+            var existingSessions = Session.GetAll();
+            var existingParkingLots = ParkingLot.GetAll();
+
             Payment payment = new Payment
             {
                 ID = _createdPaymentId,
                 TransactionID = "Test18",
-                ParkingLotID = 2,
-                SessionID = 3,
-                UserID = 4,
+                ParkingLotID = existingParkingLots.Count > 0 ? existingParkingLots[0].ID : 1,
+                SessionID = existingSessions.Count > 0 ? existingSessions[0].ID : 1,
+                UserID = existingUsers.Count > 0 ? existingUsers[0].ID : 1,
                 Amount = 50.50m,
                 Date = DateTime.Now,
                 Method = "CreditCard",
