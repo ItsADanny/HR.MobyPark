@@ -79,15 +79,15 @@ public sealed class PaymentsControllerIntegrationTests
         }
     }
 
-    [ClassCleanup]
-    public static void ClassCleanup()
-    {
-        // Clean up in correct order to avoid foreign key constraint errors
-        DBHelper.Delete($"DELETE FROM Transaction WHERE TransactionID LIKE 'TEST-INTEGRATION%' OR TransactionID = 'TEST-INVALID' OR TransactionID = 'TEST'");
-        DBHelper.Delete($"DELETE FROM Sessions WHERE UserID = {_testUserID}");
-        DBHelper.Delete($"DELETE FROM UserSessions WHERE UserID = {_testUserID}");
-        DBHelper.Delete($"DELETE FROM Users WHERE ID = {_testUserID}");
-    }
+    // [ClassCleanup]
+    // public static void ClassCleanup()
+    // {
+    //     // Clean up in correct order to avoid foreign key constraint errors
+    //     DBHelper.Delete($"DELETE FROM Transaction WHERE TransactionID LIKE 'TEST-INTEGRATION%' OR TransactionID = 'TEST-INVALID' OR TransactionID = 'TEST'");
+    //     DBHelper.Delete($"DELETE FROM Sessions WHERE UserID = {_testUserID}");
+    //     DBHelper.Delete($"DELETE FROM UserSessions WHERE UserID = {_testUserID}");
+    //     DBHelper.Delete($"DELETE FROM Users WHERE ID = {_testUserID}");
+    // }
 
     // CREATE Tests - POST Payment
     [TestMethod]
@@ -100,18 +100,14 @@ public sealed class PaymentsControllerIntegrationTests
 
         Assert.IsInstanceOfType(result.Result, typeof(CreatedResult));
 
-        // disabled: fetching created payment ID for later tests
-        // taking too long to execute
-
-        // // Store payment ID for cleanup and later tests
-        // var payments = Payment.GetAllByUserID(_testUserID);
-        // var createdPayment = payments.FirstOrDefault(p => p.TransactionID == dto.transaction);
-        // if (createdPayment != null)
-        // {
-        //     _testPaymentId = createdPayment.ID;
-        // }
-
-
+        // Fetch created payment ID for later tests - optimized with Take(10)
+        var payments = Payment.GetAllByUserID(_testUserID).Take(10).ToList();
+        var createdPayment = payments.FirstOrDefault(p => p.TransactionID == dto.transaction);
+        if (createdPayment != null)
+        {
+            _testPaymentId = createdPayment.ID;
+            Console.WriteLine($"Captured payment ID: {_testPaymentId}");
+        }
     }
 
     [TestMethod]

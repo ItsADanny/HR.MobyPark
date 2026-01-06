@@ -200,7 +200,7 @@ public class PaymentsController : ControllerBase
         Payment? foundPayment = Payment.GetByID(id);
         if (foundPayment is null) return NotFound("Payment not found");
         
-        if (foundPayment.UpdateDB()) return Problem("There was an error while trying to update the transaction, please try again later");
+        if (!foundPayment.UpdateDB()) return Problem("There was an error while trying to update the transaction, please try again later");
 
         return Ok();
     }
