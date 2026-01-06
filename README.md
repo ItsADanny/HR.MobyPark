@@ -47,9 +47,10 @@ The workflow (`.github/workflows/dotnet.yml`) is triggered on push to the `live`
 The deployment step:
 1. Stops and removes the old running container
 2. Transfers the Docker image and docker-compose.yml to the remote server
-3. Loads the new Docker image
-4. Starts the container using Docker Compose
-5. Verifies the deployment
+3. Moves files to the deployment directory (`/opt/mobypark`)
+4. Loads the new Docker image
+5. Starts the container using Docker Compose
+6. Verifies the deployment
 
 ### Required Secrets
 Configure these secrets in your GitHub repository settings:
@@ -64,6 +65,8 @@ The remote server must have:
 - Docker Compose installed
 - SSH access configured
 - Port 8080 available
+- User must have sudo privileges (or `/opt/mobypark` directory must be writable)
+- Deployment directory: `/opt/mobypark`
 
 ## Architecture
 

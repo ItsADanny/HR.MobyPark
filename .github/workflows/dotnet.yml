@@ -58,19 +58,35 @@ jobs:
         SSH_HOST: ${{ secrets.SSH_HOST }}
         SSH_USER: ${{ secrets.SSH_USER }}
       run: |
+        # Setup trap to ensure SSH key is always cleaned up
+        trap 'rm -f ~/.ssh/deploy_key' EXIT
+        
         # Setup SSH
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
         ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
         
+        # Define deployment directory on remote server
+        DEPLOY_DIR="/opt/mobypark"
+        
         # Copy files to remote server
         scp -i ~/.ssh/deploy_key mobypark-latest.tar.gz docker-compose.yml $SSH_USER@$SSH_HOST:/tmp/
         
         # Deploy on remote server
-        ssh -i ~/.ssh/deploy_key $SSH_USER@$SSH_HOST << 'EOF'
+        ssh -i ~/.ssh/deploy_key $SSH_USER@$SSH_HOST << EOF
+          # Create deployment directory if it doesn't exist
+          sudo mkdir -p $DEPLOY_DIR
+          sudo chown $SSH_USER:$SSH_USER $DEPLOY_DIR
+          
+          # Move files to deployment directory
+          mv /tmp/docker-compose.yml $DEPLOY_DIR/
+          mv /tmp/mobypark-latest.tar.gz $DEPLOY_DIR/
+          
+          # Change to deployment directory
+          cd $DEPLOY_DIR
+          
           # Stop and remove old containers
-          cd /tmp
           docker-compose down || true
           docker stop mobypark-app || true
           docker rm mobypark-app || true
@@ -81,7 +97,7 @@ jobs:
           # Start new container
           docker-compose up -d
           
-          # Clean up
+          # Clean up image file
           rm mobypark-latest.tar.gz
           
           # Show status
@@ -89,4 +105,4 @@ jobs:
         EOF
         
         # Clean up local files
-        rm ~/.ssh/deploy_key mobypark-latest.tar.gz
+        rm mobypark-latest.tar.gz

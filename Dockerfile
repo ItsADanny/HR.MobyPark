@@ -33,5 +33,6 @@ EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-# Set the entry point
-ENTRYPOINT ["dotnet", "MobyPark.dll"]
+# Find and run the first DLL in the publish directory
+# This makes the Dockerfile more flexible for different project names
+ENTRYPOINT dotnet $(find . -maxdepth 1 -name "*.dll" | head -n 1)
