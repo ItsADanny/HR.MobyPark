@@ -221,3 +221,7 @@ Inlevermap INFSCPX1 - Team X - INF2X.zip
 .DS_STORE
 /.vscode
 /MobyPark/obj
+
+# Docker
+*.tar.gz
+docker-compose.override.yml
