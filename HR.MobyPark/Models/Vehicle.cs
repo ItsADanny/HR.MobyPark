@@ -85,18 +85,12 @@ public class Vehicle : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
-            DateTime CreateDateTime = DateTime.Now;
-            DateTime? UpdateDateTime = null;
+            DateTime CreateDateTime = reader.GetDateTime("CreateDateTime");
+            DateTime? UpdateDateTime = reader.IsDBNull(reader.GetOrdinal("UpdateDateTime")) ? null : reader.GetDateTime("UpdateDateTime");
 
-            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
-            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
-
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
-
-            Vehicle returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
-                                 reader["LicensePlate"].ToString(), reader["Make"].ToString(), reader["Model"].ToString(),
-                                 reader["Color"].ToString(), Convert.ToInt32(reader["Year"].ToString()),
+            Vehicle returnValue = new(reader.GetInt32("ID"), reader.GetInt32("UserID"),
+                                 reader.GetString("LicensePlate"), reader.GetString("Make"), reader.GetString("Model"),
+                                 reader.GetString("Color"), reader.GetInt32("Year"),
                                  CreateDateTime, UpdateDateTime);
 
             conn.Close();
@@ -121,18 +115,12 @@ public class Vehicle : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            DateTime CreateDateTime = DateTime.Now;
-            DateTime? UpdateDateTime = null;
+            DateTime CreateDateTime = reader.GetDateTime("CreateDateTime");
+            DateTime? UpdateDateTime = reader.IsDBNull(reader.GetOrdinal("UpdateDateTime")) ? null : reader.GetDateTime("UpdateDateTime");
 
-            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
-            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
-
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
-
-            Vehicle newVehicle = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
-                                 reader["LicensePlate"].ToString(), reader["Make"].ToString(), reader["Model"].ToString(),
-                                 reader["Color"].ToString(), Convert.ToInt32(reader["Year"].ToString()),
+            Vehicle newVehicle = new(reader.GetInt32("ID"), reader.GetInt32("UserID"),
+                                 reader.GetString("LicensePlate"), reader.GetString("Make"), reader.GetString("Model"),
+                                 reader.GetString("Color"), reader.GetInt32("Year"),
                                  CreateDateTime, UpdateDateTime);
 
             returnValue.Add(newVehicle);

@@ -2,12 +2,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json.Linq;
 using MUser = User;
 
 [TestClass]
 public class VehicleControllerTest
 {
     private static string? _testAuthToken;
+    private static int _testUserID;
 
     [ClassInitialize]
     public static void ClassSetup(TestContext context)
@@ -16,27 +18,64 @@ public class VehicleControllerTest
             .AddUserSecrets<VehicleControllerTest>()
             .Build();
 
-        DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
-
-        // Get or create a test user session for integration tests
-        // Using user ID 1 for testing
-        _testAuthToken = CreateTestUserSession(1);
-    }
-
-    private static string CreateTestUserSession(int userId)
-    {
-        // Check if session already exists
-        var existingSessions = UserSession.GetByUserID(userId);
-        if (existingSessions != null && existingSessions.Count > 0)
+        // MUST set DBHelper config FIRST before any DB operations
+        var dbConfig = configuration.GetSection("Database").Get<DBConfig>();
+        if (dbConfig == null)
         {
-            return existingSessions[0].Token;
+            // Cannot use Assert.Inconclusive in ClassInitialize, so we'll skip initialization
+            // Tests will handle missing config individually
+            Console.WriteLine("⚠️  Database configuration missing. Configure user secrets:");
+            Console.WriteLine("   dotnet user-secrets set 'Database:HST' 'localhost' --project HR.MobyPark-UnitTesting");
+            Console.WriteLine("   dotnet user-secrets set 'Database:PRT' '3306' --project HR.MobyPark-UnitTesting");
+            Console.WriteLine("   dotnet user-secrets set 'Database:USR' 'your_user' --project HR.MobyPark-UnitTesting");
+            Console.WriteLine("   dotnet user-secrets set 'Database:PSW' 'your_password' --project HR.MobyPark-UnitTesting");
+            Console.WriteLine("   dotnet user-secrets set 'Database:DBL' 'your_database' --project HR.MobyPark-UnitTesting");
+            return; // Skip setup, tests will be marked inconclusive
+        }
+        DBHelper.dBConfig = dbConfig;
+
+        // Register a new test user with vehicle permissions
+        var authController = new AuthController();
+        var registerDto = new registerDto(
+            $"test-vehicle-{DateTime.Now.Ticks}",
+            "test-password-123",
+            "Test Vehicle User",
+            $"test-vehicle-{DateTime.Now.Ticks}@test.com",
+            "+31612345678",
+            new DateOnly(1990, 1, 1)
+        );
+        
+        var registerResult = authController.register(registerDto);
+        if (registerResult.Result is not CreatedResult)
+        {
+            var message = registerResult.Value?.ToString() ?? "Unknown error";
+            throw new Exception($"Failed to register test user: {message}");
         }
 
-        // Create new session
-        string token = Auth.GenAuthToken();
-        string insertSQL = $"INSERT INTO UserSessions (UserID, Token) VALUES ({userId}, '{token}')";
-        DBHelper.Create(insertSQL);
-        return token;
+        // Login to get auth token
+        var loginDto = new loginDto(registerDto.username, registerDto.password);
+        var loginResult = authController.login(loginDto);
+        
+        if (loginResult.Result is not OkObjectResult okResult)
+        {
+            throw new Exception($"Failed to login test user: {loginResult.Value}");
+        }
+        
+        // Parse token from login response
+        var loginJson = JObject.Parse(okResult.Value?.ToString() ?? "");
+        _testAuthToken = loginJson["session_token"]?.ToString();
+        
+        if (string.IsNullOrEmpty(_testAuthToken))
+        {
+            throw new Exception("Failed to get session token from login");
+        }
+        
+        // Get the created user ID
+        var user = MUser.GetUserUsername(registerDto.username);
+        if (user == null) throw new Exception("Failed to retrieve created user");
+        _testUserID = user.ID;
+        
+        Console.WriteLine($"Created test user {_testUserID} with role {user.Role.Name}");
     }
 
     [TestMethod]

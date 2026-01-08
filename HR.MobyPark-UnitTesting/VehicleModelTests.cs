@@ -15,7 +15,13 @@ public class VehicleModelTests
             .AddUserSecrets<VehicleModelTests>()
             .Build();
 
-        DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
+        var dbConfig = configuration.GetSection("Database").Get<DBConfig>();
+        if (dbConfig == null)
+        {
+            Assert.Inconclusive("Database configuration missing. Run: dotnet user-secrets set 'Database:HST' 'localhost' --project HR.MobyPark-UnitTesting");
+            return;
+        }
+        DBHelper.dBConfig = dbConfig;
     }
 
     [TestMethod]
