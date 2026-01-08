@@ -129,8 +129,8 @@ public class VehicleModelTests
         Assert.AreEqual(vehicle.ModelYear, (int)json["modelYear"]!);
     }
 
-    [TestCleanup]
-    public void Cleanup()
+    [ClassCleanup]
+    public static void Cleanup()
     {
         // Clean up created test vehicle after all tests
         if (_createdVehicleId != 0)

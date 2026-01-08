@@ -1518,19 +1518,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/dannydesnoo/.nuget/packages/": {}
+    "C:\\Users\\hengyi\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj",
+      "projectUniqueName": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-BillingUsersWorker\\HR.MobyPark-BillingUsersWorker.csproj",
       "projectName": "HR.MobyPark-BillingUsersWorker",
-      "projectPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj",
-      "packagesPath": "/Users/dannydesnoo/.nuget/packages/",
-      "outputPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-BillingUsersWorker/obj/",
+      "projectPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-BillingUsersWorker\\HR.MobyPark-BillingUsersWorker.csproj",
+      "packagesPath": "C:\\Users\\hengyi\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-BillingUsersWorker\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/dannydesnoo/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\hengyi\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -1581,7 +1581,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",

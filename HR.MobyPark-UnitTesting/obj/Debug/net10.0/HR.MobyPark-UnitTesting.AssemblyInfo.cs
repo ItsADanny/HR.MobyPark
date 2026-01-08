@@ -10,11 +10,11 @@
 using System;
 using System.Reflection;
 
-[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("549b4910-80ad-4b52-ac6a-77eae87eb4bb")]
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("847a0f53-58fc-4027-99a3-274a19bdf87a")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("HR.MobyPark-UnitTesting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3400e1a4c710e02b054f30248247603d4eff8b9c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d1ec75f22116c109e0238c312c16cbf4de6f886c")]
 [assembly: System.Reflection.AssemblyProductAttribute("HR.MobyPark-UnitTesting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HR.MobyPark-UnitTesting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -5444,19 +5444,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/dannydesnoo/.nuget/packages/": {}
+    "C:\\Users\\hengyi\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnitTesting/HR.MobyPark-UnitTesting.csproj",
+      "projectUniqueName": "c:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-UnitTesting\\HR.MobyPark-UnitTesting.csproj",
       "projectName": "HR.MobyPark-UnitTesting",
-      "projectPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnitTesting/HR.MobyPark-UnitTesting.csproj",
-      "packagesPath": "/Users/dannydesnoo/.nuget/packages/",
-      "outputPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnitTesting/obj/",
+      "projectPath": "c:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-UnitTesting\\HR.MobyPark-UnitTesting.csproj",
+      "packagesPath": "C:\\Users\\hengyi\\.nuget\\packages\\",
+      "outputPath": "c:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-UnitTesting\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/dannydesnoo/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\hengyi\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -5468,8 +5468,8 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj": {
-              "projectPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj"
+            "c:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj": {
+              "projectPath": "c:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark\\HR.MobyPark.csproj"
             }
           }
         }
@@ -5523,7 +5523,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",

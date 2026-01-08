@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MobyPark-DataImporter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a5a60b52daa829f72ce3eab382b571f4f467cc8f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d1ec75f22116c109e0238c312c16cbf4de6f886c")]
 [assembly: System.Reflection.AssemblyProductAttribute("MobyPark-DataImporter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MobyPark-DataImporter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
