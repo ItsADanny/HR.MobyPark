@@ -139,9 +139,9 @@ public sealed class ReservationModelTests
         // First create a reservation
         Reservation reservation = new Reservation
         {
-            UserID = 95,
-            ParkingLotID = 2,
-            VehicleID = 5,
+            UserID = 99,
+            ParkingLotID = 1,
+            VehicleID = 1,
             StartDateTime = GeneralMethods.ParseDBDateTime("11/12/2025 12:00:00"),
             EndDateTime = GeneralMethods.ParseDBDateTime("11/12/2025 13:00:00"),
             Status = "active",
@@ -160,19 +160,19 @@ public sealed class ReservationModelTests
         Assert.IsTrue(reservations.Count > 0);
         
         // check dat de gemaakte reservering in de lijst is,
-        bool found = reservations.Any(r => r.UserID == 95 && r.ParkingLotID == 2 && r.VehicleID == 5);
+        bool found = reservations.Any(r => r.UserID == 99 && r.ParkingLotID == 1 && r.VehicleID == 1);
         Assert.IsTrue(found);
     }
 
     [TestMethod]
     public void GetAllByParkingLot_ReturnsReservationsForParkingLot()
     {
-        // reservation maken voor parking lot 7
+        // reservation maken voor parking lot 1
         Reservation reservation = new Reservation
         {
-            UserID = 94,
-            ParkingLotID = 7,
-            VehicleID = 6,
+            UserID = 99,
+            ParkingLotID = 1,
+            VehicleID = 1,
             StartDateTime = GeneralMethods.ParseDBDateTime("12/12/2025 14:00:00"),
             EndDateTime = GeneralMethods.ParseDBDateTime("12/12/2025 15:00:00"),
             Status = "active",
@@ -183,18 +183,18 @@ public sealed class ReservationModelTests
 
         reservation.CreateDB();
 
-        // alle reservations voor parking lot 7 krijgen
-        List<Reservation> reservations = Reservation.GetAllByParkingLot(7);
+        // alle reservations voor parking lot 1 krijgen
+        List<Reservation> reservations = Reservation.GetAllByParkingLot(1);
 
         // Check dat de lijst niet null is
         Assert.IsNotNull(reservations);
 
         // Check dat de  reservering in de lijst is,
-        bool found = reservations.Any(r => r.UserID == 94 && r.ParkingLotID == 7 && r.VehicleID == 6);
+        bool found = reservations.Any(r => r.UserID == 99 && r.ParkingLotID == 1 && r.VehicleID == 1);
         Assert.IsTrue(found);
 
-        // Verify all returned reservations are for parking lot 7
-        bool allGood = reservations.All(r => r.ParkingLotID == 7);
+        // Verify all returned reservations are for parking lot 1
+        bool allGood = reservations.All(r => r.ParkingLotID == 1);
         Assert.IsTrue(allGood);
     }
 
@@ -203,9 +203,9 @@ public sealed class ReservationModelTests
     {
         Reservation reservation = new Reservation
         {
-            UserID = 93,
-            ParkingLotID = 4,
-            VehicleID = 7,
+            UserID = 99,
+            ParkingLotID = 1,
+            VehicleID = 1,
             StartDateTime = GeneralMethods.ParseDBDateTime("13/12/2025 16:00:00"),
             EndDateTime = GeneralMethods.ParseDBDateTime("13/12/2025 17:00:00"),
             Status = "active",
@@ -217,7 +217,7 @@ public sealed class ReservationModelTests
         reservation.CreateDB();
 
         List<Reservation> allReservations = Reservation.GetAll();
-        Reservation? created = allReservations.FirstOrDefault(r => r.UserID == 93 && r.ParkingLotID == 4);
+        Reservation? created = allReservations.FirstOrDefault(r => r.UserID == 99 && r.ParkingLotID == 1);
         
         Reservation? retrieved = Reservation.GetByID(created.ID);
         Assert.AreEqual(created.ID, retrieved.ID);
