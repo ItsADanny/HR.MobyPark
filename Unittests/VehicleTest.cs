@@ -31,18 +31,23 @@ public sealed class VehicleTest
         };
         vehicle.CreateDB();
 
-        vehicle.Make = "updateMake";
-        vehicle.Model = "updateModel";
-        vehicle.Color = "updateColor";
-        vehicle.ModelYear = 2025;
-        vehicle.UpdateDateTime = DateTime.Now;
+        List<Vehicle> vehicles = Vehicle.GetAll();
+        Vehicle? createdVehicle = vehicles
+            .FirstOrDefault(v => v.UserID == 10 && v.LicensePlate == "12-df-9");
 
-        bool result = vehicle.UpdateDB();
+        Assert.IsNotNull(createdVehicle, "vehicle was not inserted");
+
+        createdVehicle.Make = "updateMake";
+        createdVehicle.Model = "updateModel";
+        createdVehicle.Color = "updateColor";
+        createdVehicle.ModelYear = 2025;
+        createdVehicle.UpdateDateTime = DateTime.Now;
+        bool result = createdVehicle.UpdateDB();
 
         Assert.IsTrue(result);
 
         // reload vehicle to double check
-        Vehicle? updatedVehicle = Vehicle.GetByID(vehicle.ID);
+        Vehicle? updatedVehicle = Vehicle.GetByID(createdVehicle.ID);
         Assert.IsNotNull(updatedVehicle);
 
         Assert.AreEqual("updateMake", updatedVehicle.Make);
@@ -59,9 +64,8 @@ public sealed class VehicleTest
     {
         var controller = new VehicleController();
 
-        var dto = new vehicleDto
+        var dto = new updateVehicleDto
         (
-            userID: 1,
             licensePlate: "76-ABC-7",
             make: "BMW",
             model: "X5",
@@ -71,7 +75,7 @@ public sealed class VehicleTest
 
         var result = controller.PUT_UpdateVehicle(1, "", dto);
 
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedObjectResult));
     }
 
     [TestMethod]
@@ -79,9 +83,8 @@ public sealed class VehicleTest
     {
         var controller = new VehicleController();
 
-        var dto = new vehicleDto
+        var dto = new updateVehicleDto
         (
-            userID: 1,
             licensePlate: "76-ABC-7",
             make: "BMW",
             model: "X5",
@@ -91,7 +94,7 @@ public sealed class VehicleTest
 
         var result = controller.PUT_UpdateVehicle(1, null!, dto);
 
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedObjectResult));
     }
 
     [TestMethod]
