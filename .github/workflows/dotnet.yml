@@ -1,9 +1,8 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
 name: .NET
 
 on:
+  # Before being allowed to go to the "live" we first have to set our version in the 
+  # "staging" branch
   push:
     branches: [ "live" ]
   pull_request:
@@ -42,8 +41,9 @@ jobs:
       with:
         path: coverage.xml
       if: ${{ failure() }}
-    
-    # Docker build and deployment steps
+
+    # When the tests are succesful we start building the Docker image (with docker-compose)
+    # and deploy the Docker image to our "production" server
     - name: Build Docker image
       run: |
         docker build -t mobypark:latest .
