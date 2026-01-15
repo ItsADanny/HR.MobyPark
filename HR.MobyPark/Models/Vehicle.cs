@@ -16,15 +16,15 @@ using Newtonsoft.Json.Linq;
 public class Vehicle : aModel, iDatabase
 {
     //Public properties
-    public int ID { get; private set; }
-    public int UserID { get; private set; }
-    public string LicensePlate { get; private set; }
-    public string Make { get; private set; }
-    public string Model { get; private set; }
-    public string Color { get; private set; }
-    public int ModelYear { get; private set; }
-    public DateTime CreateDateTime { get; private set; }
-    public DateTime? UpdateDateTime { get; private set; }
+    public int ID { get; set; }
+    public int UserID { get; set; }
+    public string LicensePlate { get; set; }
+    public string Make { get; set; }
+    public string Model { get; set; }
+    public string Color { get; set; }
+    public int ModelYear { get; set; }
+    public DateTime CreateDateTime { get; set; }
+    public DateTime? UpdateDateTime { get; set; }
 
     private Vehicle(int id, int userid, string licensePlate, string make, string model, string color, int modelYear, DateTime createDateTime, DateTime? updateDateTime = null)
     {
@@ -38,6 +38,8 @@ public class Vehicle : aModel, iDatabase
         CreateDateTime = createDateTime;
         UpdateDateTime = updateDateTime;
     }
+
+    public Vehicle() { }
 
     public static JObject ToJSON(Vehicle vehicle)
     {

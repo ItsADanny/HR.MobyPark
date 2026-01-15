@@ -82,59 +82,59 @@ public class VehicleModelTests
         DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
     }
 
-    // [TestMethod]
-    // public void ToJSON_SingleVehicle()
-    // {
-    //     JObject vehicleJson = Vehicle.ToJSON(new Vehicle
-    //     {
-    //         ID = 1,
-    //         UserID = 1,
-    //         LicensePlate = "ABC-123",
-    //         Make = "Toyota",
-    //         Model = "Corolla",
-    //         Color = "Blue",
-    //         ModelYear = 2020,
-    //         CreateDateTime = DateTime.Now,
-    //         UpdateDateTime = DateTime.Now
-    //     });
-    //     Assert.IsNotNull(vehicleJson);
-    // }
+    [TestMethod]
+    public void ToJSON_SingleVehicle()
+    {
+        JObject vehicleJson = Vehicle.ToJSON(new Vehicle
+        {
+            ID = 1,
+            UserID = 1,
+            LicensePlate = "ABC-123",
+            Make = "Toyota",
+            Model = "Corolla",
+            Color = "Blue",
+            ModelYear = 2020,
+            CreateDateTime = DateTime.Now,
+            UpdateDateTime = DateTime.Now
+        });
+        Assert.IsNotNull(vehicleJson);
+    }
 
-    // [TestMethod]
-    // public void ToJSON_MultipleVehicles()
-    // {
-    //     List<Vehicle> vehicles = new List<Vehicle>
-    //     {
-    //         new Vehicle
-    //         {
-    //             ID = 1,
-    //             UserID = 1,
-    //             LicensePlate = "ABC-123",
-    //             Make = "Toyota",
-    //             Model = "Corolla",
-    //             Color = "Blue",
-    //             ModelYear = 2020,
-    //             CreateDateTime = DateTime.Now,
-    //             UpdateDateTime = DateTime.Now
-    //         },
-    //         new Vehicle
-    //         {
-    //             ID = 2,
-    //             UserID = 1,
-    //             LicensePlate = "DEF-456",
-    //             Make = "Honda",
-    //             Model = "Civic",
-    //             Color = "Red",
-    //             ModelYear = 2019,
-    //             CreateDateTime = DateTime.Now,
-    //             UpdateDateTime = DateTime.Now
-    //         }
-    //     };
+    [TestMethod]
+    public void ToJSON_MultipleVehicles()
+    {
+        List<Vehicle> vehicles = new List<Vehicle>
+        {
+            new Vehicle
+            {
+                ID = 1,
+                UserID = 1,
+                LicensePlate = "ABC-123",
+                Make = "Toyota",
+                Model = "Corolla",
+                Color = "Blue",
+                ModelYear = 2020,
+                CreateDateTime = DateTime.Now,
+                UpdateDateTime = DateTime.Now
+            },
+            new Vehicle
+            {
+                ID = 2,
+                UserID = 1,
+                LicensePlate = "DEF-456",
+                Make = "Honda",
+                Model = "Civic",
+                Color = "Red",
+                ModelYear = 2019,
+                CreateDateTime = DateTime.Now,
+                UpdateDateTime = DateTime.Now
+            }
+        };
 
-    //     JArray vehiclesJson = Vehicle.ToJSON(vehicles);
-    //     Assert.IsNotNull(vehiclesJson);
-    //     Assert.AreEqual(2, vehiclesJson.Count);
-    // }
+        JArray vehiclesJson = Vehicle.ToJSON(vehicles);
+        Assert.IsNotNull(vehiclesJson);
+        Assert.AreEqual(2, vehiclesJson.Count);
+    }
 
 
     // [TestMethod]

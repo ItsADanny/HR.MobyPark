@@ -85,39 +85,47 @@ public class ProfileModelTests
         DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
     }   
 
-    // [TestMethod]
-    // public void ToJSON_SingleProfile()
-    // {
-    //     var user = new User(
-    //         "TestUser",
-    //         "Test User",
-    //         "testuser@testuser.nl",
-    //         "06123456789",
-    //         new DateOnly(1990, 1, 1)
-    //     );
-    //     user.Role = UserRole.GetByID(1);
+    [TestMethod]
+    public void ToJSON_SingleProfile()
+    {
+        var user = new User(
+            "TestUser",
+            "Test User",
+            "testuser@testuser.nl",
+            "06123456789",
+            new DateOnly(1990, 1, 1)
+        );
         
-    //     JObject obj = JObject.Parse(User.ToJSON(user));
-    //     Assert.IsNotNull(obj);
-    //     Assert.AreEqual("TestUser", obj.Value<string>("username"));
-    //     Assert.AreEqual("Test User", obj.Value<string>("name"));
+        // Mock UserRole data instead of calling GetByID
+        user.Role = new UserRole (1, "USER");
+        
+        JObject obj = JObject.Parse(User.ToJSON(user));
+        Assert.IsNotNull(obj);
+        Assert.AreEqual("TestUser", obj.Value<string>("username"));
+        Assert.AreEqual("Test User", obj.Value<string>("name"));
 
-    // }
+    }
 
-    // [TestMethod]
-    // public void ToJSON_ListOfProfiles()
-    // {
-    //     List<User> profiles = new List<User>
-    //     {
-    //         new User("Alice", "Alice@alice.nl", "0612345678", "", new DateOnly()),
-    //         new User("Bob", "Bob@bob.nl", "122112213", "", new DateOnly())
-    //     };
+    [TestMethod]
+    public void ToJSON_ListOfProfiles()
+    {
+        List<User> profiles = new List<User>
+        {
+            new User("Alice", "Alice", "Alice@alice.nl", "0612345678", new DateOnly(1990, 1, 1)),
+            new User("Bob", "Bob", "Bob@bob.nl", "0622112213", new DateOnly(1990, 1, 1))
+        };
 
-    //     JArray arr = (JArray)User.ToJSON(profiles);
+        foreach (var profile in profiles)
+        {
+            profile.Role = new UserRole(1, "USER");
+        }
 
-    //     Assert.IsNotNull(arr);
-    //     Assert.AreEqual(2, arr.Count);
-    // }
+        string json = User.ToJSON(profiles);
+
+        Assert.IsNotNull(json);
+        Assert.IsTrue(json.Contains("Alice"));
+        Assert.IsTrue(json.Contains("Bob"));
+    }
 
     // [TestMethod]
     // public void CreateDB_InsertsUserSuccessfully()
