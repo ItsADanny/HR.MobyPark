@@ -126,7 +126,7 @@ public sealed class BillingModelTests
         Assert.AreEqual(billings[1].ID, jsonArray[1].Value<int>("id"));
     }
 
-    //gaat fout?
+    // gaat nogsteeds fout
     // [TestMethod]
     // public void CreateDB_InsertsBillingSuccessfully()
     // {
@@ -135,10 +135,10 @@ public sealed class BillingModelTests
     //         ID = 1,
     //         SessionID = 1,
     //         ParkingLotID = 1,
-    //         Amount = 10,
+    //         Amount = 10.00m,
     //         tHash = "beep",
-    //         Payed = 10,
-    //         Balance = 0,
+    //         Payed = 10.00m,
+    //         Balance = 0.00m,
     //         CompletedDateTime = DateTime.Now,
     //         CreateDateTime = DateTime.Now,
     //         UpdateDateTime = DateTime.Now
@@ -148,6 +148,7 @@ public sealed class BillingModelTests
 
     //     Assert.IsTrue(result);
     // }
+
 
     // [TestMethod]
     // public void GetAllBillings_NoException()

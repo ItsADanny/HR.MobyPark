@@ -97,6 +97,7 @@ public class ProfileModelTests
         );
         
         // Mock UserRole data instead of calling GetByID
+        // otherwise it does not work
         user.Role = new UserRole (1, "USER");
         
         JObject obj = JObject.Parse(User.ToJSON(user));

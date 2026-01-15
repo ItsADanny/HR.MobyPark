@@ -85,7 +85,7 @@ public class VehicleModelTests
     [TestMethod]
     public void ToJSON_SingleVehicle()
     {
-        JObject vehicleJson = Vehicle.ToJSON(new Vehicle
+        var vehicle = new Vehicle
         {
             ID = 1,
             UserID = 1,
@@ -96,8 +96,10 @@ public class VehicleModelTests
             ModelYear = 2020,
             CreateDateTime = DateTime.Now,
             UpdateDateTime = DateTime.Now
-        });
+        };
+        JObject vehicleJson = Vehicle.ToJSON(vehicle);
         Assert.IsNotNull(vehicleJson);
+        Assert.AreEqual(vehicle.LicensePlate, vehicleJson.Value<string>("licensePlate"));
     }
 
     [TestMethod]
