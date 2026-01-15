@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-UnpaidBillingWorker\\HR.MobyPark-UnpaidBillingWorker.csproj": {}
+    "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj": {}
   },
   "projects": {
-    "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-UnpaidBillingWorker\\HR.MobyPark-UnpaidBillingWorker.csproj": {
+    "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-UnpaidBillingWorker\\HR.MobyPark-UnpaidBillingWorker.csproj",
+        "projectUniqueName": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj",
         "projectName": "HR.MobyPark-UnpaidBillingWorker",
-        "projectPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-UnpaidBillingWorker\\HR.MobyPark-UnpaidBillingWorker.csproj",
-        "packagesPath": "C:\\Users\\hengyi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\HR.MobyPark-UnpaidBillingWorker\\obj\\",
+        "projectPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj",
+        "packagesPath": "/Users/dannydesnoo/.nuget/packages/",
+        "outputPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-UnpaidBillingWorker/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\hengyi\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/dannydesnoo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -47,6 +47,10 @@
             "Microsoft.Extensions.Hosting": {
               "target": "Package",
               "version": "[10.0.0, )"
+            },
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[9.5.0, )"
             }
           },
           "imports": [
@@ -65,7 +69,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",

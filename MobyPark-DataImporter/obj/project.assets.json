@@ -638,19 +638,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\hengyi\\.nuget\\packages\\": {}
+    "/Users/dannydesnoo/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\MobyPark-DataImporter\\MobyPark-DataImporter.csproj",
+      "projectUniqueName": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/MobyPark-DataImporter/MobyPark-DataImporter.csproj",
       "projectName": "MobyPark-DataImporter",
-      "projectPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\MobyPark-DataImporter\\MobyPark-DataImporter.csproj",
-      "packagesPath": "C:\\Users\\hengyi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\hengyi\\Documents\\code\\HR.MobyPark\\MobyPark-DataImporter\\obj\\",
+      "projectPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/MobyPark-DataImporter/MobyPark-DataImporter.csproj",
+      "packagesPath": "/Users/dannydesnoo/.nuget/packages/",
+      "outputPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/MobyPark-DataImporter/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\hengyi\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/dannydesnoo/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -706,15 +706,11 @@
             "version": "[9.0.11, 9.0.11]"
           },
           {
-            "name": "Microsoft.NETCore.App.Host.win-x64",
+            "name": "Microsoft.NETCore.App.Host.osx-arm64",
             "version": "[9.0.11, 9.0.11]"
           },
           {
             "name": "Microsoft.NETCore.App.Ref",
-            "version": "[9.0.11, 9.0.11]"
-          },
-          {
-            "name": "Microsoft.WindowsDesktop.App.Ref",
             "version": "[9.0.11, 9.0.11]"
           }
         ],
@@ -723,7 +719,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
