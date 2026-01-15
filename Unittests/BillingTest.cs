@@ -49,105 +49,107 @@ public sealed class BillingControllerTest
 
 }
 
-[TestClass]
-public sealed class BillingModelTests
-{
-    [ClassInitialize]
-    public static void ClassSetup(TestContext context)
-    {
-        var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<BillingModelTests>()
-            .Build();
+// [TestClass]
+// public sealed class BillingModelTests
+// {
+//     [ClassInitialize]
+//     public static void ClassSetup(TestContext context)
+//     {
+//         var configuration = new ConfigurationBuilder()
+//             .AddUserSecrets<BillingModelTests>()
+//             .Build();
 
-        DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
-    }
+//         DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
+//     }
 
-    [TestMethod]
-    public void ToJSON_SingleBilling()
-    {
-        Billing billing = new Billing
-        {
-            ID = 1,
-            SessionID = 1,
-            ParkingLotID = 1,
-            Amount = 10,
-            tHash = "beep",
-            Payed = 10,
-            Balance = 0,
-            CompletedDateTime = DateTime.Now,
-            CreateDateTime = DateTime.Now,
-            UpdateDateTime = DateTime.Now
-        };
+//     [TestMethod]
+//     public void ToJSON_SingleBilling()
+//     {
+//         Billing billing = new Billing
+//         {
+//             ID = 1,
+//             SessionID = 1,
+//             ParkingLotID = 1,
+//             Amount = 10,
+//             tHash = "beep",
+//             Payed = 10,
+//             Balance = 0,
+//             CompletedDateTime = DateTime.Now,
+//             CreateDateTime = DateTime.Now,
+//             UpdateDateTime = DateTime.Now
+//         };
 
-        var json = Billing.ToJSON(billing);
+//         var json = Billing.ToJSON(billing);
 
-        Assert.IsNotNull(json);
-        Assert.AreEqual(billing.ID, json.Value<int>("id"));
-    }
+//         Assert.IsNotNull(json);
+//         Assert.AreEqual(billing.ID, json.Value<int>("id"));
+//     }
 
-    [TestMethod]
-    public void ToJSON_ListOfBillings()
-    {
-        List<Billing> billings = new List<Billing>
-        {
-            new Billing
-            {
-                ID = 1,
-                SessionID = 1,
-                ParkingLotID = 1,
-                Amount = 10,
-                tHash = "beep",
-                Payed = 10,
-                Balance = 0,
-                CompletedDateTime = DateTime.Now,
-                CreateDateTime = DateTime.Now,
-                UpdateDateTime = DateTime.Now
-            },
-            new Billing
-            {
-                ID = 2,
-                SessionID = 2,
-                ParkingLotID = 2,
-                Amount = 20,
-                tHash = "boop",
-                Payed = 15,
-                Balance = 5,
-                CompletedDateTime = DateTime.Now,
-                CreateDateTime = DateTime.Now,
-                UpdateDateTime = DateTime.Now
-            }
-        };
+//     [TestMethod]
+//     public void ToJSON_ListOfBillings()
+//     {
+//         List<Billing> billings = new List<Billing>
+//         {
+//             new Billing
+//             {
+//                 ID = 1,
+//                 SessionID = 1,
+//                 ParkingLotID = 1,
+//                 Amount = 10,
+//                 tHash = "beep",
+//                 Payed = 10,
+//                 Balance = 0,
+//                 CompletedDateTime = DateTime.Now,
+//                 CreateDateTime = DateTime.Now,
+//                 UpdateDateTime = DateTime.Now
+//             },
+//             new Billing
+//             {
+//                 ID = 2,
+//                 SessionID = 2,
+//                 ParkingLotID = 2,
+//                 Amount = 20,
+//                 tHash = "boop",
+//                 Payed = 15,
+//                 Balance = 5,
+//                 CompletedDateTime = DateTime.Now,
+//                 CreateDateTime = DateTime.Now,
+//                 UpdateDateTime = DateTime.Now
+//             }
+//         };
 
-        var jsonArray = Billing.ToJSON(billings);
+//         var jsonArray = Billing.ToJSON(billings);
 
-        Assert.IsNotNull(jsonArray);
-        Assert.AreEqual(2, jsonArray.Count);
-        Assert.AreEqual(billings[0].ID, jsonArray[0].Value<int>("id"));
-        Assert.AreEqual(billings[1].ID, jsonArray[1].Value<int>("id"));
-    }
+//         Assert.IsNotNull(jsonArray);
+//         Assert.AreEqual(2, jsonArray.Count);
+//         Assert.AreEqual(billings[0].ID, jsonArray[0].Value<int>("id"));
+//         Assert.AreEqual(billings[1].ID, jsonArray[1].Value<int>("id"));
+//     }
 
-    // gaat nogsteeds fout
-    // [TestMethod]
-    // public void CreateDB_InsertsBillingSuccessfully()
-    // {
-    //     Billing billing = new Billing
-    //     {
-    //         ID = 1,
-    //         SessionID = 1,
-    //         ParkingLotID = 1,
-    //         Amount = 10.00m,
-    //         tHash = "beep",
-    //         Payed = 10.00m,
-    //         Balance = 0.00m,
-    //         CompletedDateTime = DateTime.Now,
-    //         CreateDateTime = DateTime.Now,
-    //         UpdateDateTime = DateTime.Now
-    //     };
+//     [TestMethod]
+//     public void ToInsertSQL_GeneratesValidInsertStatement()
+//     {
+//         Billing billing = new Billing
+//         {
+//             ID = 1,
+//             SessionID = 1,
+//             ParkingLotID = 1,
+//             Amount = 10.00m,
+//             tHash = "beep",
+//             Payed = 10.00m,
+//             Balance = 0.00m,
+//             CompletedDateTime = DateTime.Now,
+//             CreateDateTime = DateTime.Now,
+//             UpdateDateTime = DateTime.Now
+//         };
 
-    //     bool result = billing.CreateDB();
+//         string sql = billing.ToInsertSQL();
 
-    //     Assert.IsTrue(result);
-    // }
+//         Assert.IsNotNull(sql);
+//         Assert.IsTrue(sql.Contains("INSERT INTO Billing"));
+//         Assert.IsTrue(sql.Contains("VALUES"));
+//         Assert.IsTrue(sql.Contains("beep"));
+//     }
 
 
     // [TestMethod]

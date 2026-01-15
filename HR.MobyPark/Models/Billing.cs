@@ -13,6 +13,8 @@ public class Billing : aModel, iDatabase
     public DateTime CreateDateTime { get; set; }
     public DateTime? UpdateDateTime { get; set; }
 
+    public Billing() {}
+
     public static JObject ToJSON(Billing billing)
     {
         JObject returnValue = new()
@@ -177,7 +179,7 @@ public class Billing : aModel, iDatabase
     }
 
 
-    public override string ToInsertSQL() => $"INSERT INTO Billing (SessionID, ParkingLotID, Amount, tHash, Payed, Balance, CompletedDateTime) VALUES ({SessionID}, {ParkingLotID}, {Amount}, \"{tHash}\", {Payed}, {Balance}, {CompletedDateTime})";
+    public override string ToInsertSQL() => $"INSERT INTO Billing (SessionID, ParkingLotID, Amount, tHash, Payed, Balance, CompletedDateTime) VALUES ({SessionID}, {ParkingLotID}, {Amount}, \"{tHash}\", {Payed}, {Balance}, '{CompletedDateTime:yyyy-MM-dd HH:mm:ss}')";
 
     public override string ToUpdateSQL() => $"UPDATE Billing SET SessionID = {SessionID}, ParkingLotID = {ParkingLotID}, Amount = {Amount}, tHash = \"{tHash}\", Payed = {Payed}, Balance = {Balance}, CompletedDateTime = {CompletedDateTime:YYYY-MM-DD hh:mm:ss} WHERE ID = {ID}";
 
