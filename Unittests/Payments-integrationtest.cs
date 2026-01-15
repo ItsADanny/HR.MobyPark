@@ -12,6 +12,11 @@ public sealed class PaymentsControllerIntegrationTests
     private static string? _validAuthToken;
     private static int _testPaymentId = 0;
     private static int _testUserID = 0;
+    
+    // Billing user (reused across test runs for data accumulation)
+    private static string? _billingAuthToken;
+    private static int _billingUserID = 0;
+    private const string BILLING_USERNAME = "test-billing-user";
 
     [ClassInitialize]
     public static void ClassSetup(TestContext context)
@@ -22,7 +27,9 @@ public sealed class PaymentsControllerIntegrationTests
 
         DBHelper.dBConfig = configuration.GetSection("Database").Get<DBConfig>();
 
-        // Register a new test user (gets role 1 = User with payment permissions)
+        // ============================================================================
+        // Setup 1: Create NEW user for payment integration tests (cleaned up after)
+        // ============================================================================
         var authController = new AuthController();
         var registerDto = new registerDto(
             $"test-integration-{DateTime.Now.Ticks}",
@@ -71,23 +78,95 @@ public sealed class PaymentsControllerIntegrationTests
         
         if (parkingLots.Count > 0 && vehicles.Count > 0)
         {
-            var startTime = DateTime.Now;
+            var startTime = DateTime.Now.AddDays(-1);
             var endTime = startTime.AddHours(2);
             DBHelper.Create($@"INSERT INTO Sessions (ParkingLotID, LicensePlate, VehicleID, UserID, StartDateTime, EndDateTime, Duration, Amount, PaymentStatus, CreateDateTime)
                 VALUES ({parkingLots[0].ID}, 'TEST-PLATE', {vehicles[0].ID}, {_testUserID}, '{startTime:yyyy-MM-dd HH:mm:ss}', '{endTime:yyyy-MM-dd HH:mm:ss}', 120, 10.00, 'unpaid', NOW())");
-            Console.WriteLine($"Created test user {_testUserID} with parking session (expires {endTime:yyyy-MM-dd HH:mm:ss})");
+            Console.WriteLine($"Created payment test session for user {_testUserID}");
+        }
+
+        // ============================================================================
+        // Setup 2: Create or REUSE billing user (for data accumulation across runs)
+        // ============================================================================
+        var existingBillingUser = User.GetUserUsername(BILLING_USERNAME);
+        
+        if (existingBillingUser == null)
+        {
+            // Create new billing user
+            var billingRegisterDto = new registerDto(
+                BILLING_USERNAME,
+                "billing-test-password",
+                "Billing Test User",
+                "billing-test@mobypark.test",
+                "+31612345679",
+                new DateOnly(1990, 1, 1)
+            );
+            
+            var billingRegisterResult = authController.register(billingRegisterDto);
+            if (billingRegisterResult.Result is not CreatedResult)
+            {
+                throw new Exception("Failed to create billing test user");
+            }
+            
+            existingBillingUser = User.GetUserUsername(BILLING_USERNAME);
+            Console.WriteLine($"Created NEW billing user: {existingBillingUser?.ID}");
+        }
+        else
+        {
+            Console.WriteLine($"Reusing EXISTING billing user: {existingBillingUser.ID}");
+        }
+        
+        _billingUserID = existingBillingUser!.ID;
+        
+        // Login billing user
+        var billingLoginDto = new loginDto(BILLING_USERNAME, "billing-test-password");
+        var billingLoginResult = authController.login(billingLoginDto);
+        
+        if (billingLoginResult.Result is OkObjectResult billingOkResult)
+        {
+            var billingLoginJson = JObject.Parse(billingOkResult.Value?.ToString() ?? "");
+            _billingAuthToken = billingLoginJson["session_token"]?.ToString();
+            Console.WriteLine("Billing user logged in successfully");
+        }
+        
+        // Create a new session + payment for billing user (accumulates across runs)
+        if (parkingLots.Count > 0 && vehicles.Count > 0)
+        {
+            var startTime = DateTime.Now.AddDays(-1);
+            var endTime = startTime.AddHours(2);
+            DBHelper.Create($@"INSERT INTO Sessions (ParkingLotID, LicensePlate, VehicleID, UserID, StartDateTime, EndDateTime, Duration, Amount, PaymentStatus, CreateDateTime)
+                VALUES ({parkingLots[0].ID}, 'BILLING-PLATE', {vehicles[0].ID}, {_billingUserID}, '{startTime:yyyy-MM-dd HH:mm:ss}', '{endTime:yyyy-MM-dd HH:mm:ss}', 120, 10.00, 'unpaid', NOW())");
+            
+            // Get the created session ID
+            var sessions = Session.GetAllByUserID(_billingUserID);
+            var latestSession = sessions.OrderByDescending(s => s.ID).FirstOrDefault();
+            
+            if (latestSession != null)
+            {
+                // Add test payment for billing endpoint testing
+                var paymentDate = DateTime.Now.AddDays(-1);
+                DBHelper.Create($@"INSERT INTO Transaction (TransactionID, ParkingLotID, SessionID, UserID, Amount, Date, Method, Issuer, Bank, Hash, CompletedDateTime, CreateDateTime)
+                    VALUES ('TEST-BILLING-{DateTime.Now.Ticks}', {parkingLots[0].ID}, {latestSession.ID}, {_billingUserID}, 5.00, '{paymentDate:yyyy-MM-dd HH:mm:ss}', 'CreditCard', 'Visa', 'TestBank', 'test-hash-{DateTime.Now.Ticks}', '{paymentDate:yyyy-MM-dd HH:mm:ss}', NOW())");
+                Console.WriteLine($"Created billing session {latestSession.ID} + payment (amount: 10.00, paid: 5.00, balance: 5.00)");
+            }
         }
     }
 
-    // [ClassCleanup]
-    // public static void ClassCleanup()
-    // {
-    //     // Clean up in correct order to avoid foreign key constraint errors
-    //     DBHelper.Delete($"DELETE FROM Transaction WHERE TransactionID LIKE 'TEST-INTEGRATION%' OR TransactionID = 'TEST-INVALID' OR TransactionID = 'TEST'");
-    //     DBHelper.Delete($"DELETE FROM Sessions WHERE UserID = {_testUserID}");
-    //     DBHelper.Delete($"DELETE FROM UserSessions WHERE UserID = {_testUserID}");
-    //     DBHelper.Delete($"DELETE FROM Users WHERE ID = {_testUserID}");
-    // }
+    [ClassCleanup]
+    public static void ClassCleanup()
+    {
+        // Clean up ONLY the payment test user (created fresh each run)
+        // Do NOT delete the billing user - it should persist across runs for data accumulation
+        Console.WriteLine($"Cleaning up payment test user {_testUserID}, keeping billing user {_billingUserID}");
+        
+        // Delete in correct order to avoid foreign key constraint errors
+        DBHelper.Delete($"DELETE FROM Transaction WHERE UserID = {_testUserID}");
+        DBHelper.Delete($"DELETE FROM Sessions WHERE UserID = {_testUserID}");
+        DBHelper.Delete($"DELETE FROM UserSessions WHERE UserID = {_testUserID}");
+        DBHelper.Delete($"DELETE FROM Users WHERE ID = {_testUserID}");
+        
+        Console.WriteLine("Payment test user cleanup complete. Billing user data preserved.");
+    }
 
     // CREATE Tests - POST Payment
     [TestMethod]
@@ -286,6 +365,57 @@ public sealed class PaymentsControllerIntegrationTests
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
+
+    // Billing Tests - GET /payments/billing (uses persistent billing user)
+    [TestMethod]
+    [Priority(14)]
+    public void GetBilling_ValidAuth_ReturnsOkWithData()
+    {
+        var controller = new PaymentsController();
+        var result = controller.GET_Billing(_billingAuthToken!);
+
+        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult?.Value);
+        
+        // Verify it returns a JArray
+        var billingData = okResult.Value as JArray;
+        Assert.IsNotNull(billingData);
+        
+        // Should have at least one billing record for our billing user
+        Assert.IsTrue(billingData.Count > 0, "Should have at least one billing record");
+        
+        // Verify structure of first billing record
+        var firstRecord = billingData[0] as JObject;
+        Assert.IsNotNull(firstRecord);
+        Assert.IsTrue(firstRecord.ContainsKey("session"));
+        Assert.IsTrue(firstRecord.ContainsKey("parking"));
+        Assert.IsTrue(firstRecord.ContainsKey("amount"));
+        Assert.IsTrue(firstRecord.ContainsKey("thash"));
+        Assert.IsTrue(firstRecord.ContainsKey("payed"));
+        Assert.IsTrue(firstRecord.ContainsKey("balance"));
+        
+        Console.WriteLine($"Billing returned {billingData.Count} records for billing user {_billingUserID}");
+        Console.WriteLine($"First record: {firstRecord}");
+    }
+
+    [TestMethod]
+    [Priority(15)]
+    public void GetBilling_NoAuth_ReturnsUnauthorized()
+    {
+        var controller = new PaymentsController();
+        var result = controller.GET_Billing(null!);
+
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedObjectResult));
+    }
+
+    [TestMethod]
+    [Priority(16)]
+    public void GetBilling_InvalidAuth_ReturnsUnauthorized()
+    {
+        var controller = new PaymentsController();
+        var result = controller.GET_Billing("invalid-token-12345");
+
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedObjectResult));
+    }
 }
-
-
