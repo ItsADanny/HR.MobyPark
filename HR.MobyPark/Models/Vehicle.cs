@@ -128,6 +128,35 @@ public class Vehicle : aModel, iDatabase
         return returnValue;
     }
 
+    public static List<Vehicle> GetByUserID(int userID)
+    {
+        List<Vehicle> returnValue = [];
+
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        cmd.Connection = conn;
+        cmd.CommandText = ToSelectByUserIDSQL(userID);
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            DateTime CreateDateTime = reader.GetDateTime("CreateDateTime");
+            DateTime? UpdateDateTime = reader.IsDBNull(reader.GetOrdinal("UpdateDateTime")) ? null : reader.GetDateTime("UpdateDateTime");
+
+            Vehicle newVehicle = new(reader.GetInt32("ID"), reader.GetInt32("UserID"),
+                                 reader.GetString("LicensePlate"), reader.GetString("Make"), reader.GetString("Model"),
+                                 reader.GetString("Color"), reader.GetInt32("Year"),
+                                 CreateDateTime, UpdateDateTime);
+
+            returnValue.Add(newVehicle);
+        }
+
+        conn.Close();
+        return returnValue;
+    }
+
     public override string ToInsertSQL() => $"INSERT INTO Vehicles (UserID, LicensePlate, Make, Model, Color, Year) VALUES (\"{UserID}\", \"{LicensePlate}\", \"{Make}\", \"{Model}\", \"{Color}\", \"{ModelYear}\")";
 
     public override string ToUpdateSQL() => $"UPDATE Vehicles SET UserID = \"{UserID}\", LicensePlate = \"{LicensePlate}\", Make = \"{Make}\", Model = \"{Model}\", Color = \"{Color}\", Year = \"{ModelYear}\" WHERE ID = {ID}";
@@ -137,6 +166,8 @@ public class Vehicle : aModel, iDatabase
     public override string ToSelectSQL() => $"SELECT * FROM Vehicles WHERE ID = {ID}";
 
     public static string ToSelectByIDSQL(int id) => $"SELECT * FROM Vehicles WHERE ID = {id}";
+
+    public static string ToSelectByUserIDSQL(int userID) => $"SELECT * FROM Vehicles WHERE UserID = {userID}";
 
     public static string ToSelectAllSQL() => "SELECT * FROM Vehicles";
 }

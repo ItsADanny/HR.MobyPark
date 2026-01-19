@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HR.MobyPark-UnitTesting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+28f7898761fc45c14f65090d07a183ca2f7dc2fe")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9c0a7650a566a2a840c46d7f9a1e9caaa686cba6")]
 [assembly: System.Reflection.AssemblyProductAttribute("HR.MobyPark-UnitTesting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HR.MobyPark-UnitTesting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

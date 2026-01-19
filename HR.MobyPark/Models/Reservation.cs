@@ -176,6 +176,50 @@ public class Reservation : aModel, iDatabase
         conn.Close();
         return returnValue;
     }
+    
+    public static List<Reservation> GetAllByVehicle(int vehicleID)
+    {
+        List<Reservation> returnValue = [];
+
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
+        MySqlCommand cmd = new MySqlCommand();
+
+        conn.Open();
+        cmd.Connection = conn;
+        cmd.CommandText = ToSelectByVehicleSQL(vehicleID);
+
+        MySqlDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            DateTime RCreateDateTime = DateTime.Now;
+            DateTime? RUpdateDateTime = null;
+
+            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
+            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
+
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+
+            Reservation newReservation = new()
+            {
+                ID = Convert.ToInt32(reader["ID"].ToString()),
+                UserID = Convert.ToInt32(reader["UserID"].ToString()),
+                ParkingLotID = Convert.ToInt32(reader["ParkingLotID"].ToString()),
+                VehicleID = Convert.ToInt32(reader["VehicleID"].ToString()),
+                StartDateTime = Convert.ToDateTime(reader["StartDateTime"].ToString()),
+                EndDateTime = Convert.ToDateTime(reader["EndDateTime"].ToString()),
+                Status = reader["Status"].ToString(),
+                Amount = Convert.ToDecimal(reader["Amount"].ToString()),
+                CreateDateTime = RCreateDateTime,
+                UpdateDateTime = RUpdateDateTime
+            };
+
+            returnValue.Add(newReservation);
+        }
+
+        conn.Close();
+        return returnValue;
+    }
 
     public override string ToInsertSQL() => $"INSERT INTO Reservations (UserID, ParkingLotID, VehicleID, StartDateTime, EndDateTime) VALUES ({UserID}, {ParkingLotID}, {VehicleID}, {StartDateTime:YYYY-MM-DD hh:mm:ss}, {EndDateTime:YYYY-MM-DD hh:mm:ss})";
 
