@@ -2,9 +2,7 @@ public static class GeneralMethods
 {
     public static bool IntToBool(int input) => input == 1;
     public static int BoolToInt(bool input) => input ? 1 : 0;
-    // Parse flexible (handles US format from database), DateTime object works universally
-    public static DateTime ParseDBDateTime(string dbDateTimeString) => DateTime.Parse(dbDateTimeString, System.Globalization.CultureInfo.InvariantCulture);
-    // Convert DateTime to Dutch format string when needed
-    public static string ToNLDateTimeString(DateTime dateTime) => dateTime.ToString("dd/MM/yyyy HH:mm:ss", new System.Globalization.CultureInfo("nl-NL"));
+    // public static DateTime ParseDBDateTime(string dbDateTimeString) => DateTime.ParseExact(dbDateTimeString, "yyyy/MM/dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+    public static DateTime ParseDBDateTime(string dbDateTimeString) => DateTime.ParseExact(dbDateTimeString, "dd/MM/yyyy HH:mm:ss", new System.Globalization.CultureInfo("nl-NL"));
     
 }
