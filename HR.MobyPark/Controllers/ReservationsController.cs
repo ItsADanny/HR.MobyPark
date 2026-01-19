@@ -28,7 +28,10 @@ public class ReservationController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if ((!foundUser.Role.Reservation.HasReadPremission() && foundReservation.UserID != foundUser.ID) || !foundUser.Role.GlobalReservations.HasReadPremission()) return Unauthorized();
+
+        if (!foundUser.Role.GlobalReservations.HasReadPremission() && 
+            (!foundUser.Role.Reservation.HasReadPremission() || foundReservation.UserID != foundUser.ID)) 
+            return Unauthorized();
 
         return Ok(Reservation.ToJSON(foundReservation));
     }
@@ -52,7 +55,8 @@ public class ReservationController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.GlobalReservations.HasWritePremission() || !foundUser.Role.Reservation.HasWritePremission()) return Unauthorized();
+        if (!foundUser.Role.GlobalReservations.HasWritePremission() && !foundUser.Role.Reservation.HasWritePremission()) 
+            return Unauthorized();
 
         Reservation newReservation = new ()
         {
@@ -90,7 +94,9 @@ public class ReservationController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if ((!foundUser.Role.Reservation.HasWritePremission() && foundReservation.UserID != foundUser.ID) || !foundUser.Role.GlobalReservations.HasWritePremission()) return Unauthorized();
+        if (!foundUser.Role.GlobalReservations.HasWritePremission() && 
+            (!foundUser.Role.Reservation.HasWritePremission() || foundReservation.UserID != foundUser.ID)) 
+            return Unauthorized();
 
         foundReservation.StartDateTime = updateReservationDto.startDateTime;
         foundReservation.EndDateTime = updateReservationDto.endDateTime;
@@ -124,7 +130,9 @@ public class ReservationController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if ((!foundUser.Role.Reservation.HasWritePremission() && foundReservation.UserID != foundUser.ID) || !foundUser.Role.GlobalReservations.HasWritePremission()) return Unauthorized();
+        if (!foundUser.Role.GlobalReservations.HasWritePremission() && 
+            (!foundUser.Role.Reservation.HasWritePremission() || foundReservation.UserID != foundUser.ID)) 
+            return Unauthorized();
 
         if (foundReservation.DeleteDB()) return Ok($"Reservation with ID {id} deleted successfully");
         return Problem($"Failed to delete reservation with ID {id}");
