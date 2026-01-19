@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/younes/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj": {}
+    "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj": {}
   },
   "projects": {
-    "/Users/younes/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj": {
+    "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/younes/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj",
+        "projectUniqueName": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj",
         "projectName": "HR.MobyPark",
-        "projectPath": "/Users/younes/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj",
-        "packagesPath": "/Users/younes/.nuget/packages/",
-        "outputPath": "/Users/younes/Documents/GitHub/HR.MobyPark/HR.MobyPark/obj/",
+        "projectPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/HR.MobyPark.csproj",
+        "packagesPath": "/Users/dannydesnoo/.nuget/packages/",
+        "outputPath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/younes/.nuget/NuGet/NuGet.Config"
+          "/Users/dannydesnoo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
