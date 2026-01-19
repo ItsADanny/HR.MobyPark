@@ -200,6 +200,8 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+# IF I SEE ANYONE USE THIS IDE I WILL PERSONALY DELETE ALL YOUR CODE
+# WE DON'T "VIBE" CODE HERE
 
 # Marimo
 marimo/_static/
@@ -217,6 +219,18 @@ Inlevermap INFSCPX1 - Team X - INF2X.zip
 
 #MacOS
 .DS_STORE
-*.cache
-*.cache
-*.cache
+/.vscode
+/MobyPark/obj
+HR.MobyPark/obj/Debug/net10.0/apphost.exe
+HR.MobyPark/obj/Debug/net10.0/HR.MobyPark.AssemblyInfo.cs
+HR.MobyPark/obj/Debug/net10.0/HR.MobyPark.AssemblyInfoInputs.cache
+HR.MobyPark/obj/Debug/net10.0/HR.MobyPark.assets.cache
+HR.MobyPark/obj/Debug/net10.0/HR.MobyPark.csproj.AssemblyReference.cache
+HR.MobyPark/obj/Debug/net10.0/HR.MobyPark.GeneratedMSBuildEditorConfig.editorconfig
+HR.MobyPark/obj/Debug/net10.0/HR.MobyPark.GlobalUsings.g.cs
+HR.MobyPark/obj/HR.MobyPark.csproj.nuget.dgspec.json
+HR.MobyPark/obj/HR.MobyPark.csproj.nuget.g.props
+HR.MobyPark/obj/HR.MobyPark.csproj.nuget.g.targets
+HR.MobyPark/obj/project.assets.json
+HR.MobyPark/obj/project.nuget.cache
+MobyPark-DataImporter/Import/users.json

@@ -143,7 +143,7 @@ public class ParkingLot : aModel, iDatabase
         return returnValue;
     }
 
-    //useful methods to check parking lots stat
+    //useful methods to check parking lots state
     public bool HasFreeSpots() => Reserved < Capacity;
     public int GetAvailableSpots() => Capacity - Reserved;
     public bool IsFull() => Reserved >= Capacity;
