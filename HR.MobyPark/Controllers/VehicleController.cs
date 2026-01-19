@@ -145,10 +145,45 @@ public class VehicleController : ControllerBase
     // ====================================================================================
     // PUT
     // ====================================================================================
-    [HttpPut("/")]
-    public ActionResult<string> PUT_UpdateReservation()
+    [HttpPut("{id:int}")]
+    public ActionResult<string> PUT_UpdateVehicle(int id,[FromHeader(Name = "authorization")] string authorization,[FromBody] updateVehicleDto dto)
     {
-        return Problem("NOT IMPLEMENTED, -Danny");
+        if (string.IsNullOrEmpty(authorization)) return Unauthorized("Missing authorization header");
+
+        UserSession? userSession = UserSession.GetUserSession(authorization);
+        if (userSession is null) return Unauthorized("Invalid session");
+
+        MUser? foundUser = MUser.GetUser(userSession.UserID);
+        if (foundUser is null) return Problem("User account not found");
+
+        // check if fields are missing
+        if (string.IsNullOrEmpty(dto.make) ||
+            string.IsNullOrEmpty(dto.model) ||
+            string.IsNullOrEmpty(dto.color) ||
+            dto.modelYear <= 1900)
+        {
+            return BadRequest("Required field missing or invalid");
+        }
+
+        // load vehicle
+        Vehicle? vehicle = Vehicle.GetByID(id);
+        if (vehicle is null) return NotFound("Vehicle not found");
+
+        // check owner
+        if (vehicle.UserID != userSession.UserID) return Unauthorized("You do not own this vehicle");
+
+        // apply changes
+        vehicle.LicensePlate = dto.licensePlate;
+        vehicle.Make = dto.make;
+        vehicle.Model = dto.model;
+        vehicle.Color = dto.color;
+        vehicle.ModelYear = dto.modelYear;
+        vehicle.UpdateDateTime = DateTime.Now;
+
+        bool updated = vehicle.UpdateDB();
+        if (!updated) return Problem("Failed to update vehicle");
+
+        return Ok(new{status = "Success", vehicle = Vehicle.ToJSON(vehicle)});
     }
 
     // ====================================================================================

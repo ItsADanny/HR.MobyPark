@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
@@ -58,3 +60,4 @@ public record reservationDto(int userID, int parkingLotID, int vehicleID, DateTi
 public record updateReservationDto(DateTime startDateTime, DateTime endDateTime, string status);
 public record parkingLotDto(string name, string location, string address, int capacity, decimal tariff, decimal dayTariff, double lat, double lon);
 public record vehicleDto(int userID,string licensePlate, string make, string model, string color, int modelYear);
+public record updateVehicleDto(string licensePlate, string make, string model, string color, int modelYear);
