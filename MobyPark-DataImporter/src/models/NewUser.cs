@@ -15,7 +15,7 @@ public class NewUser : iSQL
 
     public string ToInsertSQL()
     {
-        return $"INSERT INTO Users (Username, Password, Name, Email, Phone, BirthDate) VALUES (\"{Username}\", \"{Password}\", \"{Name}\", \"{Email}\", \"{Phone}\", '{BirthDate:yyyy-MM-dd}')";
+        return $"INSERT INTO Users (Username, Password, Name, Email, Phone, BirthDate) VALUES (\"{Username}\", \"{Password}\", \"{Name}\", \"{Email}\", \"{Phone}\", {BirthDate})";
     }
 
     public string ToUpdateSQL()

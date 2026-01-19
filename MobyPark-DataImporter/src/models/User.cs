@@ -37,5 +37,8 @@ public class User : iSQL
         return $"INSERT INTO LegacyAccounts (OrigID, Username, Password, Name, Email, Phone, Role, CreatedAt, BirthYear, Active) VALUES ({id}, \"{username}\", \"{password}\", \"{name}\", \"{email}\", \"{phone}\", \"{role}\", \"{created_at}\", {birth_year}, {active});";
     }
 
-    public string ToUpdateSQL() => $"UPDATE LegacyAccounts SET NewUserID = {NewUserID} WHERE ID = {id};";
+    public string ToUpdateSQL()
+    {
+        return $"UPDATE LegacyAccounts SET NewUserID = {NewUserID} WHERE ID = {id};";
+    }
 }

@@ -2,88 +2,117 @@ namespace HR.MobyPark_DashboardingDBWorker;
 
 public class Worker(ILogger<Worker> logger) : BackgroundService
 {
+    private static string LogDBStartedTableString(string table) => $"Started copying table: {table}";
+    private static string LogDBFinishedTableString(string table, int total) => $"Finished copying table: {table}, Total rows copied/updated: {total}";
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
             if (logger.IsEnabled(LogLevel.Information))
             {
-                DateTime startMoment = DateTime.Now;
                 logger.LogInformation("HR.MobyPark Dashboarding Database Worker running at: {time}", DateTimeOffset.Now);
-                logger.LogInformation("Started database cleaning");
-                Program.DBH_ToDB.Delete(LegacyUser.ToDeleteAllSQL());
+                logger.LogInformation("Started clearing database...");
                 Program.DBH_ToDB.Delete(ParkingLot.ToDeleteAllSQL());
+                Program.DBH_ToDB.Delete(Billing.ToDeleteAllSQL());
+                Program.DBH_ToDB.Delete(Payment.ToDeleteAllSQL());
                 Program.DBH_ToDB.Delete(Reservation.ToDeleteAllSQL());
                 Program.DBH_ToDB.Delete(Session.ToDeleteAllSQL());
-                Program.DBH_ToDB.Delete(Payment.ToDeleteAllSQL());
                 Program.DBH_ToDB.Delete(User.ToDeleteAllSQL());
                 Program.DBH_ToDB.Delete(UserActivity.ToDeleteAllSQL());
                 Program.DBH_ToDB.Delete(UserRole.ToDeleteAllSQL());
                 Program.DBH_ToDB.Delete(UserSession.ToDeleteAllSQL());
                 Program.DBH_ToDB.Delete(Vehicle.ToDeleteAllSQL());
-                logger.LogInformation("Finished cleaning, starting duplication");
-                logger.LogInformation("Retrieving LegacyAccount records from Production database");
-                //Retriev values from original database, and let the DBHelper create 
-                //the records in the dashboard database
-                List<LegacyUser>? legacyUsers = LegacyUser.GetAll(Program.DBH_FromDB);
-                logger.LogInformation("Inserting LegacyAccount records into Dashboard database");
-                Program.DBH_ToDB.Create(legacyUsers);
-                //Set to null to remove everything in this variable from memory
-                //We DONT want a bloated memory hungry service-worker...
-                //(We are not going to make the next Google Chrome)
-                legacyUsers = null;
-                logger.LogInformation("Retrieving ParkingLot records from Production database");
-                List<ParkingLot>? ParkingLots = ParkingLot.GetAll(Program.DBH_FromDB);
-                logger.LogInformation("Inserting ParkingLot records into Dashboard database");
-                Program.DBH_ToDB.Create(ParkingLots);
-                ParkingLots = null;
+                logger.LogInformation("Finished clearing database...");
+                logger.LogInformation($"Finished clearing database. task completed at: {DateTimeOffset.Now} ,total time taken for this operation: {(DateTimeOffset.Now - DateTimeOffset.Now.AddMinutes(-1)).TotalSeconds} seconds.");
 
-                logger.LogInformation("Retrieving Reservation records from Production database");
-                List<Reservation>? Reservations = Reservation.GetAll(Program.DBH_FromDB);
-                logger.LogInformation("Inserting Reservation records into Dashboard database");
-                Program.DBH_ToDB.Create(Reservations);
-                Reservations = null;
+                logger.LogInformation("Started copying database...");
+                //Copying ParkingLots table
+                logger.LogInformation(LogDBStartedTableString("ParkingLot"));
+                List<ParkingLot> parkingLots = ParkingLot.GetAll(Program.DBH_FromDB);
+                foreach (ParkingLot parkingLot in parkingLots)
+                {
+                    Program.DBH_ToDB.Create(parkingLot.ToInsertSQL());
+                }
+                logger.LogInformation(LogDBFinishedTableString("ParkingLot", parkingLots.Count()));
+                //Copying Billing table
+                logger.LogInformation(LogDBStartedTableString("Billing"));
+                List<Billing> billings = Billing.GetAll(Program.DBH_FromDB);
+                foreach (Billing billing in billings)
+                {
+                    Program.DBH_ToDB.Create(billing.ToInsertSQL());
+                }
+                logger.LogInformation(LogDBFinishedTableString("Billing", billings.Count()));
+                //Copying Payment table
+                logger.LogInformation(LogDBStartedTableString("Payment"));
+                List<Payment> payments = Payment.GetAll(Program.DBH_FromDB);
+                foreach (Payment payment in payments)
+                {
+                    Program.DBH_ToDB.Create(payment.ToInsertSQL());
+                }
+                logger.LogInformation(LogDBFinishedTableString("Payment", payments.Count()));
+                //Copying Reservation table
+                logger.LogInformation(LogDBStartedTableString("Reservation"));
+                List<Reservation> reservations = Reservation.GetAll(Program.DBH_FromDB);
+                foreach (Reservation reservation in reservations)
+                {
+                    Program.DBH_ToDB.Create(reservation.ToInsertSQL());
+                }
+                logger.LogInformation(LogDBFinishedTableString("Reservation", reservations.Count()));
+                //Copying Session table
+                logger.LogInformation(LogDBStartedTableString("Session"));
+                List<Session> sessions = Session.GetAll(Program.DBH_FromDB);
+                foreach (Session session in sessions)
+                {
+                    Program.DBH_ToDB.Create(session.ToInsertSQL());
+                }
+                logger.LogInformation(LogDBFinishedTableString("Session", sessions.Count()));
+                //Copying User table
+                logger.LogInformation(LogDBStartedTableString("User"));
+                List<User> users = User.GetAll(Program.DBH_FromDB);
+                foreach (User user in users)
+                {
+                    Program.DBH_ToDB.Create(user.ToInsertSQL());
+                }
+                logger.LogInformation(LogDBFinishedTableString("User", users.Count()));
+                //Copying UserActivity table
+                logger.LogInformation(LogDBStartedTableString("UserActivity"));
+                List<UserActivity> userActivities = UserActivity.GetAll(Program.DBH_FromDB);
+                foreach (UserActivity userActivity in userActivities)
+                {
+                    Program.DBH_ToDB.Create(userActivity.ToInsertSQL());
+                }
+                logger.LogInformation(LogDBFinishedTableString("UserActivity", userActivities.Count()));
+                //Copying UserRole table
+                logger.LogInformation(LogDBStartedTableString("UserRole"));
+                List<UserRole> userRoles = UserRole.GetAll(Program.DBH_FromDB);
+                foreach (UserRole userRole in userRoles)
+                {
+                    Program.DBH_ToDB.Create(userRole.ToInsertSQL());
+                }
+                logger.LogInformation(LogDBFinishedTableString("UserRole", userRoles.Count()));
+                //Copying UserSession table
+                logger.LogInformation(LogDBStartedTableString("UserSession"));
+                List<UserSession> userSessions = UserSession.GetAll(Program.DBH_FromDB);
+                foreach (UserSession userSession in userSessions)
+                {
+                    Program.DBH_ToDB.Create(userSession.ToInsertSQL());
+                }
+                logger.LogInformation(LogDBFinishedTableString("UserSession", userSessions.Count()));
+                //Copying Vehicle table
+                logger.LogInformation(LogDBStartedTableString("Vehicle"));
+                List<Vehicle> vehicles = Vehicle.GetAll(Program.DBH_FromDB);
+                foreach (Vehicle vehicle in vehicles)
+                {
+                    Program.DBH_ToDB.Create(vehicle.ToInsertSQL());
+                }
+                logger.LogInformation(LogDBFinishedTableString("Vehicle", vehicles.Count()));
+                logger.LogInformation("Finished copying database...");
 
-                logger.LogInformation("Retrieving Session records from Production database");
-                List<Session>? Sessions = Session.GetAll(Program.DBH_FromDB);
-                logger.LogInformation("Inserting Session records into Dashboard database");
-                Program.DBH_ToDB.Create(Sessions);
-                Sessions = null;
-
-                logger.LogInformation("Retrieving Payment records from Production database");
-                List<Payment>? Payments = Payment.GetAll(Program.DBH_FromDB);
-                logger.LogInformation("Inserting Payment records into Dashboard database");
-                Program.DBH_ToDB.Create(Payments);
-                Payments = null;
-
-                logger.LogInformation("Retrieving UserActivity records from Production database");
-                List<UserActivity>? UserActivities = UserActivity.GetAll(Program.DBH_FromDB);
-                logger.LogInformation("Inserting UserActivity records into Dashboard database");
-                Program.DBH_ToDB.Create(UserActivities);
-                UserActivities = null;
-
-                logger.LogInformation("Retrieving User records from Production database");
-                List<User>? Users = User.GetAll(Program.DBH_FromDB);
-                logger.LogInformation("Inserting User records into Dashboard database");
-                Program.DBH_ToDB.Create(Users);
-                Users = null;
-
-                logger.LogInformation("Retrieving UserRole records from Production database");
-                List<UserRole>? UserRoles = UserRole.GetAll(Program.DBH_FromDB);
-                logger.LogInformation("Inserting UserRole records into Dashboard database");
-                Program.DBH_ToDB.Create(UserRoles);
-                UserRoles = null;
-
-                logger.LogInformation("Retrieving Vehicle records from Production database");
-                List<Vehicle>? Vehicles = Vehicle.GetAll(Program.DBH_FromDB);
-                logger.LogInformation("Inserting Vehicle records into Dashboard database");
-                Program.DBH_ToDB.Create(Vehicles);
-                Vehicles = null;
-
-                TimeSpan completeTime = DateTime.Now - startMoment;
-                logger.LogInformation($"Operation finished at {DateTimeOffset.Now}, Time to Complete: {completeTime:HH:MM}");
+                logger.LogInformation($"Finished copying database. task completed at: {DateTimeOffset.Now}, total time taken for this operation: {(DateTimeOffset.Now - DateTimeOffset.Now.AddMinutes(-1)).TotalSeconds} seconds.");
+                logger.LogInformation($"Total time taken for entire operation: {(DateTimeOffset.Now - DateTimeOffset.Now.AddMinutes(-1)).TotalSeconds} seconds.");
             }
-            await Task.Delay(Converter.DayToMilisecond(1), stoppingToken);
+            await Task.Delay((int) Converter.HourToMilisecond(24), stoppingToken);
         }
     }
 }

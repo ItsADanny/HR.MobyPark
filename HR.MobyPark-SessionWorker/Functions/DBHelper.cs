@@ -1,12 +1,11 @@
 using MySql.Data.MySqlClient;
 
-public class DBHelper
+public static class DBHelper
 {
-    public DBConfig dBConfig {private get; set;}
+    public static DBConfig dBConfig {private get; set;}
 
-    public int? Create(string sqlstatement)
+    public static int? Create(string sqlstatement)
     {
-        if (dBConfig is null) return null;
         try {
             MySqlConnection conn = new MySqlConnection(dBConfig.GetConnectionSTR());
             MySqlCommand cmd = new MySqlCommand();
@@ -15,11 +14,11 @@ public class DBHelper
             cmd.Connection = conn;
             cmd.CommandText = sqlstatement;
             cmd.ExecuteNonQuery();
-            // int insertID = Convert.ToInt32(cmd.LastInsertedId);
+            int insertID = Convert.ToInt32(cmd.LastInsertedId);
 
             conn.Close();
 
-            return 1;
+            return insertID;
         }
         catch (Exception e)
         {
@@ -32,15 +31,8 @@ public class DBHelper
         }
     }
 
-    public bool Update(string sqlstatement) {
-        int? result = Create(sqlstatement);
-        return result != 0 || result is not null;
-    }
+    public static bool Update(string sqlstatement) => Create(sqlstatement) != 0 ? true : false;
+    public static bool Delete(string sqlstatement) => Update(sqlstatement);
 
-    public bool Delete(string sqlstatement) => Update(sqlstatement);
-
-    public string GetConnectionSTR() {
-        if (dBConfig is null) return "DBHelper not initialized correctly, please initialize the DBHelper by providing it a DBConfig";
-        return dBConfig.GetConnectionSTR();
-    }
+    public static string GetConnectionSTR() => dBConfig.GetConnectionSTR();
 }

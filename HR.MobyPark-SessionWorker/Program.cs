@@ -1,7 +1,6 @@
 using HR.MobyPark_SessionWorker;
 
-public class Program { 
-    public static DBHelper DBHelper = new ();
+public class Program {
 
     static void Main(string[] args)
     {
@@ -9,15 +8,16 @@ public class Program {
         builder.Services.AddHostedService<Worker>();
 
         //Loading database connection variables into a DBConfig object at program launch
-        DBConfig? dbConfig = builder.Configuration.GetSection("FromDatabase").Get<DBConfig>();
+        DBConfig? dbConfigFromDB = builder.Configuration.GetSection("Database").Get<DBConfig>();
         //If database connection variables can't be loaded exit program with error
-        if (dbConfig is null) throw new NullReferenceException("Can't load user-secrets into DBConfig");
+        if (dbConfigFromDB is null) throw new NullReferenceException("Can't load user-secrets into DBConfig");
         //Check if the HOST and PORT for the DBConfig are filled
-        if (dbConfig.HST is null || dbConfig.PRT is null) throw new NullReferenceException("Can't load user-secrets into DBConfig");
+        if (dbConfigFromDB.HST is null || dbConfigFromDB.PRT is null) throw new NullReferenceException("Can't load user-secrets into DBConfig");
         //Set the DBConfig into the DBHelper
-        DBHelper.dBConfig = dbConfig;
+        DBHelper.dBConfig = dbConfigFromDB;
 
         var host = builder.Build();
         host.Run();
     }
 }
+

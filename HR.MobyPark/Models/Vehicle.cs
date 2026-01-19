@@ -16,17 +16,17 @@ using Newtonsoft.Json.Linq;
 public class Vehicle : aModel, iDatabase
 {
     //Public properties
-    public int ID { get; private set; }
-    public int UserID { get; private set; }
-    public string LicensePlate { get; private set; }
-    public string Make { get; private set; }
-    public string Model { get; private set; }
-    public string Color { get; private set; }
-    public int ModelYear { get; private set; }
-    public DateTime CreateDateTime { get; private set; }
-    public DateTime? UpdateDateTime { get; private set; }
+    public int ID { get; set; }
+    public int UserID { get; set; }
+    public string LicensePlate { get; set; }
+    public string Make { get; set; }
+    public string Model { get; set; }
+    public string Color { get; set; }
+    public int ModelYear { get; set; }
+    public DateTime CreateDateTime { get; set; }
+    public DateTime? UpdateDateTime { get; set; }
 
-    private Vehicle(int id, int userid, string licensePlate, string make, string model, string color, int modelYear, DateTime createDateTime, DateTime? updateDateTime = null)
+    public Vehicle(int id, int userid, string licensePlate, string make, string model, string color, int modelYear, DateTime createDateTime, DateTime? updateDateTime = null)
     {
         ID = id;
         UserID = userid;
@@ -37,6 +37,10 @@ public class Vehicle : aModel, iDatabase
         ModelYear = modelYear;
         CreateDateTime = createDateTime;
         UpdateDateTime = updateDateTime;
+    }
+
+    public Vehicle()
+    {
     }
 
     public static JObject ToJSON(Vehicle vehicle)
@@ -81,18 +85,12 @@ public class Vehicle : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         if (reader.Read())
         {
-            DateTime CreateDateTime = DateTime.Now;
-            DateTime? UpdateDateTime = null;
+            DateTime CreateDateTime = reader.GetDateTime("CreateDateTime");
+            DateTime? UpdateDateTime = reader.IsDBNull(reader.GetOrdinal("UpdateDateTime")) ? null : reader.GetDateTime("UpdateDateTime");
 
-            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
-            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
-
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
-
-            Vehicle returnValue = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
-                                 reader["LicensePlate"].ToString(), reader["Make"].ToString(), reader["Model"].ToString(),
-                                 reader["Color"].ToString(), Convert.ToInt32(reader["Year"].ToString()),
+            Vehicle returnValue = new(reader.GetInt32("ID"), reader.GetInt32("UserID"),
+                                 reader.GetString("LicensePlate"), reader.GetString("Make"), reader.GetString("Model"),
+                                 reader.GetString("Color"), reader.GetInt32("Year"),
                                  CreateDateTime, UpdateDateTime);
 
             conn.Close();
@@ -101,41 +99,6 @@ public class Vehicle : aModel, iDatabase
 
         conn.Close();
         return null;
-    }
-
-    public static List<Vehicle> GetByUserID(int userID)
-    {
-        List<Vehicle> returnValue = [];
-
-        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
-        MySqlCommand cmd = new MySqlCommand();
-
-        conn.Open();
-        cmd.Connection = conn;
-        cmd.CommandText = ToSelectByUserIDSQL(userID);
-
-        MySqlDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            DateTime CreateDateTime = DateTime.Now;
-            DateTime? UpdateDateTime = null;
-
-            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
-            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
-
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
-
-            Vehicle newVehicle = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
-                                 reader["LicensePlate"].ToString(), reader["Make"].ToString(), reader["Model"].ToString(),
-                                 reader["Color"].ToString(), Convert.ToInt32(reader["Year"].ToString()),
-                                 CreateDateTime, UpdateDateTime);
-
-            returnValue.Add(newVehicle);
-        }
-
-        conn.Close();
-        return returnValue;
     }
 
     public static List<Vehicle> GetAll()
@@ -152,18 +115,12 @@ public class Vehicle : aModel, iDatabase
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            DateTime CreateDateTime = DateTime.Now;
-            DateTime? UpdateDateTime = null;
+            DateTime CreateDateTime = reader.GetDateTime("CreateDateTime");
+            DateTime? UpdateDateTime = reader.IsDBNull(reader.GetOrdinal("UpdateDateTime")) ? null : reader.GetDateTime("UpdateDateTime");
 
-            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
-            string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
-
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
-
-            Vehicle newVehicle = new(Convert.ToInt32(reader["ID"].ToString()), Convert.ToInt32(reader["UserID"].ToString()),
-                                 reader["LicensePlate"].ToString(), reader["Make"].ToString(), reader["Model"].ToString(),
-                                 reader["Color"].ToString(), Convert.ToInt32(reader["Year"].ToString()),
+            Vehicle newVehicle = new(reader.GetInt32("ID"), reader.GetInt32("UserID"),
+                                 reader.GetString("LicensePlate"), reader.GetString("Make"), reader.GetString("Model"),
+                                 reader.GetString("Color"), reader.GetInt32("Year"),
                                  CreateDateTime, UpdateDateTime);
 
             returnValue.Add(newVehicle);
@@ -174,10 +131,14 @@ public class Vehicle : aModel, iDatabase
     }
 
     public override string ToInsertSQL() => $"INSERT INTO Vehicles (UserID, LicensePlate, Make, Model, Color, Year) VALUES (\"{UserID}\", \"{LicensePlate}\", \"{Make}\", \"{Model}\", \"{Color}\", \"{ModelYear}\")";
+
     public override string ToUpdateSQL() => $"UPDATE Vehicles SET UserID = \"{UserID}\", LicensePlate = \"{LicensePlate}\", Make = \"{Make}\", Model = \"{Model}\", Color = \"{Color}\", Year = \"{ModelYear}\" WHERE ID = {ID}";
+
     public override string ToDeleteSQL() => $"DELETE FROM Vehicles WHERE ID = {ID}";
+
     public override string ToSelectSQL() => $"SELECT * FROM Vehicles WHERE ID = {ID}";
+
     public static string ToSelectByIDSQL(int id) => $"SELECT * FROM Vehicles WHERE ID = {id}";
-    public static string ToSelectByUserIDSQL(int userID) => $"SELECT * FROM Vehicles WHERE UserID = {userID}";
+
     public static string ToSelectAllSQL() => "SELECT * FROM Vehicles";
 }

@@ -67,9 +67,6 @@ public class Reservation : aModel, iDatabase
             if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
             if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
 
-            string? amountStr1 = reader["Amount"].ToString();
-            decimal amount1 = string.IsNullOrEmpty(amountStr1) ? 0 : Convert.ToDecimal(amountStr1);
-
             Reservation returnValue = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -79,7 +76,7 @@ public class Reservation : aModel, iDatabase
                 StartDateTime = Convert.ToDateTime(reader["StartDateTime"].ToString()),
                 EndDateTime = Convert.ToDateTime(reader["EndDateTime"].ToString()),
                 Status = reader["Status"].ToString(),
-                Amount = amount1,
+                Amount = Convert.ToDecimal(reader["Amount"].ToString()),
                 CreateDateTime = RCreateDateTime,
                 UpdateDateTime = RUpdateDateTime
             };
@@ -159,9 +156,6 @@ public class Reservation : aModel, iDatabase
             if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
             if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
 
-            string? amountStr = reader["Amount"].ToString();
-            decimal amount = string.IsNullOrEmpty(amountStr) ? 0 : Convert.ToDecimal(amountStr);
-
             Reservation newReservation = new()
             {
                 ID = Convert.ToInt32(reader["ID"].ToString()),
@@ -171,7 +165,7 @@ public class Reservation : aModel, iDatabase
                 StartDateTime = Convert.ToDateTime(reader["StartDateTime"].ToString()),
                 EndDateTime = Convert.ToDateTime(reader["EndDateTime"].ToString()),
                 Status = reader["Status"].ToString(),
-                Amount = amount,
+                Amount = Convert.ToDecimal(reader["Amount"].ToString()),
                 CreateDateTime = RCreateDateTime,
                 UpdateDateTime = RUpdateDateTime
             };

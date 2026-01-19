@@ -30,15 +30,35 @@ public class VehicleController : ControllerBase
     // POST
     // ====================================================================================
     [HttpPost("")]
-    public ActionResult<string> POST_CreateVehicle()
+    public ActionResult<string> POST_CreateVehicle([FromHeader(Name = "authorization")] string authorization, [FromBody] vehicleDto createvehicleDto)
     {
-        return Problem("NOT IMPLEMENTED, -Danny");
-    }
+        if (string.IsNullOrEmpty(authorization)) return Unauthorized();
 
-    [HttpPost("/")]
-    public ActionResult<string> POST_CreateVehicleS()
-    {
-        return Problem("NOT IMPLEMENTED, -Danny");
+        UserSession? userSession = UserSession.GetUserSession(authorization);
+        if (userSession is null) return NotFound("Session not found");
+
+        MUser? foundUser = MUser.GetUser(userSession.UserID);
+        if (foundUser is null) return Problem("There was an problem while trying to retrieve your account, please try again later");
+
+        // Check if user has permission to create vehicles
+        if (!foundUser.Role.Vehicle.HasWritePremission()) return Unauthorized();
+
+        // Check for duplicate license plate for this user
+        List<Vehicle> userVehicles = Vehicle.GetAll().Where(v => v.UserID == userSession.UserID).ToList();
+        Vehicle? existingVehicle = userVehicles.FirstOrDefault(v => v.LicensePlate.Replace("-", "").Equals(createvehicleDto.licensePlate.Replace("-", ""), StringComparison.OrdinalIgnoreCase));
+        
+        if (existingVehicle != null)
+            return BadRequest(new { error = "Vehicle already exists", data = Vehicle.ToJSON(existingVehicle) });
+
+        // Create new vehicle with authenticated user's ID
+        Vehicle newVehicle = new Vehicle(0, userSession.UserID, createvehicleDto.licensePlate, createvehicleDto.make, createvehicleDto.model, createvehicleDto.color, createvehicleDto.modelYear, DateTime.Now);
+
+        if (newVehicle.CreateDB())
+        {
+           return Created();
+        }
+        
+        return Problem("Failed to create vehicle in database");
     }
 
     // ====================================================================================
@@ -53,28 +73,9 @@ public class VehicleController : ControllerBase
     // ====================================================================================
     // DELETE
     // ====================================================================================
-    [HttpDelete("{id:int}")]
-    public ActionResult<string> DELETE_Vehicle([FromHeader(Name = "authorization")] string authorization, int id)
+    [HttpDelete("/")]
+    public ActionResult<string> DELETE_Reservation()
     {
-        //Controleer of de autorisatie is ingevuld, als dit niet het geval is, retourneer Unauthorized error
-        if (string.IsNullOrEmpty(authorization)) return Unauthorized();
-
-        //Probeer de user sessie te halen, als dit niet lukt retourneer NotFound error
-        UserSession? userSession = UserSession.GetUserSession(authorization);
-        if (userSession is null) return NotFound("Session not found");
-
-        //Als de user niet kan worden gevonden retourneer een server error
-        MUser? foundUser = MUser.GetUser(userSession.UserID);
-        if (foundUser is null) return Problem("There was an problem while trying to retrieve your account, please try again later");
-
-        //Zoek naar auto's met het gegeven ID
-        Vehicle? foundVehicle = Vehicle.GetByID(id);
-        if (foundVehicle is null) return NotFound($"No vehicle found with ID {id}");
-
-        //Controleer of de auto van de user is
-        if (foundVehicle.UserID != foundUser.ID) return Unauthorized();
-
-        if (foundVehicle.DeleteDB()) return Ok($"Vehicle with ID {id} deleted successfully");
-        return Problem($"Failed to delete vehicle with ID {id}");
+        return Problem("NOT IMPLEMENTED, -Danny");
     }
 }

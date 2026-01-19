@@ -1,9 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "V2tRbb0lDlY=",
+  "dgSpecHash": "gCxNOlfK3Yk=",
   "success": true,
   "projectFilePath": "/Users/dannydesnoo/Documents/GitHub/HR.MobyPark/HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj",
   "expectedPackageFiles": [
+    "/Users/dannydesnoo/.nuget/packages/bouncycastle.cryptography/2.6.2/bouncycastle.cryptography.2.6.2.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/google.protobuf/3.32.0/google.protobuf.3.32.0.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/k4os.compression.lz4/1.3.8/k4os.compression.lz4.1.3.8.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/k4os.compression.lz4.streams/1.3.8/k4os.compression.lz4.streams.1.3.8.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/k4os.hash.xxhash/1.0.8/k4os.hash.xxhash.1.0.8.nupkg.sha512",
     "/Users/dannydesnoo/.nuget/packages/microsoft.extensions.configuration/10.0.0/microsoft.extensions.configuration.10.0.0.nupkg.sha512",
     "/Users/dannydesnoo/.nuget/packages/microsoft.extensions.configuration.abstractions/10.0.0/microsoft.extensions.configuration.abstractions.10.0.0.nupkg.sha512",
     "/Users/dannydesnoo/.nuget/packages/microsoft.extensions.configuration.binder/10.0.0/microsoft.extensions.configuration.binder.10.0.0.nupkg.sha512",
@@ -31,7 +36,13 @@
     "/Users/dannydesnoo/.nuget/packages/microsoft.extensions.options/10.0.0/microsoft.extensions.options.10.0.0.nupkg.sha512",
     "/Users/dannydesnoo/.nuget/packages/microsoft.extensions.options.configurationextensions/10.0.0/microsoft.extensions.options.configurationextensions.10.0.0.nupkg.sha512",
     "/Users/dannydesnoo/.nuget/packages/microsoft.extensions.primitives/10.0.0/microsoft.extensions.primitives.10.0.0.nupkg.sha512",
-    "/Users/dannydesnoo/.nuget/packages/system.diagnostics.eventlog/10.0.0/system.diagnostics.eventlog.10.0.0.nupkg.sha512"
+    "/Users/dannydesnoo/.nuget/packages/mysql.data/9.5.0/mysql.data.9.5.0.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/system.configuration.configurationmanager/8.0.0/system.configuration.configurationmanager.8.0.0.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/system.diagnostics.eventlog/10.0.0/system.diagnostics.eventlog.10.0.0.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/system.security.cryptography.protecteddata/8.0.0/system.security.cryptography.protecteddata.8.0.0.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/system.security.permissions/8.0.0/system.security.permissions.8.0.0.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/system.windows.extensions/8.0.0/system.windows.extensions.8.0.0.nupkg.sha512",
+    "/Users/dannydesnoo/.nuget/packages/zstdsharp.port/0.8.6/zstdsharp.port.0.8.6.nupkg.sha512"
   ],
   "logs": []
 }

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using MUser = User;
 
 [ApiController]
@@ -68,182 +67,6 @@ public class PaymentsController : ControllerBase
         return Ok(foundPayment);
     }
 
-    [HttpGet("billing")]
-    public ActionResult<string> GET_Billing([FromHeader(Name = "authorization")] string authorization)
-    {
-        //Check to see if the authorization has been filled, If it isn't filled. Return Unauthorized error
-        if (string.IsNullOrEmpty(authorization)) return Unauthorized("Unauthorized: Invalid or missing session token");
-
-        //Try and get the user session, if not return NotFound error
-        UserSession? userSession = UserSession.GetUserSession(authorization);
-        if (userSession is null) return Unauthorized("Unauthorized: Invalid or missing session token");
-
-        //Get the user from the database
-        MUser? user = MUser.GetUser(userSession.UserID);
-        if (user is null) return Problem("There was an problem while trying to retrieve your account, please try again later");
-
-        JArray billingData = new();
-
-        // Get all parking lots
-        List<ParkingLot> parkingLots = ParkingLot.GetAll();
-        
-        foreach (ParkingLot parkingLot in parkingLots)
-        {
-            // Get all sessions for this parking lot
-            List<Session> sessions = Session.GetAllByParkingLotID(parkingLot.ID);
-            
-            foreach (Session session in sessions)
-            {
-                // Only include sessions for the current user
-                if (session.UserID == userSession.UserID)
-                {
-                    // Calculate hours and days
-                    TimeSpan duration = session.EndDateTime - session.StartDateTime;
-                    double hours = duration.TotalHours;
-                    int days = (int)duration.TotalDays;
-                    
-                    // Calculate amount (using the session's stored amount or calculating from tariff)
-                    decimal amount = (decimal)session.Amount;
-                    
-                    // Generate payment hash (transaction ID based on session)
-                    string transaction = $"{session.ID}-{session.UserID}-{parkingLot.ID}";
-                    
-                    // Check how much has been paid for this transaction
-                    List<Payment> payments = Payment.GetAllByUserID(userSession.UserID);
-                    decimal payed = 0;
-                    foreach (Payment payment in payments)
-                    {
-                        if (payment.SessionID == session.ID)
-                        {
-                            payed += payment.Amount;
-                        }
-                    }
-                    
-                    // Build the billing record
-                    JObject billingRecord = new()
-                    {
-                        new JProperty("session", new JObject
-                        {
-                            new JProperty("licenseplate", session.LicensePlate),
-                            new JProperty("started", session.StartDateTime),
-                            new JProperty("stopped", session.EndDateTime),
-                            new JProperty("hours", Math.Round(hours, 2)),
-                            new JProperty("days", days)
-                        }),
-                        new JProperty("parking", new JObject
-                        {
-                            new JProperty("name", parkingLot.Name),
-                            new JProperty("location", parkingLot.Location),
-                            new JProperty("tariff", parkingLot.Tariff),
-                            new JProperty("daytariff", parkingLot.DayTariff)
-                        }),
-                        new JProperty("amount", amount),
-                        new JProperty("thash", transaction),
-                        new JProperty("payed", payed),
-                        new JProperty("balance", amount - payed)
-                    };
-                    
-                    billingData.Add(billingRecord);
-                }
-            }
-        }
-
-        return Ok(billingData);
-    }
-
-    [HttpGet("billing/{username}")]
-    public ActionResult<string> GET_BillingForUser([FromHeader(Name = "authorization")] string authorization, string username)
-    {
-        //Check to see if the authorization has been filled, If it isn't filled. Return Unauthorized error
-        if (string.IsNullOrEmpty(authorization)) return Unauthorized("Unauthorized: Invalid or missing session token");
-
-        //Try and get the user session, if not return NotFound error
-        UserSession? userSession = UserSession.GetUserSession(authorization);
-        if (userSession is null) return Unauthorized("Unauthorized: Invalid or missing session token");
-
-        //Get the user from the database
-        MUser? user = MUser.GetUser(userSession.UserID);
-        if (user is null) return Problem("There was an problem while trying to retrieve your account, please try again later");
-
-        // Check if user has admin privileges
-        if (user.Role.Name != "ADMIN")
-        {
-            return StatusCode(403, "Access denied");
-        }
-
-        // Get the target user by username
-        MUser? targetUser = MUser.GetUserUsername(username);
-        if (targetUser is null) return NotFound("User not found");
-
-        JArray billingData = new();
-
-        // Get all parking lots
-        List<ParkingLot> parkingLots = ParkingLot.GetAll();
-        
-        foreach (ParkingLot parkingLot in parkingLots)
-        {
-            // Get all sessions for this parking lot
-            List<Session> sessions = Session.GetAllByParkingLotID(parkingLot.ID);
-            
-            foreach (Session session in sessions)
-            {
-                // Only include sessions for the target user
-                if (session.UserID == targetUser.ID)
-                {
-                    // Calculate hours and days
-                    TimeSpan duration = session.EndDateTime - session.StartDateTime;
-                    double hours = duration.TotalHours;
-                    int days = (int)duration.TotalDays;
-                    
-                    // Calculate amount (using the session's stored amount or calculating from tariff)
-                    decimal amount = (decimal)session.Amount;
-                    
-                    // Generate payment hash (transaction ID based on session)
-                    string transaction = $"{session.ID}-{session.UserID}-{parkingLot.ID}";
-                    
-                    // Check how much has been paid for this transaction
-                    List<Payment> payments = Payment.GetAllByUserID(targetUser.ID);
-                    decimal payed = 0;
-                    foreach (Payment payment in payments)
-                    {
-                        if (payment.SessionID == session.ID)
-                        {
-                            payed += payment.Amount;
-                        }
-                    }
-                    
-                    // Build the billing record
-                    JObject billingRecord = new()
-                    {
-                        new JProperty("session", new JObject
-                        {
-                            new JProperty("licenseplate", session.LicensePlate),
-                            new JProperty("started", session.StartDateTime),
-                            new JProperty("stopped", session.EndDateTime),
-                            new JProperty("hours", Math.Round(hours, 2)),
-                            new JProperty("days", days)
-                        }),
-                        new JProperty("parking", new JObject
-                        {
-                            new JProperty("name", parkingLot.Name),
-                            new JProperty("location", parkingLot.Location),
-                            new JProperty("tariff", parkingLot.Tariff),
-                            new JProperty("daytariff", parkingLot.DayTariff)
-                        }),
-                        new JProperty("amount", amount),
-                        new JProperty("thash", transaction),
-                        new JProperty("payed", payed),
-                        new JProperty("balance", amount - payed)
-                    };
-                    
-                    billingData.Add(billingRecord);
-                }
-            }
-        }
-
-        return Ok(billingData);
-    }
-
     // ====================================================================================
     // POST
     // ====================================================================================
@@ -263,7 +86,7 @@ public class PaymentsController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.Payments.HasWritePremission()) return Unauthorized();
+        if (!foundUser.Role.GlobalPayments.HasWritePremission()) return Unauthorized();
 
         //Check to see if the transaction is filled and the amount is equal or above 0
         if (string.IsNullOrEmpty(createPaymentDto.transaction) || createPaymentDto.amount <= 0) return BadRequest("Require field missing");
@@ -279,15 +102,11 @@ public class PaymentsController : ControllerBase
             SessionID = CurrentSession.ID,
             UserID = CurrentSession.UserID,
             Amount = createPaymentDto.amount,
-            Date = DateTime.Now,
             Method = "Unknown", // method is not provided in the request, assuming a default value of "Unknown"
-            Issuer = "Unknown", // issuer is not provided in the request, assuming a default value of "Unknown"
-            Bank = "Unknown", // bank is not provided in the request, assuming a default value of "Unknown"
-            Hash = "", // hash is not provided in the request, using empty string
-            CompletedDateTime = DateTime.Now,
-            CreateDateTime = DateTime.Now
+            Issuer = "Unknown", // issuer is not provided in the request, assuming a default value of "
+            Bank = "Unknown" // bank is not provided in the request, assuming a default value of "Unknown"
         };
-        if (!payment.CreateDB()) return Problem("There was an problem while trying to create a payment, try again later");
+        if (payment.CreateDB()) return Problem("There was an problem while trying to create a payment, try again later");
 
         return Created(); //Originally Ok(), but Created() is more logical here
     }
@@ -308,7 +127,7 @@ public class PaymentsController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.Payments.HasWritePremission()) return Unauthorized();
+        if (!foundUser.Role.GlobalPayments.HasWritePremission()) return Unauthorized();
 
         //Check to see if the transaction is filled and the amount is equal or above 0
         if (amount <= Convert.ToDecimal(0.0)) return BadRequest("Require field missing");
@@ -325,16 +144,12 @@ public class PaymentsController : ControllerBase
             ParkingLotID = CurrentSession.ParkingLotId,
             SessionID = CurrentSession.ID,
             UserID = userSession.UserID, 
-            Amount = amount,
-            Date = DateTime.Now,
+            Amount = amount, 
             Method = "Unknown", // method is not provided in the request, assuming a default value of "Unknown"
-            Issuer = "Unknown", // issuer is not provided in the request, assuming a default value of "Unknown"
-            Bank = "Unknown",  // bank is not provided in the request, assuming a default value of "Unknown"
-            Hash = "", // hash is not provided in the request, using empty string
-            CompletedDateTime = DateTime.Now,
-            CreateDateTime = DateTime.Now
+            Issuer = "Unknown", // issuer is not provided in the request, assuming a default value of "
+            Bank = "Unknown"  // bank is not provided in the request, assuming a default value of "Unknown"
         };
-        if (!refundPayment.CreateDB()) return Problem("There was an problem while trying to create a refund, try again later");
+        if (refundPayment.CreateDB()) return Problem("There was an problem while trying to create a refund, try again later");
 
         return Created(); //Originally Ok(), but Created() is more logical here
     }
@@ -358,7 +173,7 @@ public class PaymentsController : ControllerBase
 
         //See if the user has the required premission, if the user does not have the required premission.
         //return a Unauthorized error
-        if (!foundUser.Role.Payments.HasWritePremission()) return Unauthorized();
+        if (!foundUser.Role.GlobalPayments.HasWritePremission()) return Unauthorized();
 
         //Check to see if the transaction is filled and the amount is equal or above 0
         if (paymentDto.amount <= Convert.ToDecimal(0.0) || 
@@ -377,7 +192,7 @@ public class PaymentsController : ControllerBase
         Payment? foundPayment = Payment.GetByID(id);
         if (foundPayment is null) return NotFound("Payment not found");
         
-        if (!foundPayment.UpdateDB()) return Problem("There was an error while trying to update the transaction, please try again later");
+        if (foundPayment.UpdateDB()) return Problem("There was an error while trying to update the transaction, please try again later");
 
         return Ok();
     }

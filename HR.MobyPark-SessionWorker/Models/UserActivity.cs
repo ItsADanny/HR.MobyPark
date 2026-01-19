@@ -1,37 +1,73 @@
 using MySql.Data.MySqlClient;
 
-public class UserActivity
+public class UserActivity : aModel, iDatabase
 {
     public int ID {get; set;}
+    public int UserID {get; set;}
     public string Token {get; set;}
+    public string Endpoint {get; set;}
+    public EHTTPMethod Method {get; set;}
     public DateTime CreateDateTime {get; set;}
 
-    public UserActivity(int id, string token, DateTime createDateTime)
+    //IDatabase implementation
+    public override string ToInsertSQL() => $"INSERT INTO UserActivity (UserID, Token, Endpoint, Method) VALUES ({UserID}, \"{Token}\", \"{Endpoint}\", \"{Method}\")";
+
+    public override string ToUpdateSQL() => $"UPDATE UserActivity SET UserID = {UserID}, Token = \"{Token}\", Endpoint = \"{Endpoint}\", Method = \"{Method}\" WHERE ID = {ID}";
+
+    public override string ToDeleteSQL() => $"DELETE FROM UserActivity WHERE ID = {ID}";
+
+    public override string ToSelectSQL() => $"SELECT * FROM UserActivity WHERE ID = {ID}";
+
+    public static void SaveActivity(UserSession userSession, string endpoint, EHTTPMethod eHTTPMethod)
     {
-        ID = id;
-        Token = token;
-        CreateDateTime = createDateTime;
+        UserActivity newUserActivity = new()
+        {
+            UserID = userSession.ID,
+            Token = userSession.Token,
+            Endpoint = endpoint,
+            Method = eHTTPMethod
+        };
+
+        if (newUserActivity.CreateDB())
+        {
+            Log.WriteLine("UserActivity:SaveActivity():CreateDB(), Insertion successful, UserActivity saved to Database");
+        } 
+        else
+        {
+            Log.WriteErrorLine("UserActivity:SaveActivity():CreateDB(), Insertion failed, please check why the insertion failed");
+        }
     }
 
-    public static List<UserActivity> GetAll(DBHelper dbHelper)
+    public static void SaveActivity(string token, string endpoint, EHTTPMethod eHTTPMethod)
     {
-        List<UserActivity> returnValue = [];
+        UserSession? foundUserSession = UserSession.GetUserSession(token);
+        if (foundUserSession is not null) SaveActivity(foundUserSession, endpoint, eHTTPMethod);
+    }
 
-        MySqlConnection conn = new MySqlConnection(dbHelper.GetConnectionSTR());
+    public static List<UserActivity> GetAll()
+    {
+        List<UserActivity> returnValue = new();
+
+        MySqlConnection conn = new MySqlConnection(DBHelper.GetConnectionSTR());
         MySqlCommand cmd = new MySqlCommand();
 
         conn.Open();
+        string query = "SELECT * FROM UserActivity";
         cmd.Connection = conn;
-        cmd.CommandText = ToSelectAllSQL();
+        cmd.CommandText = query;
 
         MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            DateTime CreateDateTime = DateTime.Now;
-            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-
-            UserActivity newUserActivity = new(Convert.ToInt32(reader["ID"].ToString()), reader["Token"].ToString(), CreateDateTime);
+            UserActivity newUserActivity = new()
+            {
+                ID = Convert.ToInt32(reader["ID"].ToString()),
+                UserID = Convert.ToInt32(reader["UserID"].ToString()),
+                Token = reader["Token"].ToString() ?? "",
+                Endpoint = reader["Endpoint"].ToString() ?? "",
+                Method = (EHTTPMethod)Enum.Parse(typeof(EHTTPMethod), reader["Method"].ToString() ?? "GET"),
+                CreateDateTime = Convert.ToDateTime(reader["CreateDateTime"].ToString())
+            };
 
             returnValue.Add(newUserActivity);
         }
@@ -39,34 +75,4 @@ public class UserActivity
         conn.Close();
         return returnValue;
     }
-
-    public static List<UserActivity> GetAll(DBHelper dbHelper, string token)
-    {
-        List<UserActivity> returnValue = [];
-
-        MySqlConnection conn = new MySqlConnection(dbHelper.GetConnectionSTR());
-        MySqlCommand cmd = new MySqlCommand();
-
-        conn.Open();
-        cmd.Connection = conn;
-        cmd.CommandText = ToSelectAllFromTokenSQL(token);
-
-        MySqlDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            DateTime CreateDateTime = DateTime.Now;
-            string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-
-            UserActivity newUserActivity = new(Convert.ToInt32(reader["ID"].ToString()), reader["Token"].ToString(), CreateDateTime);
-
-            returnValue.Add(newUserActivity);
-        }
-
-        conn.Close();
-        return returnValue;
-    }
-
-    public static string ToSelectAllSQL() => "SELECT * FROM UserActivity";
-    public static string ToSelectAllFromTokenSQL(string token) => $"SELECT * FROM UserActivity WHERE Token = \"{token}\"";
 }
