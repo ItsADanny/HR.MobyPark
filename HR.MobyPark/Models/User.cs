@@ -255,7 +255,6 @@ public class User : aModel, iDatabase
         catch (Exception e)
         {
             throw new Exception(e.ToString());
-            return null;
         }
     }
 
