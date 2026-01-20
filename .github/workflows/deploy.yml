@@ -72,31 +72,6 @@ jobs:
             exit 1
           fi
 
-      - name: Add runner to docker group
-        run: sudo usermod -aG docker $USER
-      - name: Restart Docker (if needed)
-        run: sudo systemctl restart docker
-
-      # Step 7: Build Docker images for all services
-      - name: Build Docker images with docker-compose
-        if: success()
-        run: docker-compose build --no-cache
-
-      # Step 8: Stop old containers
-      - name: Stop old Docker containers
-        if: success()
-        run: |
-          docker-compose down || true
-        continue-on-error: true
-
-      # Step 9: Deploy all services
-      - name: Deploy all services
-        if: success()
-        run: |
-          docker-compose up -d
-          echo "All services deployed successfully!"
-          docker-compose ps
-
       # Step 10: Push staging to live branch
       - name: Push to live branch
         if: success()
