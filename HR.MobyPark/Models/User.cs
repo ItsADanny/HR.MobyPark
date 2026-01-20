@@ -1,7 +1,7 @@
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 
-//I AM A HAPPY VEGTIBALE AND I DON"T WANT TO WORK TODAY :)
+//Now i am a french fry :)ß
 
 public class User : aModel, iDatabase
 {
