@@ -42,7 +42,7 @@ jobs:
 
       # Step 4: Run MSTest tests (only for HR.MobyPark)
       - name: Run MSTest tests for HR.MobyPark
-        run: dotnet test /HR.MobyPark/HR.MobyPark.csproj --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory /home/ubuntu-1091749/actions-test-result/
+        run: dotnet test ./HR.MobyPark/HR.MobyPark.csproj --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./home/ubuntu-1091749/actions-test-result/
         continue-on-error: true
 
       # Step 5: Upload test results and coverage
@@ -52,13 +52,13 @@ jobs:
         with:
           name:  test-results
           path: |
-            /home/ubuntu-1091749/actions-test-result/
+            ./home/ubuntu-1091749/actions-test-result/
           retention-days: 30
 
       # Step 6: Parse test results and fail if tests didn't pass
       - name: Check test results
         run: |
-          if grep -q "failed=\"0\"" /home/ubuntu-1091749/actions-test-result/test-results.trx; then
+          if grep -q "failed=\"0\"" ./home/ubuntu-1091749/actions-test-result/test-results.trx; then
             echo "All tests passed!"
           else
             echo "Tests failed!  Check the artifacts for details."
