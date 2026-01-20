@@ -116,7 +116,7 @@ jobs:
     
     # Promote staging to live branch after successful deployment
     - name: Promote staging to live
-      if: github.event_name == 'push' && github.ref == 'refs/heads/staging' && steps.deploy.outcome == 'success'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/staging' && steps.deploy.conclusion == 'success'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
