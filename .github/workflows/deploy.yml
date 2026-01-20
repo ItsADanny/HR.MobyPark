@@ -25,7 +25,7 @@ jobs:
 
       # Step 3: Build all projects
       - name: Build HR.MobyPark (Main API)
-        run: dotnet build ./HR.MobyPark/HR.MobyPark. csproj --configuration Release --no-restore
+        run: dotnet build ./HR.MobyPark/HR.MobyPark.csproj --configuration Release --no-restore
 
       - name: Build HR.MobyPark-SessionWorker
         run: dotnet build ./HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj --configuration Release --no-restore
