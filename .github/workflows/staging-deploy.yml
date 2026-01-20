@@ -32,52 +32,52 @@ jobs:
       - name: Configure User Secrets for HR.MobyPark
         run: |
           dotnet user-secrets init --project HR.MobyPark/HR.MobyPark.csproj
-          dotnet user-secrets set "Database:HST" "${{ secrets.Database-HST }}" --project HR.MobyPark/HR.MobyPark.csproj
-          dotnet user-secrets set "Database:PRT" "${{ secrets.Database-PRT }}" --project HR.MobyPark/HR.MobyPark.csproj
-          dotnet user-secrets set "Database:USR" "${{ secrets.Database-USR }}" --project HR.MobyPark/HR.MobyPark.csproj
-          dotnet user-secrets set "Database:PSW" "${{ secrets.Database-PSW }}" --project HR.MobyPark/HR.MobyPark.csproj
-          dotnet user-secrets set "Database:DBL" "${{ secrets.Database-DBL }}" --project HR.MobyPark/HR.MobyPark.csproj
+          dotnet user-secrets set "Database:HST" "${{ secrets.Database_HST }}" --project HR.MobyPark/HR.MobyPark.csproj
+          dotnet user-secrets set "Database:PRT" "${{ secrets.Database_PRT }}" --project HR.MobyPark/HR.MobyPark.csproj
+          dotnet user-secrets set "Database:USR" "${{ secrets.Database_USR }}" --project HR.MobyPark/HR.MobyPark.csproj
+          dotnet user-secrets set "Database:PSW" "${{ secrets.Database_PSW }}" --project HR.MobyPark/HR.MobyPark.csproj
+          dotnet user-secrets set "Database:DBL" "${{ secrets.Database_DBL }}" --project HR.MobyPark/HR.MobyPark.csproj
 
       - name: Configure User Secrets for HR.MobyPark-SessionWorker
         run: |
           dotnet user-secrets init --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
-          dotnet user-secrets set "Database:HST" "${{ secrets.Database-HST }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
-          dotnet user-secrets set "Database:PRT" "${{ secrets.Database-PRT }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
-          dotnet user-secrets set "Database:USR" "${{ secrets.Database-USR }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
-          dotnet user-secrets set "Database:PSW" "${{ secrets.Database-PSW }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
-          dotnet user-secrets set "Database:DBL" "${{ secrets.Database-DBL }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+          dotnet user-secrets set "Database:HST" "${{ secrets.Database_HST }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+          dotnet user-secrets set "Database:PRT" "${{ secrets.Database_PRT }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+          dotnet user-secrets set "Database:USR" "${{ secrets.Database_USR }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+          dotnet user-secrets set "Database:PSW" "${{ secrets.Database_PSW }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+          dotnet user-secrets set "Database:DBL" "${{ secrets.Database_DBL }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
 
       - name: Configure User Secrets for HR.MobyPark-BillingUsersWorker
         run: |
           dotnet user-secrets init --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
-          dotnet user-secrets set "Database:HST" "${{ secrets.Database-HST }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
-          dotnet user-secrets set "Database:PRT" "${{ secrets.Database-PRT }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
-          dotnet user-secrets set "Database:USR" "${{ secrets.Database-USR }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
-          dotnet user-secrets set "Database:PSW" "${{ secrets.Database-PSW }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
-          dotnet user-secrets set "Database:DBL" "${{ secrets.Database-DBL }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+          dotnet user-secrets set "Database:HST" "${{ secrets.Database_HST }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+          dotnet user-secrets set "Database:PRT" "${{ secrets.Database_PRT }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+          dotnet user-secrets set "Database:USR" "${{ secrets.Database_USR }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+          dotnet user-secrets set "Database:PSW" "${{ secrets.Database_PSW }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+          dotnet user-secrets set "Database:DBL" "${{ secrets.Database_DBL }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
 
       - name: Configure User Secrets for HR.MobyPark-UnpaidBillingWorker
         run: |
           dotnet user-secrets init --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
-          dotnet user-secrets set "Database:HST" "${{ secrets.Database-HST }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
-          dotnet user-secrets set "Database:PRT" "${{ secrets.Database-PRT }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
-          dotnet user-secrets set "Database:USR" "${{ secrets.Database-USR }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
-          dotnet user-secrets set "Database:PSW" "${{ secrets.Database-PSW }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
-          dotnet user-secrets set "Database:DBL" "${{ secrets.Database-DBL }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+          dotnet user-secrets set "Database:HST" "${{ secrets.Database_HST }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+          dotnet user-secrets set "Database:PRT" "${{ secrets.Database_PRT }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+          dotnet user-secrets set "Database:USR" "${{ secrets.Database_USR }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+          dotnet user-secrets set "Database:PSW" "${{ secrets.Database_PSW }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+          dotnet user-secrets set "Database:DBL" "${{ secrets.Database_DBL }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
 
       - name: Configure User Secrets for HR.MobyPark-DashboardingDBWorker
         run: |
           dotnet user-secrets init --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
-          dotnet user-secrets set "FromDatabase:HST" "${{ secrets.Database-HST }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
-          dotnet user-secrets set "FromDatabase:PRT" "${{ secrets.Database-PRT }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
-          dotnet user-secrets set "FromDatabase:USR" "${{ secrets.Database-USR }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
-          dotnet user-secrets set "FromDatabase:PSW" "${{ secrets.Database-PSW }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
-          dotnet user-secrets set "FromDatabase:DBL" "${{ secrets.Database-DBL }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
-          dotnet user-secrets set "ToDatabase:HST" "${{ secrets.ToDatabase-HST }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
-          dotnet user-secrets set "ToDatabase:PRT" "${{ secrets.ToDatabase-PRT }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
-          dotnet user-secrets set "ToDatabase:USR" "${{ secrets.ToDatabase-USR }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
-          dotnet user-secrets set "ToDatabase:PSW" "${{ secrets.ToDatabase-PSW }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
-          dotnet user-secrets set "ToDatabase:DBL" "${{ secrets.ToDatabase-DBL }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "FromDatabase:HST" "${{ secrets.Database_HST }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "FromDatabase:PRT" "${{ secrets.Database_PRT }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "FromDatabase:USR" "${{ secrets.Database_USR }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "FromDatabase:PSW" "${{ secrets.Database_PSW }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "FromDatabase:DBL" "${{ secrets.Database_DBL }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "ToDatabase:HST" "${{ secrets.ToDatabase_HST }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "ToDatabase:PRT" "${{ secrets.ToDatabase_PRT }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "ToDatabase:USR" "${{ secrets.ToDatabase_USR }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "ToDatabase:PSW" "${{ secrets.ToDatabase_PSW }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "ToDatabase:DBL" "${{ secrets.ToDatabase_DBL }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
 
       - name: Restore Dependencies
         run: dotnet restore
