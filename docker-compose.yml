@@ -1,17 +1,94 @@
 version: '3.8'
 
 services:
-  mobypark:
-    image: mobypark:latest
-    container_name: mobypark-app
-    build:
+  # Main API Service
+  mobypark:  
+    build: 
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./HR.MobyPark/Dockerfile
+    container_name: hr-mobypark-api
     ports:
-      - "8080:8080"
+      - "8076:8076"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:8080
+      - Database__Host=${DB_HOST}
+      - Database__Port=${DB_PORT}
+      - Database__User=${DB_USER}
+      - Database__Password=${DB_PASSWORD}
+      - Database__Name=${DB_NAME}
+    restart: unless-stopped
+    networks:
+      - mobypark-network
+    depends_on:
+      - session-worker
+      - dashboarding-worker
+      - billing-users-worker
+      - unpaid-billing-worker
+
+  # Session Worker Service
+  session-worker: 
+    build: 
+      context: .  
+      dockerfile: ./HR. MobyPark-SessionWorker/Dockerfile
+    container_name: hr-mobypark-session-worker
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+      - Database__Host=${DB_HOST}
+      - Database__Port=${DB_PORT}
+      - Database__User=${DB_USER}
+      - Database__Password=${DB_PASSWORD}
+      - Database__Name=${DB_NAME}
+    restart: unless-stopped
+    networks:
+      - mobypark-network
+
+  # Dashboarding DB Worker Service
+  dashboarding-worker:
+    build:
+      context: . 
+      dockerfile: ./HR.MobyPark-DashboardingDBWorker/Dockerfile
+    container_name: hr-mobypark-dashboarding-worker
+    environment:  
+      - DOTNET_ENVIRONMENT=Production
+      - Database__Host=${DB_HOST}
+      - Database__Port=${DB_PORT}
+      - Database__User=${DB_USER}
+      - Database__Password=${DB_PASSWORD}
+      - Database__Name=${DB_NAME}
+    restart: unless-stopped
+    networks:
+      - mobypark-network
+
+  # Billing Users Worker Service
+  billing-users-worker:
+    build:  
+      context: .
+      dockerfile: ./HR.MobyPark-BillingUsersWorker/Dockerfile
+    container_name: hr-mobypark-billing-users-worker
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+      - Database__Host=${DB_HOST}
+      - Database__Port=${DB_PORT}
+      - Database__User=${DB_USER}
+      - Database__Password=${DB_PASSWORD}
+      - Database__Name=${DB_NAME}
+    restart:  unless-stopped
+    networks: 
+      - mobypark-network
+
+  # Unpaid Billing Worker Service
+  unpaid-billing-worker:
+    build:
+      context: .
+      dockerfile: ./HR.MobyPark-UnpaidBillingWorker/Dockerfile
+    container_name: hr-mobypark-unpaid-billing-worker
+    environment:  
+      - DOTNET_ENVIRONMENT=Production
+      - Database__Host=${DB_HOST}
+      - Database__Port=${DB_PORT}
+      - Database__User=${DB_USER}
+      - Database__Password=${DB_PASSWORD}
+      - Database__Name=${DB_NAME}
     restart: unless-stopped
     networks:
       - mobypark-network
