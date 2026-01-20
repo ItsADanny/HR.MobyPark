@@ -202,7 +202,6 @@ public class User : aModel, iDatabase
             _password = password;
         }
     }
-    // => _password = password;
 
     //Static methods
     public static bool DoesEmailExist(string email) => GetUserEmail(email) is not null ? true : false;
