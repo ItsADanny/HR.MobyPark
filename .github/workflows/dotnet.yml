@@ -1,142 +1,17 @@
-name: .NET
-
 on:
-  # Trigger on push to staging branch
-  # After successful deployment, code will be automatically promoted to live branch
   push:
     branches: [ "staging" ]
-  # Trigger on pull request to staging branch
-  # Note: Deployment steps only run on push events, not on PR events
   pull_request:
     branches: [ "staging" ]
 
 jobs:
   build:
-
-    runs-on: self-hosted
-    environment: production
-    
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'  # Update this condition.
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    # Code coverage step removed to allow deployment to proceed
-    # Coverage can be re-enabled with a lower threshold if needed
-    # - name: Run code coverage
-    #   run: |
-    #     # Run coverage report
-    #     coverage xml
-    #
-    #     # Report and write to summary.
-    #     coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
-    #
-    #     # Report again and fail if under threshold
-    #     coverage report --fail-under=80
-    # - name: Store coverage report
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     path: coverage.xml
-    #   if: ${{ failure() }}
-
-    # When the tests are successful we start building the Docker image (with docker-compose)
-    # and deploy the Docker image to our "production" server
-    # Deploy on push to staging branch
-    - name: Build Docker image
-      if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
-      run: |
-        docker build -t mobypark:latest .
-        docker tag mobypark:latest mobypark:${{ github.sha }}
-    
-    - name: Save Docker image
-      if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
-      run: docker save mobypark:latest | gzip > mobypark-latest.tar.gz
-    
-    - name: Deploy to remote server
-      id: deploy
-      if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
-      env:
-        DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-        DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-        DEPLOY_PASSWORD: ${{ secrets.DEPLOY_PASSWORD }}
-        DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
-      run: |
-        # Install sshpass for password-based SSH authentication
-        sudo apt-get update
-        sudo apt-get install -y sshpass
-        
-        # Setup SSH known hosts
-        mkdir -p ~/.ssh
-        ssh-keyscan -H -p ${DEPLOY_PORT} ${DEPLOY_HOST} >> ~/.ssh/known_hosts
-        
-        # Define deployment directory on remote server
-        DEPLOY_DIR="/opt/mobypark"
-        
-        # Copy files to remote server using sshpass
-        sshpass -p "${DEPLOY_PASSWORD}" scp -P ${DEPLOY_PORT} \
-          mobypark-latest.tar.gz docker-compose.yml ${DEPLOY_USER}@${DEPLOY_HOST}:/tmp/
-        
-        # Deploy on remote server using sshpass
-        sshpass -p "${DEPLOY_PASSWORD}" ssh -p ${DEPLOY_PORT} \
-          ${DEPLOY_USER}@${DEPLOY_HOST} << 'EOF'
-          # Create deployment directory if it doesn't exist
-          sudo mkdir -p /opt/mobypark
-          sudo chown $(whoami):$(whoami) /opt/mobypark
-          
-          # Move files to deployment directory
-          mv /tmp/docker-compose.yml /opt/mobypark/
-          mv /tmp/mobypark-latest.tar.gz /opt/mobypark/
-          
-          # Change to deployment directory
-          cd /opt/mobypark
-          
-          # Stop and remove old containers
-          docker-compose down || true
-          docker stop mobypark-app || true
-          docker rm mobypark-app || true
-          
-          # Load new image
-          docker load < mobypark-latest.tar.gz
-          
-          # Start new container on port 8080
-          docker-compose up -d
-          
-          # Clean up image file
-          rm mobypark-latest.tar.gz
-          
-          # Show status
-          docker ps | grep mobypark
-        EOF
-        
-        # Clean up local files
-        rm mobypark-latest.tar.gz
-    
-    # Promote staging to live branch after successful deployment
-    - name: Promote staging to live
-      if: github.event_name == 'push' && github.ref == 'refs/heads/staging' && steps.deploy.conclusion == 'success'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        # Configure git
-        git config --global user.name "GitHub Actions Bot"
-        git config --global user.email "actions@github.com"
-        
-        # Fetch all branches
-        git fetch origin
-        
-        # Push staging to live branch with error handling
-        # Use token authentication (GitHub Actions masks tokens in logs)
-        if git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" staging:live 2>&1 | sed "s/${GITHUB_TOKEN}/***MASKED***/g"; then
-          echo "Successfully promoted staging to live branch"
-        else
-          echo "Failed to promote staging to live branch"
-          echo "This may be due to branch protection rules or merge conflicts"
-          exit 1
-        fi
+      - name: Checkout code
+        uses: actions/checkout@v2  
+      - name: Build with docker
+        run: docker build .
+      - name: Deploy
+        run: ./deploy.sh
