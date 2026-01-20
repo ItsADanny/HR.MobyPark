@@ -124,21 +124,15 @@ jobs:
         git config --global user.name "GitHub Actions Bot"
         git config --global user.email "actions@github.com"
         
-        # Configure git credential helper to avoid token exposure in logs
-        git config --global credential.helper store
-        echo "https://x-access-token:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
-        
         # Fetch all branches
         git fetch origin
         
         # Push staging to live branch with error handling
-        if git push origin staging:live; then
+        # Use token authentication (GitHub Actions masks tokens in logs)
+        if git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" staging:live 2>&1 | sed "s/${GITHUB_TOKEN}/***MASKED***/g"; then
           echo "Successfully promoted staging to live branch"
         else
           echo "Failed to promote staging to live branch"
           echo "This may be due to branch protection rules or merge conflicts"
           exit 1
         fi
-        
-        # Clean up credentials
-        rm -f ~/.git-credentials
