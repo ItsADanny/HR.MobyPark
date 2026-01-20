@@ -1,6 +1,8 @@
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 
+//I AM A HAPPY VEGTIBALE AND I DON"T WANT TO WORK TODAY :)
+
 public class User : aModel, iDatabase
 {
     //Original fields on which this class is based
