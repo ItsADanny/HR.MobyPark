@@ -72,6 +72,11 @@ jobs:
             exit 1
           fi
 
+      - name: Add runner to docker group
+        run: sudo usermod -aG docker $USER
+      - name: Restart Docker (if needed)
+        run: sudo systemctl restart docker
+
       # Step 7: Build Docker images for all services
       - name: Build Docker images with docker-compose
         if: success()
