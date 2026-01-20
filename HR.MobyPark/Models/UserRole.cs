@@ -231,8 +231,8 @@ public class UserRole : aModel, iDatabase
                 string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
                 string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
 
-                if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-                if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+                if (CreateDateTime_STR is not null && CreateDateTime_STR != "") CreateDateTime = reader.GetDateTime("CreateDateTime");
+                if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") UpdateDateTime = reader.GetDateTime("UpdateDateTime");
 
                 UserRole userRole = new(Convert.ToInt32(reader["ID"].ToString()), reader["Name"].ToString(),
                                  Convert.ToInt32(reader["User"].ToString()), Convert.ToInt32(reader["ParkingLots"].ToString()), Convert.ToInt32(reader["Reservation"].ToString()),
