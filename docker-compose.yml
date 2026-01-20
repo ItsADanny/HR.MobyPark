@@ -29,7 +29,7 @@ services:
   session-worker: 
     build: 
       context: .  
-      dockerfile: ./HR. MobyPark-SessionWorker/Dockerfile
+      dockerfile: ./HR.MobyPark-SessionWorker/Dockerfile
     container_name: hr-mobypark-session-worker
     environment:
       - DOTNET_ENVIRONMENT=Production
