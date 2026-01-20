@@ -42,7 +42,7 @@ jobs:
     #     path: coverage.xml
     #   if: ${{ failure() }}
 
-    # When the tests are succesful we start building the Docker image (with docker-compose)
+    # When the tests are successful we start building the Docker image (with docker-compose)
     # and deploy the Docker image to our "production" server
     # Deploy on push to staging branch
     - name: Build Docker image
@@ -56,6 +56,7 @@ jobs:
       run: docker save mobypark:latest | gzip > mobypark-latest.tar.gz
     
     - name: Deploy to remote server
+      id: deploy
       if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
       env:
         DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
@@ -115,7 +116,7 @@ jobs:
     
     # Promote staging to live branch after successful deployment
     - name: Promote staging to live
-      if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/staging' && steps.deploy.outcome == 'success'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
