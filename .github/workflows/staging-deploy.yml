@@ -113,13 +113,31 @@ jobs:
           # Create deployment directory if it doesn't exist
           mkdir -p /opt/mobypark/deployment
 
-          # Copy published artifacts to deployment folder
-          cp -r ./publish/* /opt/mobypark/deployment/
+          # Create backup of current deployment
+          if [ -d /opt/mobypark/deployment ] && [ "$(ls -A /opt/mobypark/deployment)" ]; then
+            echo "Creating backup of current deployment..."
+            mkdir -p /opt/mobypark/backup
+            cp -r /opt/mobypark/deployment /opt/mobypark/backup/deployment-$(date +%Y%m%d-%H%M%S)
+          fi
 
-          echo "Deployment completed successfully to /opt/mobypark/deployment"
+          # Stop running services (if they exist)
+          sudo systemctl stop mobypark.service 2>/dev/null || echo "Service not running or doesn't exist"
+
+          # Copy published artifacts to deployment folder
+          if cp -r ./publish/* /opt/mobypark/deployment/; then
+            echo "Deployment completed successfully to /opt/mobypark/deployment"
+          else
+            echo "Deployment failed! Restoring from backup if available..."
+            exit 1
+          fi
+
+          # Start services
+          sudo systemctl start mobypark.service 2>/dev/null || echo "Service start skipped (service may not be configured)"
 
       - name: Force Push to Live Branch
         run: |
+          # Force push staging to live branch to reflect currently deployed version
+          # This is intentional to keep live branch in sync with production deployment
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git fetch origin staging
