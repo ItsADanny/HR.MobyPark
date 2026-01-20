@@ -1,38 +1,33 @@
-# .NET Workflow for Docker Build and Deployment
-name: .NET Build and Deploy
+# .NET Deployment Workflow
+
+name: Deploy to Staging
 
 on:
   push:
     branches:
-      - staging
+      - staging  # Trigger on push to staging branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: '6.0.x'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore
+    - name: Restore dependencies
+      run: dotnet restore
 
-      - name: Build
-        run: dotnet build --configuration Release
+    - name: Build
+      run: dotnet build --configuration Release
 
-      - name: Publish
-        run: dotnet publish --configuration Release --output ./publish
+    - name: Publish
+      run: dotnet publish --configuration Release --output ./output
 
-      - name: Build Docker Image
-        run: |
-          docker build -t yourdockerimage:latest ./publish
-
-      - name: Deploy
-        run: |
-          echo "Deploying..."
-          # Add your deployment commands here
+    - name: Deploy to Staging
+      run: az webapp deploy --name <YourWebAppName> --resource-group <YourResourceGroup> --src-path ./output
