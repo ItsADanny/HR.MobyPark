@@ -9,7 +9,7 @@ on:
 
 jobs:    
   test-and-deploy:
-    runs-on: HR.MobyPark. Server
+    runs-on: self-hosted
     
     steps:
       # Step 1: Checkout code from staging branch
