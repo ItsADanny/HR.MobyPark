@@ -1,0 +1,6 @@
+@HR.MobyPark_HostAddress = http://localhost:5095
+
+GET {{HR.MobyPark_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
