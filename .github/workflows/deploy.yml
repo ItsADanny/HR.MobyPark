@@ -52,7 +52,7 @@ jobs:
         with:
           name:  test-results
           path: |
-            ./test-results/
+            ./home/ubuntu-1091749/actions-test-result/
           retention-days: 30
 
       # Step 6: Parse test results and fail if tests didn't pass
