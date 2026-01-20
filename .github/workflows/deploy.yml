@@ -72,6 +72,26 @@ jobs:
             exit 1
           fi
 
+      # Step 7: Run MobyPark API with user-secrets from .env
+      - name: Run MobyPark API with user-secrets
+        if: success()
+        run: |
+          if [ -f .env ]; then
+            export $(cat .env | xargs)
+          fi
+          dotnet run --project ./HR.MobyPark/HR.MobyPark.csproj --configuration Release &
+          API_PID=$!
+          sleep 5
+          if kill -0 $API_PID 2>/dev/null; then
+            echo "MobyPark API started successfully (PID: $API_PID)"
+            kill $API_PID
+          else
+            echo "Failed to start MobyPark API"
+            exit 1
+          fi
+        env:
+          DOTNET_ENVIRONMENT: Production
+
       # Step 10: Push staging to live branch
       - name: Push to live branch
         if: success()
@@ -84,4 +104,4 @@ jobs:
       - name: Notify on test failure
         if: failure()
         run: |
-          echo "Workflow failed! Check the uploaded artifacts for test results and logs."
+          echo "Workflow failed! Check the uploaded artifacts for test results and logs."]
