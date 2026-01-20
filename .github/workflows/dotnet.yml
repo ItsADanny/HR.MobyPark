@@ -5,6 +5,10 @@ on:
   # After successful deployment, code will be automatically promoted to live branch
   push:
     branches: [ "staging" ]
+  # Trigger on pull request to staging branch
+  # Note: Deployment steps only run on push events, not on PR events
+  pull_request:
+    branches: [ "staging" ]
 
 jobs:
   build:
