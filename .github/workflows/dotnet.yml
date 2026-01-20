@@ -116,14 +116,18 @@ jobs:
     # Promote staging to live branch after successful deployment
     - name: Promote staging to live
       if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # Configure git
         git config --global user.name "GitHub Actions Bot"
         git config --global user.email "actions@github.com"
         
+        # Configure authentication using GITHUB_TOKEN
+        git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+        
         # Fetch all branches
         git fetch origin
         
-        # Create or update live branch from staging
-        git checkout staging
+        # Push staging to live branch
         git push origin staging:live
