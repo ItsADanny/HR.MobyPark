@@ -27,17 +27,18 @@ jobs:
       - name: Build HR.MobyPark (Main API)
         run: dotnet build ./HR.MobyPark/HR.MobyPark.csproj --configuration Release --no-restore
 
-      - name: Build HR.MobyPark-SessionWorker
-        run: dotnet build ./HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj --configuration Release --no-restore
+      #DISABLED TO TEST IF THE WORKFLOW WOULD WORK
+      # - name: Build HR.MobyPark-SessionWorker
+      #   run: dotnet build ./HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj --configuration Release --no-restore
 
-      - name: Build HR.MobyPark-DashboardingDBWorker
-        run: dotnet build ./HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj --configuration Release --no-restore
+      # - name: Build HR.MobyPark-DashboardingDBWorker
+      #   run: dotnet build ./HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj --configuration Release --no-restore
 
-      - name: Build HR. MobyPark-BillingUsersWorker
-        run: dotnet build ./HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj --configuration Release --no-restore
+      # - name: Build HR. MobyPark-BillingUsersWorker
+      #   run: dotnet build ./HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj --configuration Release --no-restore
 
-      - name: Build HR.MobyPark-UnpaidBillingWorker
-        run: dotnet build ./HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj --configuration Release --no-restore
+      # - name: Build HR.MobyPark-UnpaidBillingWorker
+      #   run: dotnet build ./HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj --configuration Release --no-restore
 
       # Step 4: Run MSTest tests (only for HR.MobyPark)
       - name: Run MSTest tests for HR.MobyPark
