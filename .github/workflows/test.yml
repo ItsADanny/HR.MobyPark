@@ -1,0 +1,129 @@
+name: CI/CD Pipeline - Build, Test, and Deploy
+
+on:  
+  pull_request:
+    branches: [ staging ]
+  push:
+    branches:  [ staging ]
+  workflow_dispatch:
+
+jobs:    
+  Build-and-test:
+    runs-on: self-hosted
+    
+    steps:
+      # Step 1: Checkout code from staging branch
+      - name: Checkout staging branch
+        uses: actions/checkout@v4
+        with:
+          ref:  staging
+          fetch-depth: 0
+
+      # Step 2: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Step 3: Build all projects
+      - name: Build HR.MobyPark (Main API)
+        run: dotnet build ./HR.MobyPark/HR.MobyPark.csproj --configuration Release --no-restore
+
+      - name: Build HR.MobyPark-SessionWorker
+        run: dotnet build ./HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj --configuration Release --no-restore
+
+      - name: Build HR.MobyPark-DashboardingDBWorker
+        run: dotnet build ./HR. MobyPark-DashboardingDBWorker/HR. MobyPark-DashboardingDBWorker.csproj --configuration Release --no-restore
+
+      - name: Build HR. MobyPark-BillingUsersWorker
+        run: dotnet build ./HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj --configuration Release --no-restore
+
+      - name: Build HR.MobyPark-UnpaidBillingWorker
+        run: dotnet build ./HR.MobyPark-UnpaidBillingWorker/HR. MobyPark-UnpaidBillingWorker.csproj --configuration Release --no-restore
+
+      # Step 4: Run MSTest tests (only for HR.MobyPark)
+      - name: Run MSTest tests for HR.MobyPark
+        run: dotnet test ./HR.MobyPark/HR.MobyPark.csproj --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./test-results
+        continue-on-error: true
+
+      # Step 5: Upload test results and coverage
+      - name: Upload test results and coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name:  test-results
+          path: |
+            ./test-results/
+          retention-days: 30
+
+      # Step 6: Parse test results and fail if tests didn't pass
+      - name: Check test results
+        run: |
+          if grep -q "failed=\"0\"" ./test-results/test-results.trx; then
+            echo "All tests passed!"
+          else
+            echo "Tests failed!  Check the artifacts for details."
+            exit 1
+          fi
+
+      # Step 7: Notify on failure
+      - name: Notify on test failure
+        if: failure()
+        run: |
+          echo "Workflow failed! Check the uploaded artifacts for test results and logs."
+  Build-deploy-live
+    runs-on: self-hosted
+
+    steps:
+      # Step 1: Checkout code from staging branch
+      - name: Checkout staging branch
+        uses: actions/checkout@v4
+        with:
+          ref:  staging
+          fetch-depth: 0
+
+      # Step 2: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Step 3: Build all projects
+      - name: Build HR.MobyPark (Main API)
+        run: dotnet build ./HR.MobyPark/HR.MobyPark.csproj --configuration Release --no-restore
+
+      - name: Build HR.MobyPark-SessionWorker
+        run: dotnet build ./HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj --configuration Release --no-restore
+
+      - name: Build HR.MobyPark-DashboardingDBWorker
+        run: dotnet build ./HR. MobyPark-DashboardingDBWorker/HR. MobyPark-DashboardingDBWorker.csproj --configuration Release --no-restore
+
+      - name: Build HR. MobyPark-BillingUsersWorker
+        run: dotnet build ./HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj --configuration Release --no-restore
+
+      - name: Build HR.MobyPark-UnpaidBillingWorker
+        run: dotnet build ./HR.MobyPark-UnpaidBillingWorker/HR. MobyPark-UnpaidBillingWorker.csproj --configuration Release --no-restore
+
+      # Step 4: Build Docker images for all services
+      - name: Build Docker images with docker-compose
+        if: success()
+        run: docker-compose build --no-cache
+
+      # Step 5: Stop old containers
+      - name: Stop old Docker containers
+        if: success()
+        run: |
+          docker-compose down || true
+        continue-on-error: true
+
+      # Step 6: Deploy all services
+      - name: Deploy all services
+        if: success()
+        run: |
+          docker-compose up -d
+          echo "All services deployed successfully!"
+          docker-compose ps
+
+      # Step 7: Push staging to live branch
+      - name: Push to live branch
+        if: success()
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git push origin staging: live --force
