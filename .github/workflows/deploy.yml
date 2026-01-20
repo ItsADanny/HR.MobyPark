@@ -41,8 +41,15 @@ jobs:
       #   run: dotnet build ./HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj --configuration Release --no-restore
 
       # Step 4: Run MSTest tests (only for HR.MobyPark)
-      - name: Run MSTest tests for HR.MobyPark
-        run: dotnet test ./HR.MobyPark/HR.MobyPark.csproj --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./home/ubuntu-1091749/actions-test-result/
+      # - name: Run MSTest tests for HR.MobyPark
+      #   run: dotnet test ./HR.MobyPark/HR.MobyPark.csproj --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./home/ubuntu-1091749/actions-test-result/
+      #   continue-on-error: true
+
+      - name: Create test results directory
+        run: mkdir -p ./home/ubuntu-1091749/actions-test-result/
+
+      - name: Run Tests with MSTest
+        run: dotnet test --logger "trx;LogFileName=test-results.trx" --results-directory ./home/ubuntu-1091749/actions-test-result/
         continue-on-error: true
 
       # Step 5: Upload test results and coverage
