@@ -1,11 +1,9 @@
 name: .NET
 
 on:
-  # Before being allowed to go to the "live" we first have to set our version in the 
-  # "staging" branch
+  # Trigger on push to staging branch
+  # After successful deployment, code will be automatically promoted to live branch
   push:
-    branches: [ "live" ]
-  pull_request:
     branches: [ "staging" ]
 
 jobs:
@@ -44,21 +42,22 @@ jobs:
     #     path: coverage.xml
     #   if: ${{ failure() }}
 
-    # When the tests are succesful we start building the Docker image (with docker-compose)
+    # When the tests are successful we start building the Docker image (with docker-compose)
     # and deploy the Docker image to our "production" server
-    # Only deploy on push to live branch, not on pull requests
+    # Deploy on push to staging branch
     - name: Build Docker image
-      if: github.event_name == 'push' && github.ref == 'refs/heads/live'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
       run: |
         docker build -t mobypark:latest .
         docker tag mobypark:latest mobypark:${{ github.sha }}
     
     - name: Save Docker image
-      if: github.event_name == 'push' && github.ref == 'refs/heads/live'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
       run: docker save mobypark:latest | gzip > mobypark-latest.tar.gz
     
     - name: Deploy to remote server
-      if: github.event_name == 'push' && github.ref == 'refs/heads/live'
+      id: deploy
+      if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
       env:
         DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
@@ -114,3 +113,26 @@ jobs:
         
         # Clean up local files
         rm mobypark-latest.tar.gz
+    
+    # Promote staging to live branch after successful deployment
+    - name: Promote staging to live
+      if: github.event_name == 'push' && github.ref == 'refs/heads/staging' && steps.deploy.conclusion == 'success'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Configure git
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
+        
+        # Fetch all branches
+        git fetch origin
+        
+        # Push staging to live branch with error handling
+        # Use token authentication (GitHub Actions masks tokens in logs)
+        if git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" staging:live 2>&1 | sed "s/${GITHUB_TOKEN}/***MASKED***/g"; then
+          echo "Successfully promoted staging to live branch"
+        else
+          echo "Failed to promote staging to live branch"
+          echo "This may be due to branch protection rules or merge conflicts"
+          exit 1
+        fi
