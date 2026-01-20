@@ -1,22 +1,25 @@
-# Dockerfile for HR.MobyPark-SessionWorker
-
-# Use a lightweight base image
-FROM python:3.9-slim
-
-# Set the working directory
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Copy solution and project files
+COPY . .
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Restore dependencies
+RUN dotnet restore
 
-# Make port 5000 available to the world outside this container
-EXPOSE 5000
+# Build the application
+RUN dotnet build -c Release --no-restore
 
-# Define environment variable
-ENV NAME World
+# Publish the application
+RUN dotnet publish -c Release -o /app/publish --no-build
 
-# Run app.py when the container launches
-CMD ["python", "app.py"]
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/runtime:9.0
+WORKDIR /app
+
+# Copy published application from build stage
+COPY --from=build /app/publish . 
+
+# Run the application
+ENTRYPOINT ["dotnet", "HR.MobyPark-SessionWorker.dll"]
