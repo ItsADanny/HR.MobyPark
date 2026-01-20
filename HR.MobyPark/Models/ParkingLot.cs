@@ -116,8 +116,8 @@ public class ParkingLot : aModel, iDatabase
             string? CreateDateTime_STR = reader["CreateDateTime"].ToString();
             string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
 
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = reader.GetDateTime("CreateDateTime");
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = reader.GetDateTime("UpdateDateTime");
 
             ParkingLot newParkingLot = new()
             {
