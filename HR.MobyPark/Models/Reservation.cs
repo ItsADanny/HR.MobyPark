@@ -66,8 +66,8 @@ public class Reservation : aModel, iDatabase
             string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
             string? Amount_STR = reader["Amount"].ToString();
 
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = reader.GetDateTime("CreateDateTime");
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = reader.GetDateTime("UpdateDateTime");
             if (Amount_STR is not null && Amount_STR != "") DecimalAmount = Convert.ToDecimal(Amount_STR);
 
             Reservation returnValue = new()
@@ -114,8 +114,8 @@ public class Reservation : aModel, iDatabase
             string? UpdateDateTime_STR = reader["UpdateDateTime"].ToString();
             string? Amount_STR = reader["Amount"].ToString();
 
-            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = GeneralMethods.ParseDBDateTime(CreateDateTime_STR);
-            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = GeneralMethods.ParseDBDateTime(UpdateDateTime_STR);
+            if (CreateDateTime_STR is not null && CreateDateTime_STR != "") RCreateDateTime = reader.GetDateTime("CreateDateTime");
+            if (UpdateDateTime_STR is not null && UpdateDateTime_STR != "") RUpdateDateTime = reader.GetDateTime("UpdateDateTime");
             if (Amount_STR is not null && Amount_STR != "") DecimalAmount = Convert.ToDecimal(Amount_STR);
 
             Reservation newReservation = new()
