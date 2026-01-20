@@ -1,17 +1,38 @@
+# .NET Workflow for Docker Build and Deployment
+name: .NET Build and Deploy
+
 on:
   push:
-    branches: [ "staging" ]
-  pull_request:
-    branches: [ "staging" ]
+    branches:
+      - staging
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'  # Update this condition.
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2  
-      - name: Build with docker
-        run: docker build .
+        uses: actions/checkout@v2
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Publish
+        run: dotnet publish --configuration Release --output ./publish
+
+      - name: Build Docker Image
+        run: |
+          docker build -t yourdockerimage:latest ./publish
+
       - name: Deploy
-        run: ./deploy.sh
+        run: |
+          echo "Deploying..."
+          # Add your deployment commands here
