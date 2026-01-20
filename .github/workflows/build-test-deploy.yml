@@ -1,0 +1,147 @@
+name: Build, Test, and Deploy
+
+on:  
+  pull_request:
+    branches: [ staging ]
+  push:  
+    branches: [ staging ]
+  workflow_dispatch:
+
+jobs:  
+  build-test-deploy:
+    runs-on: self-hosted
+    
+    steps:  
+      # Step 1: Checkout code from staging branch
+      - name: Checkout staging branch
+        uses: actions/checkout@v4
+        with:
+          ref:  staging
+          fetch-depth: 0
+
+      # Step 2: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Step 3: Build all projects
+      - name: Build HR.MobyPark (Main API)
+        run: dotnet build ./HR.MobyPark/HR.MobyPark. csproj --configuration Release --no-restore
+
+      - name: Build HR.MobyPark-SessionWorker
+        run: dotnet build ./HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj --configuration Release --no-restore
+
+      - name: Build HR.MobyPark-DashboardingDBWorker
+        run: dotnet build ./HR. MobyPark-DashboardingDBWorker/HR. MobyPark-DashboardingDBWorker.csproj --configuration Release --no-restore
+
+      - name: Build HR.MobyPark-BillingUsersWorker
+        run: dotnet build ./HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj --configuration Release --no-restore
+
+      - name: Build HR.MobyPark-UnpaidBillingWorker
+        run: dotnet build ./HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj --configuration Release --no-restore
+
+      # Step 4: Run MSTest tests with code coverage
+      - name: Run MSTest tests
+        run: |
+          dotnet test \
+            --configuration Release \
+            --no-build \
+            --logger "trx;LogFileName=test-results.trx" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./test-results \
+            --verbosity normal
+        continue-on-error: true
+
+      # Step 5: Upload test results and coverage
+      - name: Upload test results and coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name:  test-results
+          path: ./test-results/
+          retention-days: 30
+
+      # Step 6: Check if tests were successful
+      - name: Check test results
+        run: |
+          if grep -q "failed=\"0\"" ./test-results/test-results.trx; then
+            echo "✅ All tests passed!  Proceeding with deployment..."
+          else
+            echo "❌ Tests failed!  Stopping deployment."
+            exit 1
+          fi
+
+      # Step 7: Stop currently running projects
+      - name: Stop running projects
+        if: success()
+        run: |
+          echo "Stopping HR.MobyPark services..."
+          if pgrep -f "HR. MobyPark.dll" > /dev/null; then
+            pkill -f "HR. MobyPark.dll" || true
+          fi
+          if pgrep -f "HR. MobyPark-SessionWorker.dll" > /dev/null; then
+            pkill -f "HR.MobyPark-SessionWorker.dll" || true
+          fi
+          if pgrep -f "HR. MobyPark-DashboardingDBWorker.dll" > /dev/null; then
+            pkill -f "HR. MobyPark-DashboardingDBWorker.dll" || true
+          fi
+          if pgrep -f "HR. MobyPark-BillingUsersWorker.dll" > /dev/null; then
+            pkill -f "HR. MobyPark-BillingUsersWorker.dll" || true
+          fi
+          if pgrep -f "HR. MobyPark-UnpaidBillingWorker.dll" > /dev/null; then
+            pkill -f "HR.MobyPark-UnpaidBillingWorker. dll" || true
+          fi
+          sleep 2
+          echo "Services stopped."
+
+      # Step 8: Start updated projects with user secrets from environment variables
+      - name: Start updated projects with user secrets
+        if: success()
+        env:
+          CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          echo "Starting HR.MobyPark services with user secrets..."
+          
+          cd ./HR.MobyPark && nohup dotnet HR.MobyPark.dll > /tmp/hr-mobypark.log 2>&1 &
+          echo "HR.MobyPark started (PID: $!)"
+          
+          cd ../HR.MobyPark-SessionWorker && nohup dotnet HR. MobyPark-SessionWorker.dll > /tmp/session-worker.log 2>&1 &
+          echo "HR. MobyPark-SessionWorker started (PID: $! )"
+          
+          cd ../HR.MobyPark-DashboardingDBWorker && nohup dotnet HR.MobyPark-DashboardingDBWorker.dll > /tmp/dashboarding-worker.log 2>&1 &
+          echo "HR.MobyPark-DashboardingDBWorker started (PID: $! )"
+          
+          cd ../HR.MobyPark-BillingUsersWorker && nohup dotnet HR.MobyPark-BillingUsersWorker.dll > /tmp/billing-users-worker.log 2>&1 &
+          echo "HR.MobyPark-BillingUsersWorker started (PID: $! )"
+          
+          cd ../HR.MobyPark-UnpaidBillingWorker && nohup dotnet HR.MobyPark-UnpaidBillingWorker.dll > /tmp/unpaid-billing-worker.log 2>&1 &
+          echo "HR.MobyPark-UnpaidBillingWorker started (PID: $!)"
+          
+          sleep 3
+          echo "All services started successfully!"
+
+      # Step 9: Verify services are running
+      - name: Verify services are running
+        if: success()
+        run: |
+          echo "Verifying services..."
+          sleep 2
+          if pgrep -f "HR.MobyPark.dll" > /dev/null; then
+            echo "✅ HR.MobyPark is running"
+          else
+            echo "❌ HR.MobyPark failed to start"
+            exit 1
+          fi
+
+      # Step 10: Notify on success
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "✅ Build, test, and deployment completed successfully!"
+
+      # Step 11: Notify on failure
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Workflow failed! Check the uploaded artifacts for test results and logs."
