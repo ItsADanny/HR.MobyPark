@@ -21,12 +21,14 @@ jobs:
           fetch-depth: 0
 
       # Step 2: Setup .NET
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            9.0.x
-            10.0.x
+      # This step is not needed since we already have .Net 9 and .Net 10 installed on
+      # the server
+      # - name: Setup .NET
+      #   uses: actions/setup-dotnet@v4
+      #   with:
+      #     dotnet-version: |
+      #       9.0.x
+      #       10.0.x
 
       # Step 3: Restore dependencies
       - name: Restore dependencies
