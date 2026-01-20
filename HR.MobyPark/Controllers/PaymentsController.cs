@@ -68,182 +68,6 @@ public class PaymentsController : ControllerBase
         return Ok(foundPayment);
     }
 
-    [HttpGet("billing")]
-    public ActionResult<string> GET_Billing([FromHeader(Name = "authorization")] string authorization)
-    {
-        //Check to see if the authorization has been filled, If it isn't filled. Return Unauthorized error
-        if (string.IsNullOrEmpty(authorization)) return Unauthorized("Unauthorized: Invalid or missing session token");
-
-        //Try and get the user session, if not return NotFound error
-        UserSession? userSession = UserSession.GetUserSession(authorization);
-        if (userSession is null) return Unauthorized("Unauthorized: Invalid or missing session token");
-
-        //Get the user from the database
-        MUser? user = MUser.GetUser(userSession.UserID);
-        if (user is null) return Problem("There was an problem while trying to retrieve your account, please try again later");
-
-        JArray billingData = new();
-
-        // Get all parking lots
-        List<ParkingLot> parkingLots = ParkingLot.GetAll();
-        
-        foreach (ParkingLot parkingLot in parkingLots)
-        {
-            // Get all sessions for this parking lot
-            List<Session> sessions = Session.GetAllByParkingLotID(parkingLot.ID);
-            
-            foreach (Session session in sessions)
-            {
-                // Only include sessions for the current user
-                if (session.UserID == userSession.UserID)
-                {
-                    // Calculate hours and days
-                    TimeSpan duration = session.EndDateTime - session.StartDateTime;
-                    double hours = duration.TotalHours;
-                    int days = (int)duration.TotalDays;
-                    
-                    // Calculate amount (using the session's stored amount or calculating from tariff)
-                    decimal amount = (decimal)session.Amount;
-                    
-                    // Generate payment hash (transaction ID based on session)
-                    string transaction = $"{session.ID}-{session.UserID}-{parkingLot.ID}";
-                    
-                    // Check how much has been paid for this transaction
-                    List<Payment> payments = Payment.GetAllByUserID(userSession.UserID);
-                    decimal payed = 0;
-                    foreach (Payment payment in payments)
-                    {
-                        if (payment.SessionID == session.ID)
-                        {
-                            payed += payment.Amount;
-                        }
-                    }
-                    
-                    // Build the billing record
-                    JObject billingRecord = new()
-                    {
-                        new JProperty("session", new JObject
-                        {
-                            new JProperty("licenseplate", session.LicensePlate),
-                            new JProperty("started", session.StartDateTime),
-                            new JProperty("stopped", session.EndDateTime),
-                            new JProperty("hours", Math.Round(hours, 2)),
-                            new JProperty("days", days)
-                        }),
-                        new JProperty("parking", new JObject
-                        {
-                            new JProperty("name", parkingLot.Name),
-                            new JProperty("location", parkingLot.Location),
-                            new JProperty("tariff", parkingLot.Tariff),
-                            new JProperty("daytariff", parkingLot.DayTariff)
-                        }),
-                        new JProperty("amount", amount),
-                        new JProperty("thash", transaction),
-                        new JProperty("payed", payed),
-                        new JProperty("balance", amount - payed)
-                    };
-                    
-                    billingData.Add(billingRecord);
-                }
-            }
-        }
-
-        return Ok(billingData);
-    }
-
-    [HttpGet("billing/{username}")]
-    public ActionResult<string> GET_BillingForUser([FromHeader(Name = "authorization")] string authorization, string username)
-    {
-        //Check to see if the authorization has been filled, If it isn't filled. Return Unauthorized error
-        if (string.IsNullOrEmpty(authorization)) return Unauthorized("Unauthorized: Invalid or missing session token");
-
-        //Try and get the user session, if not return NotFound error
-        UserSession? userSession = UserSession.GetUserSession(authorization);
-        if (userSession is null) return Unauthorized("Unauthorized: Invalid or missing session token");
-
-        //Get the user from the database
-        MUser? user = MUser.GetUser(userSession.UserID);
-        if (user is null) return Problem("There was an problem while trying to retrieve your account, please try again later");
-
-        // Check if user has admin privileges
-        if (user.Role.Name != "ADMIN")
-        {
-            return StatusCode(403, "Access denied");
-        }
-
-        // Get the target user by username
-        MUser? targetUser = MUser.GetUserUsername(username);
-        if (targetUser is null) return NotFound("User not found");
-
-        JArray billingData = new();
-
-        // Get all parking lots
-        List<ParkingLot> parkingLots = ParkingLot.GetAll();
-        
-        foreach (ParkingLot parkingLot in parkingLots)
-        {
-            // Get all sessions for this parking lot
-            List<Session> sessions = Session.GetAllByParkingLotID(parkingLot.ID);
-            
-            foreach (Session session in sessions)
-            {
-                // Only include sessions for the target user
-                if (session.UserID == targetUser.ID)
-                {
-                    // Calculate hours and days
-                    TimeSpan duration = session.EndDateTime - session.StartDateTime;
-                    double hours = duration.TotalHours;
-                    int days = (int)duration.TotalDays;
-                    
-                    // Calculate amount (using the session's stored amount or calculating from tariff)
-                    decimal amount = (decimal)session.Amount;
-                    
-                    // Generate payment hash (transaction ID based on session)
-                    string transaction = $"{session.ID}-{session.UserID}-{parkingLot.ID}";
-                    
-                    // Check how much has been paid for this transaction
-                    List<Payment> payments = Payment.GetAllByUserID(targetUser.ID);
-                    decimal payed = 0;
-                    foreach (Payment payment in payments)
-                    {
-                        if (payment.SessionID == session.ID)
-                        {
-                            payed += payment.Amount;
-                        }
-                    }
-                    
-                    // Build the billing record
-                    JObject billingRecord = new()
-                    {
-                        new JProperty("session", new JObject
-                        {
-                            new JProperty("licenseplate", session.LicensePlate),
-                            new JProperty("started", session.StartDateTime),
-                            new JProperty("stopped", session.EndDateTime),
-                            new JProperty("hours", Math.Round(hours, 2)),
-                            new JProperty("days", days)
-                        }),
-                        new JProperty("parking", new JObject
-                        {
-                            new JProperty("name", parkingLot.Name),
-                            new JProperty("location", parkingLot.Location),
-                            new JProperty("tariff", parkingLot.Tariff),
-                            new JProperty("daytariff", parkingLot.DayTariff)
-                        }),
-                        new JProperty("amount", amount),
-                        new JProperty("thash", transaction),
-                        new JProperty("payed", payed),
-                        new JProperty("balance", amount - payed)
-                    };
-                    
-                    billingData.Add(billingRecord);
-                }
-            }
-        }
-
-        return Ok(billingData);
-    }
-
     // ====================================================================================
     // POST
     // ====================================================================================
@@ -380,5 +204,49 @@ public class PaymentsController : ControllerBase
         if (!foundPayment.UpdateDB()) return Problem("There was an error while trying to update the transaction, please try again later");
 
         return Ok();
+    }
+
+    [HttpGet("billing")]
+    public ActionResult<string> GET_Billing([FromHeader(Name = "authorization")] string authorization)
+    {
+        //Check to see if the authorization has been filled, If it isn't filled. Return Unauthorized error
+        if (string.IsNullOrEmpty(authorization)) return Unauthorized("Unauthorized: Invalid or missing session token");
+
+        //Try and get the user session, if not return NotFound error
+        UserSession? userSession = UserSession.GetUserSession(authorization);
+        if (userSession is null) return Unauthorized("Unauthorized: Invalid or missing session token");
+
+        //Get the user from the database
+        MUser? user = MUser.GetUser(userSession.UserID);
+        if (user is null) return Problem("There was an problem while trying to retrieve your account, please try again later");
+
+        return Ok(Billing.GetBillingDataForUser(userSession.UserID));
+    }
+
+    [HttpGet("billing/{username}")]
+    public ActionResult<string> GET_BillingForUser([FromHeader(Name = "authorization")] string authorization, string username)
+    {
+        //Check to see if the authorization has been filled, If it isn't filled. Return Unauthorized error
+        if (string.IsNullOrEmpty(authorization)) return Unauthorized("Unauthorized: Invalid or missing session token");
+
+        //Try and get the user session, if not return NotFound error
+        UserSession? userSession = UserSession.GetUserSession(authorization);
+        if (userSession is null) return Unauthorized("Unauthorized: Invalid or missing session token");
+
+        //Get the user from the database
+        MUser? user = MUser.GetUser(userSession.UserID);
+        if (user is null) return Problem("There was an problem while trying to retrieve your account, please try again later");
+
+        // Check if user has admin privileges (case-insensitive)
+        if (!user.Role.Name.Equals("ADMIN", StringComparison.OrdinalIgnoreCase))
+        {
+            return StatusCode(403, new { message = "Access denied" });
+        }
+
+        // Get the target user by username
+        MUser? targetUser = MUser.GetUserUsername(username);
+        if (targetUser is null) return NotFound(new { message = "User not found" });
+
+        return Ok(Billing.GetBillingDataForUser(targetUser.ID));
     }
 }

@@ -144,4 +144,117 @@ public class Billing : aModel, iDatabase
     public static string ToSelectByIDSQL(int id) => $"SELECT * FROM Billing WHERE ID = {id}";
 
     public static string ToSelectAllSQL() => "SELECT * FROM Billing";
+
+    // ====================================================================================
+    // Billing Data Generation (optimized for N+1 query prevention)
+    // ====================================================================================
+    
+    /// <summary>
+    /// Gets billing data for a specific user as JArray. Optimized to avoid N+1 queries.
+    /// </summary>
+    public static JArray GetBillingDataForUser(int userId)
+    {
+        JArray billingData = new();
+
+        // Get all sessions for this user (single query)
+        List<Session> userSessions = Session.GetAllByUserID(userId);
+        if (userSessions.Count == 0) return billingData;
+
+        // Get all payments for this user once (avoids N+1 query problem)
+        List<Payment> userPayments = Payment.GetAllByUserID(userId);
+        
+        // Group payments by SessionID for efficient lookup
+        Dictionary<int, decimal> paymentsBySession = GroupPaymentsBySession(userPayments);
+
+        // Get all parking lots needed (cache for efficient lookup)
+        HashSet<int> parkingLotIds = userSessions.Select(s => s.ParkingLotId).ToHashSet();
+        Dictionary<int, ParkingLot> parkingLots = GetParkingLotsDictionary(parkingLotIds);
+
+        // Build billing records for each session
+        foreach (Session session in userSessions)
+        {
+            if (!parkingLots.TryGetValue(session.ParkingLotId, out ParkingLot? parkingLot))
+                continue;
+
+            decimal payed = paymentsBySession.GetValueOrDefault(session.ID, 0);
+            JObject billingRecord = BuildBillingRecord(session, parkingLot, payed);
+            billingData.Add(billingRecord);
+        }
+
+        return billingData;
+    }
+
+    /// <summary>
+    /// Groups payments by SessionID and calculates total paid amount per session.
+    /// </summary>
+    private static Dictionary<int, decimal> GroupPaymentsBySession(List<Payment> payments)
+    {
+        Dictionary<int, decimal> result = new();
+        foreach (Payment payment in payments)
+        {
+            if (result.ContainsKey(payment.SessionID))
+                result[payment.SessionID] += payment.Amount;
+            else
+                result[payment.SessionID] = payment.Amount;
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Gets parking lots by their IDs and returns as a dictionary for efficient lookup.
+    /// </summary>
+    private static Dictionary<int, ParkingLot> GetParkingLotsDictionary(HashSet<int> parkingLotIds)
+    {
+        Dictionary<int, ParkingLot> result = new();
+        List<ParkingLot> allParkingLots = ParkingLot.GetAll();
+        
+        foreach (ParkingLot lot in allParkingLots)
+        {
+            if (parkingLotIds.Contains(lot.ID))
+                result[lot.ID] = lot;
+        }
+        
+        return result;
+    }
+
+    /// <summary>
+    /// Builds a single billing record JObject from session and parking lot data.
+    /// </summary>
+    private static JObject BuildBillingRecord(Session session, ParkingLot parkingLot, decimal payed)
+    {
+        // Calculate hours and days
+        TimeSpan duration = session.EndDateTime - session.StartDateTime;
+        double hours = duration.TotalHours;
+        int days = (int)duration.TotalDays;
+        
+        // Calculate amount
+        decimal amount = (decimal)session.Amount;
+        
+        // Generate transaction hash
+        string transaction = $"{session.ID}-{session.UserID}-{parkingLot.ID}";
+        
+        // Build the billing record
+        return new JObject
+        {
+            new JProperty("session", new JObject
+            {
+                new JProperty("licenseplate", session.LicensePlate),
+                new JProperty("started", session.StartDateTime),
+                new JProperty("stopped", session.EndDateTime),
+                new JProperty("hours", Math.Round(hours, 2)),
+                new JProperty("days", days)
+            }),
+            new JProperty("parking", new JObject
+            {
+                new JProperty("name", parkingLot.Name),
+                new JProperty("location", parkingLot.Location),
+                new JProperty("tariff", parkingLot.Tariff),
+                new JProperty("daytariff", parkingLot.DayTariff)
+            }),
+            new JProperty("amount", amount),
+            new JProperty("thash", transaction),
+            new JProperty("payed", payed),
+            new JProperty("balance", amount - payed)
+        };
+    }
 }

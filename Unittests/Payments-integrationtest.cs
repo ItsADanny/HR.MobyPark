@@ -418,4 +418,183 @@ public sealed class PaymentsControllerIntegrationTests
 
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedObjectResult));
     }
+
+    [TestMethod]
+    [Priority(19)]
+    public void GetBilling_EmptyResult_ForUserWithNoSessions()
+    {
+        // Create a user with no sessions
+        var authController = new AuthController();
+        var registerDto = new registerDto(
+            $"test-nosessions-{DateTime.Now.Ticks}",
+            "test-password-123",
+            "No Sessions User",
+            $"nosessions-{DateTime.Now.Ticks}@test.com",
+            "+31612345680",
+            new DateOnly(1990, 1, 1)
+        );
+        
+        var registerResult = authController.register(registerDto);
+        Assert.IsInstanceOfType(registerResult.Result, typeof(CreatedResult));
+        
+        var loginDto = new loginDto(registerDto.username, registerDto.password);
+        var loginResult = authController.login(loginDto);
+        var loginJson = JObject.Parse((loginResult.Result as OkObjectResult)!.Value!.ToString()!);
+        var noSessionsAuthToken = loginJson["session_token"]!.ToString();
+        
+        var controller = new PaymentsController();
+        var result = controller.GET_Billing(noSessionsAuthToken);
+        
+        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        var okResult = result.Result as OkObjectResult;
+        var billingData = okResult!.Value as JArray;
+        
+        Assert.IsNotNull(billingData);
+        Assert.AreEqual(0, billingData.Count, "User with no sessions should have empty billing data");
+        
+        // Cleanup
+        var user = User.GetUserUsername(registerDto.username);
+        if (user != null)
+        {
+            DBHelper.Delete($"DELETE FROM UserSessions WHERE UserID = {user.ID}");
+            DBHelper.Delete($"DELETE FROM Users WHERE ID = {user.ID}");
+        }
+        
+        Console.WriteLine("✓ Empty billing data returned correctly for user with no sessions");
+    }
+
+    // ============================================================================
+    // ADMIN BILLING TESTS - GET /payments/billing/{username}
+    // ============================================================================
+    
+    [TestMethod]
+    [Priority(20)]
+    public void GetBillingForUser_AdminUser_ReturnsOk()
+    {
+        // Create an admin user for testing
+        var authController = new AuthController();
+        var adminRegisterDto = new registerDto(
+            $"test-admin-{DateTime.Now.Ticks}",
+            "admin-password-123",
+            "Admin Test User",
+            $"admin-{DateTime.Now.Ticks}@test.com",
+            "+31612345681",
+            new DateOnly(1990, 1, 1)
+        );
+        
+        var registerResult = authController.register(adminRegisterDto);
+        Assert.IsInstanceOfType(registerResult.Result, typeof(CreatedResult));
+        
+        var adminUser = User.GetUserUsername(adminRegisterDto.username);
+        Assert.IsNotNull(adminUser);
+        
+        // Update user role to ADMIN
+        DBHelper.Update($"UPDATE Users SET RoleID = (SELECT ID FROM UserRole WHERE Name = 'ADMIN' LIMIT 1) WHERE ID = {adminUser.ID}");
+        
+        // Verify the admin user was updated
+        var verifyUser = User.GetUser(adminUser.ID);
+        Console.WriteLine($"Admin user role after update: {verifyUser?.Role?.Name ?? "NULL"}, RoleID: {verifyUser?.Role?.ID ?? -1}");
+        
+        var loginDto = new loginDto(adminRegisterDto.username, adminRegisterDto.password);
+        var loginResult = authController.login(loginDto);
+        var loginJson = JObject.Parse((loginResult.Result as OkObjectResult)!.Value!.ToString()!);
+        var adminAuthToken = loginJson["session_token"]!.ToString();
+        
+        // Test getting billing for another user
+        var controller = new PaymentsController();
+        var result = controller.GET_BillingForUser(adminAuthToken, BILLING_USERNAME);
+        
+        // Check for OkObjectResult or generic ObjectResult with 200 status
+        var okResult = result.Result as OkObjectResult;
+        if (okResult == null)
+        {
+            var objResult = result.Result as ObjectResult;
+            Assert.IsNotNull(objResult, "Result should be an ObjectResult");
+            Assert.AreEqual(200, objResult.StatusCode ?? 0, "Status code should be 200");
+            var billingData = objResult.Value as JArray;
+            Assert.IsNotNull(billingData);
+            Assert.IsTrue(billingData.Count > 0, "Billing user should have sessions");
+        }
+        else
+        {
+            var billingData = okResult.Value as JArray;
+            Assert.IsNotNull(billingData);
+            Assert.IsTrue(billingData.Count > 0, "Billing user should have sessions");
+        }
+        
+        // Cleanup
+        DBHelper.Delete($"DELETE FROM UserSessions WHERE UserID = {adminUser.ID}");
+        DBHelper.Delete($"DELETE FROM Users WHERE ID = {adminUser.ID}");
+        
+        Console.WriteLine($"✓ Admin successfully retrieved billing data for {BILLING_USERNAME}");
+    }
+
+    [TestMethod]
+    [Priority(21)]
+    public void GetBillingForUser_NonAdminUser_ReturnsForbidden()
+    {
+        var controller = new PaymentsController();
+        var result = controller.GET_BillingForUser(_billingAuthToken!, "some-other-user");
+        
+        Assert.IsInstanceOfType(result.Result, typeof(ObjectResult));
+        var objectResult = result.Result as ObjectResult;
+        Assert.AreEqual(403, objectResult!.StatusCode);
+        
+        Console.WriteLine("✓ Non-admin user correctly denied access");
+    }
+
+    [TestMethod]
+    [Priority(22)]
+    public void GetBillingForUser_NonExistentUser_ReturnsNotFound()
+    {
+        // Create admin user
+        var authController = new AuthController();
+        var adminRegisterDto = new registerDto(
+            $"test-admin-notfound-{DateTime.Now.Ticks}",
+            "admin-password-123",
+            "Admin Test User",
+            $"admin-notfound-{DateTime.Now.Ticks}@test.com",
+            "+31612345682",
+            new DateOnly(1990, 1, 1)
+        );
+        
+        authController.register(adminRegisterDto);
+        var adminUser = User.GetUserUsername(adminRegisterDto.username);
+        DBHelper.Update($"UPDATE Users SET RoleID = (SELECT ID FROM UserRole WHERE Name = 'ADMIN' LIMIT 1) WHERE ID = {adminUser!.ID}");
+        
+        var loginDto = new loginDto(adminRegisterDto.username, adminRegisterDto.password);
+        var loginResult = authController.login(loginDto);
+        var loginJson = JObject.Parse((loginResult.Result as OkObjectResult)!.Value!.ToString()!);
+        var adminAuthToken = loginJson["session_token"]!.ToString();
+        
+        var controller = new PaymentsController();
+        var result = controller.GET_BillingForUser(adminAuthToken, "nonexistent-user-xyz-12345");
+        
+        // Check for NotFoundObjectResult or generic ObjectResult with 404 status
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        if (notFoundResult == null)
+        {
+            var objResult = result.Result as ObjectResult;
+            Assert.IsNotNull(objResult, "Result should be an ObjectResult");
+            Assert.AreEqual(404, objResult.StatusCode ?? 0, "Status code should be 404");
+        }
+        
+        // Cleanup
+        DBHelper.Delete($"DELETE FROM UserSessions WHERE UserID = {adminUser.ID}");
+        DBHelper.Delete($"DELETE FROM Users WHERE ID = {adminUser.ID}");
+        
+        Console.WriteLine("✓ Non-existent user correctly returns NotFound");
+    }
+
+    [TestMethod]
+    [Priority(23)]
+    public void GetBillingForUser_NoAuth_ReturnsUnauthorized()
+    {
+        var controller = new PaymentsController();
+        var result = controller.GET_BillingForUser(null!, BILLING_USERNAME);
+        
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedObjectResult));
+        
+        Console.WriteLine("✓ No auth token correctly returns Unauthorized");
+    }
 }

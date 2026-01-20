@@ -7,7 +7,7 @@ public class UserActivity : aModel, iDatabase
     public EHTTPMethod Method {get; set;}
 
     //IDatabase implementation
-    public override string ToInsertSQL() => $"INSERT INTO UserActivity (UserID, Token, Endpoint, Method) VALUES ({UserID}, \"{Token}\", \"{Endpoint}\", \"{Method}\")";
+    public override string ToInsertSQL() => $"INSERT INTO UserActivity (UserID, Token, Endpoint, Method, CreateDateTime) VALUES ({UserID}, \"{Token}\", \"{Endpoint}\", \"{Method}\", NOW())";
 
     public override string ToUpdateSQL() => $"UPDATE UserActivity SET UserID = {UserID}, Token = \"{Token}\", Endpoint = \"{Endpoint}\", Method = \"{Method}\" WHERE ID = {ID}";
 
@@ -19,7 +19,7 @@ public class UserActivity : aModel, iDatabase
     {
         UserActivity newUserActivity = new()
         {
-            UserID = userSession.ID,
+            UserID = userSession.UserID,
             Token = userSession.Token,
             Endpoint = endpoint,
             Method = eHTTPMethod
