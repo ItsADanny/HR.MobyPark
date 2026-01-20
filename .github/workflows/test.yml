@@ -69,7 +69,7 @@ jobs:
         if: failure()
         run: |
           echo "Workflow failed! Check the uploaded artifacts for test results and logs."
-  Build-deploy-live
+  Build-deploy-live:
     runs-on: self-hosted
 
     steps:
