@@ -71,21 +71,21 @@ jobs:
         
         # Setup SSH known hosts
         mkdir -p ~/.ssh
-        ssh-keyscan -H -p ${DEPLOY_PORT} ${DEPLOY_HOST} >> ~/.ssh/known_hosts 2>/dev/null || true
+        ssh-keyscan -H -p ${DEPLOY_PORT} ${DEPLOY_HOST} >> ~/.ssh/known_hosts
         
         # Define deployment directory on remote server
         DEPLOY_DIR="/opt/mobypark"
         
         # Copy files to remote server using sshpass
-        sshpass -p "${DEPLOY_PASSWORD}" scp -P ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+        sshpass -p "${DEPLOY_PASSWORD}" scp -P ${DEPLOY_PORT} \
           mobypark-latest.tar.gz docker-compose.yml ${DEPLOY_USER}@${DEPLOY_HOST}:/tmp/
         
         # Deploy on remote server using sshpass
-        sshpass -p "${DEPLOY_PASSWORD}" ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+        sshpass -p "${DEPLOY_PASSWORD}" ssh -p ${DEPLOY_PORT} \
           ${DEPLOY_USER}@${DEPLOY_HOST} << 'EOF'
           # Create deployment directory if it doesn't exist
           sudo mkdir -p /opt/mobypark
-          sudo chown ${USER}:${USER} /opt/mobypark
+          sudo chown $(whoami):$(whoami) /opt/mobypark
           
           # Move files to deployment directory
           mv /tmp/docker-compose.yml /opt/mobypark/
