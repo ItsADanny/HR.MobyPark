@@ -20,9 +20,10 @@ jobs:
           ref: staging
 
       - name: Setup .NET 9
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
+          
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
         with:
