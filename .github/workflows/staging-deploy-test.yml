@@ -69,11 +69,11 @@ jobs:
           update_appsettings() {
             local file=$1
             if [ -f "$file" ]; then
-              jq '.Database.HST = "${{ secrets.DB_HOST }}" | 
-                  .Database.PRT = "${{ secrets.DB_PORT }}" | 
-                  .Database.USR = "${{ secrets.DB_USER }}" | 
-                  .Database.PSW = "${{ secrets.DB_PASSWORD }}" | 
-                  .Database.DBL = "${{ secrets.DB_NAME }}"' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+              jq '.Database.HST = "${{ secrets.Database_HST }}" | 
+                  .Database.PRT = "${{ secrets.Database_PRT }}" | 
+                  .Database.USR = "${{ secrets.Database_USR }}" | 
+                  .Database.PSW = "${{ secrets.Database_PSW }}" | 
+                  .Database.DBL = "${{ secrets.Database_DBL }}"' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
               echo "✓ Updated $file"
             fi
           }
