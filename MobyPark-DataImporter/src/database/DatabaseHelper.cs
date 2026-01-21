@@ -103,9 +103,9 @@ public static class DatabaseHelper
                 int? newUserID = null;
                 if (reader["NewUserID"] is not DBNull) newUserID = Convert.ToInt32(reader["NewUserID"].ToString());
 
-                NewUser user = new ()
+                User user = new ()
                 {
-                    ID = Convert.ToInt32(reader["ID"].ToString()),
+                    id = reader["ID"].ToString(),
                     username = reader["Username"].ToString(),
                     password = reader["Password"].ToString(),
                     name = reader["Name"].ToString(),
