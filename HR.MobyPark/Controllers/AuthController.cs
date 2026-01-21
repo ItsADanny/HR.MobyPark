@@ -15,15 +15,17 @@ public class AuthController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(authorization)) return BadRequest("Missing session token");
         if (!UserSession.SessionExist(authorization)) return Unauthorized("Session not found or expired");
+        
+        //Get the userSession BEFORE deleting it
+        UserSession? foundUserSession = UserSession.GetUserSession(authorization);
+        if (foundUserSession is null) return Unauthorized("Session not found or expired");
+
+        //Save the userActivity for this token BEFORE deleting the session
+        UserActivity.SaveActivity(foundUserSession, "logout", EHTTPMethod.GET);
+
+        //Now remove the session
         if (UserSession.RemoveSession(authorization))
         {
-            //Get the userSession
-            UserSession? foundUserSession = UserSession.GetUserSession(authorization);
-            if (foundUserSession is null) return Unauthorized("Session not found or expired");
-
-            //Save the userActivity for this token
-            UserActivity.SaveActivity(foundUserSession, "logout", EHTTPMethod.GET);
-
             return Ok("Logout successful");
         } 
         

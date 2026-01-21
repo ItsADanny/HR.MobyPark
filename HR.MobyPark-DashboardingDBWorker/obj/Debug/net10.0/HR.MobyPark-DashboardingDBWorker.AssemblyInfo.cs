@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HR.MobyPark-DashboardingDBWorker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+72028f31c0a32997f394b4d7206ba9604fcb5f26")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1555a4117d49ad8727a1cf288b2af9744e558bff")]
 [assembly: System.Reflection.AssemblyProductAttribute("HR.MobyPark-DashboardingDBWorker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HR.MobyPark-DashboardingDBWorker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
