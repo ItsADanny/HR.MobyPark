@@ -172,6 +172,25 @@ jobs:
       - name: Publish Application
         run: |
           dotnet publish --configuration Release --no-build --output ./publish
+          
+      - name: Inject Secrets into Published Appsettings
+        run: |
+          # Function to replace empty values in JSON
+          replace_json_value() {
+            local file=$1
+            local key=$2
+            local value=$3
+            # Escape special characters in the value
+            value=$(printf '%s\n' "$value" | sed -e 's/[\/&]/\\&/g')
+            sed -i "s/\"$key\": \"\"/\"$key\": \"$value\"/g" "$file"
+          }
+          
+          # HR.MobyPark
+          replace_json_value "./publish/appsettings.json" "HST" "${{ secrets.Database_HST }}"
+          replace_json_value "./publish/appsettings.json" "PRT" "${{ secrets.Database_PRT }}"
+          replace_json_value "./publish/appsettings.json" "USR" "${{ secrets.Database_USR }}"
+          replace_json_value "./publish/appsettings.json" "PSW" "${{ secrets.Database_PSW }}"
+          replace_json_value "./publish/appsettings.json" "DBL" "${{ secrets.Database_DBL }}"
 
       - name: Deploy to Self-Hosted Server
         run: |
