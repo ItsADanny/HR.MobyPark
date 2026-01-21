@@ -116,21 +116,21 @@ jobs:
       - name: Deploy to Self-Hosted Server
         run: |
           # Create deployment directory if it doesn't exist
-          mkdir -p /opt/mobypark/deployment
-
+          mkdir -p ./opt/mobypark/deployment
+          
           # Create backup of current deployment
-          if [ -d /opt/mobypark/deployment ] && [ "$(ls -A /opt/mobypark/deployment)" ]; then
+          if [ -d ./opt/mobypark/deployment ] && [ "$(ls -A ./opt/mobypark/deployment)" ]; then
             echo "Creating backup of current deployment..."
-            mkdir -p /opt/mobypark/backup
-            cp -r /opt/mobypark/deployment /opt/mobypark/backup/deployment-$(date +%Y%m%d-%H%M%S)
+            mkdir -p ./opt/mobypark/backup
+            cp -r ./opt/mobypark/deployment ./opt/mobypark/backup/deployment-$(date +%Y%m%d-%H%M%S)
           fi
 
           # Stop running services (if they exist)
           sudo systemctl stop mobypark.service 2>/dev/null || echo "Service not running or doesn't exist"
 
           # Copy published artifacts to deployment folder
-          if cp -r ./publish/* /opt/mobypark/deployment/; then
-            echo "Deployment completed successfully to /opt/mobypark/deployment"
+          if cp -r ./publish/* ./opt/mobypark/deployment/; then
+            echo "Deployment completed successfully to ./opt/mobypark/deployment"
           else
             echo "Deployment failed! Restoring from backup if available..."
             exit 1
