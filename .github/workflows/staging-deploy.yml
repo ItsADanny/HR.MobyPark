@@ -139,12 +139,12 @@ jobs:
           # Start services
           sudo systemctl start mobypark.service 2>/dev/null || echo "Service start skipped (service may not be configured)"
 
-      - name: Force Push to Live Branch
-        run: |
-          # Force push staging to live branch to reflect currently deployed version
-          # This is intentional to keep live branch in sync with production deployment
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@github.com"
-          git fetch origin staging
-          git checkout staging
-          git push origin staging:live --force
+      # - name: Force Push to Live Branch
+      #   run: |
+      #     # Force push staging to live branch to reflect currently deployed version
+      #     # This is intentional to keep live branch in sync with production deployment
+      #     git config user.name "GitHub Actions Bot"
+      #     git config user.email "actions@github.com"
+      #     git fetch origin staging
+      #     git checkout staging
+      #     git push origin staging:live --force
