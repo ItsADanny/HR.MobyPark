@@ -93,9 +93,6 @@ jobs:
             cp -r ./opt/mobypark/deployment ./opt/mobypark/backup/deployment-$(date +%Y%m%d-%H%M%S)
           fi
 
-          # Stop running services (if they exist)
-          sudo systemctl stop mobypark.service 2>/dev/null || echo "Service not running or doesn't exist"
-
           # Copy published artifacts to deployment folder
           if cp -r ./publish/* ./opt/mobypark/deployment/; then
             echo "Deployment completed successfully to ./opt/mobypark/deployment"
@@ -104,9 +101,14 @@ jobs:
             exit 1
           fi
 
-          # Start services
-          sudo systemctl start mobypark.service 2>/dev/null || echo "Service start skipped (service may not be configured)"
-
+          # Start the Application
+          cd ./opt/mobypark/deployment
+          ./HR.MobyPark
+          ./HR.MobyPark-BillingUsersWorker
+          ./HR.MobyPark-DashboardingDBWorker
+          ./HR.MobyPark-SessionWorker
+          ./HR.MobyPark-UnpaidBillingWorker
+          
       # - name: Force Push to Live Branch
       #   run: |
       #     # Force push staging to live branch to reflect currently deployed version
