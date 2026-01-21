@@ -183,6 +183,14 @@ public class UserSession : aModel, iDatabase
 
     public override string ToSelectSQL() => $"SELECT * FROM UserSessions WHERE ID = {ID}";
 
+    public override bool DeleteDB()
+    {
+        // Delete dependent UserActivity records first to avoid foreign key constraint errors
+        DBHelper.Delete($"DELETE FROM UserActivity WHERE Token = \"{Token}\"");
+        // Then delete the session itself
+        return DBHelper.Delete(ToDeleteSQL());
+    }
+
     public static string ToSelectByIDSQL(int id) => $"SELECT * FROM UserSessions WHERE ID = {id}";
 
     public static string ToSelectAllSQL() => "SELECT * FROM UserSessions";
