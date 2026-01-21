@@ -93,6 +93,13 @@ jobs:
             cp -r ./opt/mobypark/deployment ./opt/mobypark/backup/deployment-$(date +%Y%m%d-%H%M%S)
           fi
 
+          # Stop running services (if they exist)
+          sudo systemctl stop HR.MobyPark.service 2>/dev/null || echo "Service [HR.MobyPark] not running or doesn't exist"
+          sudo systemctl stop HR.MobyPark-BillingUsersWorker.service 2>/dev/null || echo "Service [HR.MobyPark-BillingUsersWorker] not running or doesn't exist"
+          sudo systemctl stop HR.MobyPark-DashboardingDBWorker.service 2>/dev/null || echo "Service [HR.MobyPark-DashboardingDBWorker] not running or doesn't exist"
+          sudo systemctl stop HR.MobyPark-UnpaidBillingWorker.service 2>/dev/null || echo "Service [HR.MobyPark-UnpaidBillingWorker] not running or doesn't exist"
+          sudo systemctl stop HR.MobyPark-SessionWorker.service 2>/dev/null || echo "Service [HR.MobyPark-SessionWorker] not running or doesn't exist"
+
           # Copy published artifacts to deployment folder
           if cp -r ./publish/* ./opt/mobypark/deployment/; then
             echo "Deployment completed successfully to ./opt/mobypark/deployment"
@@ -101,14 +108,13 @@ jobs:
             exit 1
           fi
 
-          # Start the Application
-          cd ./opt/mobypark/deployment
-          ./HR.MobyPark
-          ./HR.MobyPark-BillingUsersWorker
-          ./HR.MobyPark-DashboardingDBWorker
-          ./HR.MobyPark-SessionWorker
-          ./HR.MobyPark-UnpaidBillingWorker
-          
+          # Start services
+          sudo systemctl start HR.MobyPark.service 2>/dev/null || echo "Service [HR.MobyPark] start skipped (service may not be configured)"
+          sudo systemctl start HR.MobyPark-BillingUsersWorker.service 2>/dev/null || echo "Service [HR.MobyPark-BillingUsersWorker] start skipped (service may not be configured)"
+          sudo systemctl start HR.MobyPark-DashboardingDBWorker.service 2>/dev/null || echo "Service [HR.MobyPark-DashboardingDBWorker] start skipped (service may not be configured)"
+          sudo systemctl start HR.MobyPark-UnpaidBillingWorker.service 2>/dev/null || echo "Service [HR.MobyPark-UnpaidBillingWorker] start skipped (service may not be configured)"
+          sudo systemctl start HR.MobyPark-SessionWorker.service 2>/dev/null || echo "Service [HR.MobyPark-SessionWorker] start skipped (service may not be configured)"
+
       # - name: Force Push to Live Branch
       #   run: |
       #     # Force push staging to live branch to reflect currently deployed version
