@@ -91,7 +91,7 @@ public class Worker(ILogger<Worker> logger) : BackgroundService
 
                 logger.LogInformation($"Session cleanup task completed. task completed at: {DateTimeOffset.Now}, total time taken: {(DateTimeOffset.Now - DateTimeOffset.Now.AddMinutes(-1)).TotalSeconds} seconds.");
             }
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay((int)Converter.HourToMilisecond(24), stoppingToken);
         }
     }
 }
