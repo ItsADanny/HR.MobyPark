@@ -1,0 +1,210 @@
+name: Staging CI/CD Pipeline (TEST)
+
+on:
+  pull_request:
+    branches:
+      - staging
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+
+jobs:
+  test-build-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '9.0.x'
+          
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Configure User Secrets for HR.MobyPark
+        run: |
+          dotnet user-secrets init --project HR.MobyPark/HR.MobyPark.csproj
+          dotnet user-secrets set "Database:HST" "${{ secrets.Database_HST }}" --project HR.MobyPark/HR.MobyPark.csproj
+          dotnet user-secrets set "Database:PRT" "${{ secrets.Database_PRT }}" --project HR.MobyPark/HR.MobyPark.csproj
+          dotnet user-secrets set "Database:USR" "${{ secrets.Database_USR }}" --project HR.MobyPark/HR.MobyPark.csproj
+          dotnet user-secrets set "Database:PSW" "${{ secrets.Database_PSW }}" --project HR.MobyPark/HR.MobyPark.csproj
+          dotnet user-secrets set "Database:DBL" "${{ secrets.Database_DBL }}" --project HR.MobyPark/HR.MobyPark.csproj
+
+      - name: Configure User Secrets for HR.MobyPark-SessionWorker
+        run: |
+          dotnet user-secrets init --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+          dotnet user-secrets set "Database:HST" "${{ secrets.Database_HST }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+          dotnet user-secrets set "Database:PRT" "${{ secrets.Database_PRT }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+          dotnet user-secrets set "Database:USR" "${{ secrets.Database_USR }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+          dotnet user-secrets set "Database:PSW" "${{ secrets.Database_PSW }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+          dotnet user-secrets set "Database:DBL" "${{ secrets.Database_DBL }}" --project HR.MobyPark-SessionWorker/HR.MobyPark-SessionWorker.csproj
+
+      - name: Configure User Secrets for HR.MobyPark-BillingUsersWorker
+        run: |
+          dotnet user-secrets init --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+          dotnet user-secrets set "Database:HST" "${{ secrets.Database_HST }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+          dotnet user-secrets set "Database:PRT" "${{ secrets.Database_PRT }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+          dotnet user-secrets set "Database:USR" "${{ secrets.Database_USR }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+          dotnet user-secrets set "Database:PSW" "${{ secrets.Database_PSW }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+          dotnet user-secrets set "Database:DBL" "${{ secrets.Database_DBL }}" --project HR.MobyPark-BillingUsersWorker/HR.MobyPark-BillingUsersWorker.csproj
+
+      - name: Configure User Secrets for HR.MobyPark-UnpaidBillingWorker
+        run: |
+          dotnet user-secrets init --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+          dotnet user-secrets set "Database:HST" "${{ secrets.Database_HST }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+          dotnet user-secrets set "Database:PRT" "${{ secrets.Database_PRT }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+          dotnet user-secrets set "Database:USR" "${{ secrets.Database_USR }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+          dotnet user-secrets set "Database:PSW" "${{ secrets.Database_PSW }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+          dotnet user-secrets set "Database:DBL" "${{ secrets.Database_DBL }}" --project HR.MobyPark-UnpaidBillingWorker/HR.MobyPark-UnpaidBillingWorker.csproj
+
+      - name: Configure User Secrets for HR.MobyPark-DashboardingDBWorker
+        run: |
+          dotnet user-secrets init --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "FromDatabase:HST" "${{ secrets.Database_HST }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "FromDatabase:PRT" "${{ secrets.Database_PRT }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "FromDatabase:USR" "${{ secrets.Database_USR }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "FromDatabase:PSW" "${{ secrets.Database_PSW }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "FromDatabase:DBL" "${{ secrets.Database_DBL }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "ToDatabase:HST" "${{ secrets.ToDatabase_HST }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "ToDatabase:PRT" "${{ secrets.ToDatabase_PRT }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "ToDatabase:USR" "${{ secrets.ToDatabase_USR }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "ToDatabase:PSW" "${{ secrets.ToDatabase_PSW }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+          dotnet user-secrets set "ToDatabase:DBL" "${{ secrets.ToDatabase_DBL }}" --project HR.MobyPark-DashboardingDBWorker/HR.MobyPark-DashboardingDBWorker.csproj
+
+      - name: Inject Secrets into Appsettings
+        run: |
+          # Function to replace empty values in JSON
+          replace_json_value() {
+            local file=$1
+            local key=$2
+            local value=$3
+            # Escape special characters in the value
+            value=$(printf '%s\n' "$value" | sed -e 's/[\/&]/\\&/g')
+            sed -i.bak "s/\"$key\": \"\"/\"$key\": \"$value\"/g" "$file"
+          }
+          
+          # HR.MobyPark
+          replace_json_value "HR.MobyPark/appsettings.json" "HST" "${{ secrets.Database_HST }}"
+          replace_json_value "HR.MobyPark/appsettings.json" "PRT" "${{ secrets.Database_PRT }}"
+          replace_json_value "HR.MobyPark/appsettings.json" "USR" "${{ secrets.Database_USR }}"
+          replace_json_value "HR.MobyPark/appsettings.json" "PSW" "${{ secrets.Database_PSW }}"
+          replace_json_value "HR.MobyPark/appsettings.json" "DBL" "${{ secrets.Database_DBL }}"
+          
+          # HR.MobyPark-SessionWorker
+          replace_json_value "HR.MobyPark-SessionWorker/appsettings.json" "HST" "${{ secrets.Database_HST }}"
+          replace_json_value "HR.MobyPark-SessionWorker/appsettings.json" "PRT" "${{ secrets.Database_PRT }}"
+          replace_json_value "HR.MobyPark-SessionWorker/appsettings.json" "USR" "${{ secrets.Database_USR }}"
+          replace_json_value "HR.MobyPark-SessionWorker/appsettings.json" "PSW" "${{ secrets.Database_PSW }}"
+          replace_json_value "HR.MobyPark-SessionWorker/appsettings.json" "DBL" "${{ secrets.Database_DBL }}"
+          
+          # HR.MobyPark-BillingUsersWorker
+          replace_json_value "HR.MobyPark-BillingUsersWorker/appsettings.json" "HST" "${{ secrets.Database_HST }}"
+          replace_json_value "HR.MobyPark-BillingUsersWorker/appsettings.json" "PRT" "${{ secrets.Database_PRT }}"
+          replace_json_value "HR.MobyPark-BillingUsersWorker/appsettings.json" "USR" "${{ secrets.Database_USR }}"
+          replace_json_value "HR.MobyPark-BillingUsersWorker/appsettings.json" "PSW" "${{ secrets.Database_PSW }}"
+          replace_json_value "HR.MobyPark-BillingUsersWorker/appsettings.json" "DBL" "${{ secrets.Database_DBL }}"
+          
+          # HR.MobyPark-UnpaidBillingWorker
+          replace_json_value "HR.MobyPark-UnpaidBillingWorker/appsettings.json" "HST" "${{ secrets.Database_HST }}"
+          replace_json_value "HR.MobyPark-UnpaidBillingWorker/appsettings.json" "PRT" "${{ secrets.Database_PRT }}"
+          replace_json_value "HR.MobyPark-UnpaidBillingWorker/appsettings.json" "USR" "${{ secrets.Database_USR }}"
+          replace_json_value "HR.MobyPark-UnpaidBillingWorker/appsettings.json" "PSW" "${{ secrets.Database_PSW }}"
+          replace_json_value "HR.MobyPark-UnpaidBillingWorker/appsettings.json" "DBL" "${{ secrets.Database_DBL }}"
+          
+          # HR.MobyPark-DashboardingDBWorker - FromDatabase
+          replace_json_value "HR.MobyPark-DashboardingDBWorker/appsettings.json" "HST" "${{ secrets.Database_HST }}"
+          replace_json_value "HR.MobyPark-DashboardingDBWorker/appsettings.json" "PRT" "${{ secrets.Database_PRT }}"
+          replace_json_value "HR.MobyPark-DashboardingDBWorker/appsettings.json" "USR" "${{ secrets.Database_USR }}"
+          replace_json_value "HR.MobyPark-DashboardingDBWorker/appsettings.json" "PSW" "${{ secrets.Database_PSW }}"
+          replace_json_value "HR.MobyPark-DashboardingDBWorker/appsettings.json" "DBL" "${{ secrets.Database_DBL }}"
+
+      - name: Set Environment Variables for Runtime Configuration
+        run: |
+          echo "DATABASE_HST=${{ secrets.Database_HST }}" >> $GITHUB_ENV
+          echo "DATABASE_PRT=${{ secrets.Database_PRT }}" >> $GITHUB_ENV
+          echo "DATABASE_USR=${{ secrets.Database_USR }}" >> $GITHUB_ENV
+          echo "DATABASE_PSW=${{ secrets.Database_PSW }}" >> $GITHUB_ENV
+          echo "DATABASE_DBL=${{ secrets.Database_DBL }}" >> $GITHUB_ENV
+          echo "TODATABASE_HST=${{ secrets.ToDatabase_HST }}" >> $GITHUB_ENV
+          echo "TODATABASE_PRT=${{ secrets.ToDatabase_PRT }}" >> $GITHUB_ENV
+          echo "TODATABASE_USR=${{ secrets.ToDatabase_USR }}" >> $GITHUB_ENV
+          echo "TODATABASE_PSW=${{ secrets.ToDatabase_PSW }}" >> $GITHUB_ENV
+          echo "TODATABASE_DBL=${{ secrets.ToDatabase_DBL }}" >> $GITHUB_ENV
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Run Tests
+        id: run-tests
+        run: |
+          dotnet test HR.MobyPark-UnitTesting/HR.MobyPark-UnitTesting.csproj \
+            --configuration Release \
+            --logger "trx;LogFileName=test-results.trx" \
+            --results-directory ./TestResults
+        continue-on-error: true
+
+      - name: Upload Test Results on Failure
+        if: steps.run-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.run_number }}
+          path: ./TestResults/
+          retention-days: 30
+
+      - name: Stop Workflow on Test Failure
+        if: steps.run-tests.outcome == 'failure'
+        run: |
+          echo "Tests failed. Stopping workflow."
+          exit 1
+
+      - name: Build Application
+        run: |
+          dotnet build --configuration Release --no-restore
+
+      - name: Publish Application
+        run: |
+          dotnet publish --configuration Release --no-build --output ./publish
+
+      - name: Deploy to Self-Hosted Server
+        run: |
+          # Create deployment directory if it doesn't exist
+          mkdir -p ./opt/mobypark/deployment
+          
+          # Create backup of current deployment
+          if [ -d ./opt/mobypark/deployment ] && [ "$(ls -A ./opt/mobypark/deployment)" ]; then
+            echo "Creating backup of current deployment..."
+            mkdir -p ./opt/mobypark/backup
+            cp -r ./opt/mobypark/deployment ./opt/mobypark/backup/deployment-$(date +%Y%m%d-%H%M%S)
+          fi
+
+          # Stop running services (if they exist)
+          sudo systemctl stop mobypark.service 2>/dev/null || echo "Service not running or doesn't exist"
+
+          # Copy published artifacts to deployment folder
+          if cp -r ./publish/* ./opt/mobypark/deployment/; then
+            echo "Deployment completed successfully to ./opt/mobypark/deployment"
+          else
+            echo "Deployment failed! Restoring from backup if available..."
+            exit 1
+          fi
+
+          # Start services
+          sudo systemctl start mobypark.service 2>/dev/null || echo "Service start skipped (service may not be configured)"
+
+      # - name: Force Push to Live Branch
+      #   run: |
+      #     # Force push staging to live branch to reflect currently deployed version
+      #     # This is intentional to keep live branch in sync with production deployment
+      #     git config user.name "GitHub Actions Bot"
+      #     git config user.email "actions@github.com"
+      #     git fetch origin staging
+      #     git checkout staging
+      #     git push origin staging:live --force
