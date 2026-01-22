@@ -150,11 +150,12 @@ public class Billing : aModel, iDatabase
     // ====================================================================================
     
     /// <summary>
-    /// Gets billing data for a specific user as JArray. Optimized to avoid N+1 queries.
+    /// Gets billing data for a specific user as List<Billing>. Optimized to avoid N+1 queries.
+    /// Follows the same pattern as Payment.GetAllByUserID and ParkingLot.GetAll.
     /// </summary>
-    public static JArray GetBillingDataForUser(int userId)
+    public static List<Billing> GetBillingDataForUser(int userId)
     {
-        JArray billingData = new();
+        List<Billing> billingData = new();
 
         // Get all sessions for this user (single query)
         List<Session> userSessions = Session.GetAllByUserID(userId);
@@ -177,8 +178,22 @@ public class Billing : aModel, iDatabase
                 continue;
 
             decimal payed = paymentsBySession.GetValueOrDefault(session.ID, 0);
-            JObject billingRecord = BuildBillingRecord(session, parkingLot, payed);
-            billingData.Add(billingRecord);
+            decimal amount = (decimal)session.Amount;
+            string transactionHash = $"{session.ID}-{session.UserID}-{parkingLot.ID}";
+
+            Billing billing = new()
+            {
+                SessionID = session.ID,
+                ParkingLotID = parkingLot.ID,
+                Amount = amount,
+                tHash = transactionHash,
+                Payed = payed,
+                Balance = amount - payed,
+                CompletedDateTime = session.EndDateTime,
+                CreateDateTime = DateTime.Now
+            };
+            
+            billingData.Add(billing);
         }
 
         return billingData;
@@ -217,44 +232,4 @@ public class Billing : aModel, iDatabase
         return result;
     }
 
-    /// <summary>
-    /// Builds a single billing record JObject from session and parking lot data.
-    /// </summary>
-    private static JObject BuildBillingRecord(Session session, ParkingLot parkingLot, decimal payed)
-    {
-        // Calculate hours and days
-        TimeSpan duration = session.EndDateTime - session.StartDateTime;
-        double hours = duration.TotalHours;
-        int days = (int)duration.TotalDays;
-        
-        // Calculate amount
-        decimal amount = (decimal)session.Amount;
-        
-        // Generate transaction hash
-        string transaction = $"{session.ID}-{session.UserID}-{parkingLot.ID}";
-        
-        // Build the billing record
-        return new JObject
-        {
-            new JProperty("session", new JObject
-            {
-                new JProperty("licenseplate", session.LicensePlate),
-                new JProperty("started", session.StartDateTime),
-                new JProperty("stopped", session.EndDateTime),
-                new JProperty("hours", Math.Round(hours, 2)),
-                new JProperty("days", days)
-            }),
-            new JProperty("parking", new JObject
-            {
-                new JProperty("name", parkingLot.Name),
-                new JProperty("location", parkingLot.Location),
-                new JProperty("tariff", parkingLot.Tariff),
-                new JProperty("daytariff", parkingLot.DayTariff)
-            }),
-            new JProperty("amount", amount),
-            new JProperty("thash", transaction),
-            new JProperty("payed", payed),
-            new JProperty("balance", amount - payed)
-        };
-    }
 }
