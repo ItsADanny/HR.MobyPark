@@ -1,0 +1,60 @@
+name: Staging CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - staging
+  workflow_dispatch:
+
+jobs:
+  test-build-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '9.0.x'
+          
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Set Environment Variables for Runtime Configuration
+        run: |
+          echo "DATABASE_HST=${{ secrets.Database_HST }}" >> $GITHUB_ENV
+          echo "DATABASE_PRT=${{ secrets.Database_PRT }}" >> $GITHUB_ENV
+          echo "DATABASE_USR=${{ secrets.Database_USR }}" >> $GITHUB_ENV
+          echo "DATABASE_PSW=${{ secrets.Database_PSW }}" >> $GITHUB_ENV
+          echo "DATABASE_DBL=${{ secrets.Database_DBL }}" >> $GITHUB_ENV
+          echo "TODATABASE_HST=${{ secrets.ToDatabase_HST }}" >> $GITHUB_ENV
+          echo "TODATABASE_PRT=${{ secrets.ToDatabase_PRT }}" >> $GITHUB_ENV
+          echo "TODATABASE_USR=${{ secrets.ToDatabase_USR }}" >> $GITHUB_ENV
+          echo "TODATABASE_PSW=${{ secrets.ToDatabase_PSW }}" >> $GITHUB_ENV
+          echo "TODATABASE_DBL=${{ secrets.ToDatabase_DBL }}" >> $GITHUB_ENV
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Run Tests
+        id: run-tests
+        run: |
+          dotnet test HR.MobyPark-UnitTesting/HR.MobyPark-UnitTesting.csproj \
+            --configuration Release \
+            --logger "trx;LogFileName=test-results.trx" \
+            --results-directory ./TestResults
+        continue-on-error: true
+
+      - name: Upload Test Results on Failure
+        if: steps.run-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.run_number }}
+          path: ./TestResults/
+          retention-days: 30
