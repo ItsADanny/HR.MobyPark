@@ -1,9 +1,6 @@
 name: Staging CI/CD Pipeline (Test, Build, Publish and Deploy)
 
 on:
-  pull_request:
-    branches:
-      - staging
   push:
     branches:
       - staging
