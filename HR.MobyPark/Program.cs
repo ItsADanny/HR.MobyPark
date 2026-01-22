@@ -43,11 +43,11 @@ app.UseHttpsRedirection();
 // app.MapSwagger().RequireAuthorization();
 app.MapSwagger();
 app.MapControllers();
-//Setting the application port to run on
-app.Urls.Add($"http://*:8080");
-app.Run();
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8069";
+app.Urls.Add($"http://*:{port}");
+
+app.Run();
 
 Console.WriteLine($"Server started, Listening to port: {port}");
 Log.WriteLine($"Server started, Listening to port: {port}");
