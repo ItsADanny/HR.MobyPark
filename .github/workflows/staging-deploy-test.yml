@@ -1,4 +1,4 @@
-name: Staging CI/CD Pipeline (TEST)
+name: Staging CI/CD Pipeline (Test, Build, Publish and Deploy)
 
 on:
   pull_request:
