@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-build-deploy:
+  testing:
     runs-on: self-hosted
 
     steps:
