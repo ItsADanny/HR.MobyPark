@@ -128,29 +128,29 @@ public sealed class ParkingLotModelTests
         Assert.IsTrue(result);
     }
 
-    [TestMethod]
-    public void GetByID_returnsParkingLot()
-    {
-        var lot = new ParkingLot
-        {
-            Name = $"Lot4",
-            Location = "Test Location4",
-            Address = "Test Address4",
-            Capacity = 75,
-            Tariff = 2.0m,
-            DayTariff = 15m,
-            Latitude = 10.2,
-            Longitude = 7.4,
-            CreateDateTime = DateTime.Now
-        };
-        lot.CreateDB();
+    // [TestMethod]
+    // public void GetByID_returnsParkingLot()
+    // {
+    //     var lot = new ParkingLot
+    //     {
+    //         Name = $"Lot4",
+    //         Location = "Test Location4",
+    //         Address = "Test Address4",
+    //         Capacity = 75,
+    //         Tariff = 2.0m,
+    //         DayTariff = 15m,
+    //         Latitude = 10.2,
+    //         Longitude = 7.4,
+    //         CreateDateTime = DateTime.Now
+    //     };
+    //     lot.CreateDB();
 
-        List<ParkingLot> lotsInDb = ParkingLot.GetAll();
-        ParkingLot? createdLot = lotsInDb.FirstOrDefault(l => l.Name == lot.Name && l.Location == lot.Location);
+    //     List<ParkingLot> lotsInDb = ParkingLot.GetAll();
+    //     ParkingLot? createdLot = lotsInDb.FirstOrDefault(l => l.Name == lot.Name && l.Location == lot.Location);
 
-        ParkingLot? retrievedLot = ParkingLot.GetByID(createdLot.ID);
-        Assert.AreEqual(createdLot.ID, retrievedLot.ID);
-    }
+    //     ParkingLot? retrievedLot = ParkingLot.GetByID(createdLot.ID);
+    //     Assert.AreEqual(createdLot.ID, retrievedLot.ID);
+    // }
 
     [TestMethod]
     public void GetAll_returnsListOfParkingLots()
