@@ -1,0 +1,126 @@
+name: Staging-Test-Build-Publish-Deploy
+
+on:
+  pull_request:
+    branches:
+      - staging
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+
+jobs:
+  test-build-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '9.0.x'
+          
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Run Tests
+        id: run-tests
+        run: |
+          dotnet test HR.MobyPark-UnitTesting/HR.MobyPark-UnitTesting.csproj \
+            --configuration Release \
+            --logger "trx;LogFileName=test-results.trx" \
+            --results-directory ./TestResults
+        continue-on-error: true
+
+      - name: Upload Test Results on Failure
+        if: steps.run-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.run_number }}
+          path: ./TestResults/
+          retention-days: 30
+
+      - name: Stop Workflow on Test Failure
+        if: steps.run-tests.outcome == 'failure'
+        run: |
+          echo "Tests failed. Stopping workflow."
+          exit 1
+
+      - name: Build Application
+        run: |
+          dotnet build --configuration Release --no-restore
+
+      - name: Publish Application
+        run: |
+          dotnet publish --configuration Release --no-build --output ./publish
+
+      - name: Populate Database Secrets in appsettings.json
+        run: |
+          # Function to update appsettings.json with secrets
+          update_appsettings() {
+            local file=$1
+            if [ -f "$file" ]; then
+              jq '.Database.HST = "${{ secrets.Database_HST }}" | 
+                  .Database.PRT = "${{ secrets.Database_PRT }}" | 
+                  .Database.USR = "${{ secrets.Database_USR }}" | 
+                  .Database.PSW = "${{ secrets.Database_PSW }}" | 
+                  .Database.DBL = "${{ secrets.Database_DBL }}"' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+              echo "✓ Updated $file"
+            fi
+          }
+          
+          # Update all appsettings.json files in publish directory
+          update_appsettings "publish/appsettings.json"
+
+      - name: Deploy to Self-Hosted Server
+        run: |
+          # Create deployment directory if it doesn't exist
+          mkdir -p ./opt/mobypark/deployment
+          
+          # Create backup of current deployment
+          if [ -d ./opt/mobypark/deployment ] && [ "$(ls -A ./opt/mobypark/deployment)" ]; then
+            echo "Creating backup of current deployment..."
+            mkdir -p ./opt/mobypark/backup
+            cp -r ./opt/mobypark/deployment ./opt/mobypark/backup/deployment-$(date +%Y%m%d-%H%M%S)
+          fi
+
+          # Stop running services (if they exist)
+          sudo systemctl stop HR.MobyPark.service 2>/dev/null || echo "Service [HR.MobyPark] not running or doesn't exist"
+          sudo systemctl stop HR.MobyPark-BillingUsersWorker.service 2>/dev/null || echo "Service [HR.MobyPark-BillingUsersWorker] not running or doesn't exist"
+          sudo systemctl stop HR.MobyPark-DashboardingDBWorker.service 2>/dev/null || echo "Service [HR.MobyPark-DashboardingDBWorker] not running or doesn't exist"
+          sudo systemctl stop HR.MobyPark-UnpaidBillingWorker.service 2>/dev/null || echo "Service [HR.MobyPark-UnpaidBillingWorker] not running or doesn't exist"
+          sudo systemctl stop HR.MobyPark-SessionWorker.service 2>/dev/null || echo "Service [HR.MobyPark-SessionWorker] not running or doesn't exist"
+
+          # Copy published artifacts to deployment folder
+          if cp -r ./publish/* ./opt/mobypark/deployment/; then
+            echo "Deployment completed successfully to ./opt/mobypark/deployment"
+          else
+            echo "Deployment failed! Restoring from backup if available..."
+            exit 1
+          fi
+
+          # Start services
+          sudo systemctl start HR.MobyPark.service 2>/dev/null || echo "Service [HR.MobyPark] start skipped (service may not be configured)"
+          sudo systemctl start HR.MobyPark-BillingUsersWorker.service 2>/dev/null || echo "Service [HR.MobyPark-BillingUsersWorker] start skipped (service may not be configured)"
+          sudo systemctl start HR.MobyPark-DashboardingDBWorker.service 2>/dev/null || echo "Service [HR.MobyPark-DashboardingDBWorker] start skipped (service may not be configured)"
+          sudo systemctl start HR.MobyPark-UnpaidBillingWorker.service 2>/dev/null || echo "Service [HR.MobyPark-UnpaidBillingWorker] start skipped (service may not be configured)"
+          sudo systemctl start HR.MobyPark-SessionWorker.service 2>/dev/null || echo "Service [HR.MobyPark-SessionWorker] start skipped (service may not be configured)"
+
+      # - name: Force Push to Live Branch
+      #   run: |
+      #     # Force push staging to live branch to reflect currently deployed version
+      #     # This is intentional to keep live branch in sync with production deployment
+      #     git config user.name "GitHub Actions Bot"
+      #     git config user.email "actions@github.com"
+      #     git fetch origin staging
+      #     git checkout staging
+      #     git push origin staging:live --force
